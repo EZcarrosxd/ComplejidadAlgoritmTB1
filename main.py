@@ -8,27 +8,33 @@ from dfs_connectivity import encontrar_nodos_criticos
 
 def main():
     print("--- 1. CARGA DE DATOS ---")
-    nodos = cargar_nodos('dataset_nodos.csv')
-    aristas = cargar_aristas('dataset_aristas.csv')
+    
+    # IMPORTANTE: Reemplace esto con su ruta local exacta
+    ruta_dataset = r"C:\Users\Carlos\Downloads\dataset.json"
+    
+    # Cargamos la topología desde el mismo archivo JSON
+    nodos = cargar_nodos(ruta_dataset)
+    aristas = cargar_aristas(ruta_dataset)
     
     red = RedElectrica()
     red.inicializar_red(nodos, aristas)
     print(f"Total de nodos cargados: {red.obtener_cantidad_nodos()}")
+    print(f"Total de aristas cargadas: {len(aristas)}")
 
     print("\n--- 2. OPTIMIZACIÓN DE COSTOS (KRUSKAL) ---")
     mst, costo_minimo = optimizar_costos_kruskal(nodos, aristas)
-    print(f"Costo mínimo de instalación (MST): {costo_minimo}")
+    print(f"Costo mínimo de instalación (MST): S/ {costo_minimo:.2f}")
     print(f"Líneas de transmisión seleccionadas: {len(mst)}")
 
     print("\n--- 3. ROBUSTEZ Y NODOS CRÍTICOS (DFS) ---")
     criticos = encontrar_nodos_criticos(nodos, red.adyacencia)
     print(f"Subestaciones críticas detectadas: {len(criticos)}")
 
-    # Prueba de flujo entre los dos primeros nodos disponibles
+    # Prueba de flujo entre el N-1 y el N-1500 (o el último disponible)
     if len(nodos) >= 2:
         lista_claves = list(nodos.keys())
-        origen = lista_claves[0]
-        destino = lista_claves[1]
+        origen = "N-1"
+        destino = lista_claves[-1] # El último nodo generado
         
         print(f"\n--- 4. FLUJO MÁXIMO (FORD-FULKERSON) ---")
         print(f"Calculando capacidad de flujo entre {origen} y {destino}...")
