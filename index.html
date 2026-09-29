@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control - Red Eléctrica</title>
     <style>
-        /* Variables del sistema de espaciado y tipografía */
         :root {
             --bg-color: #f3f4f6;
             --card-bg: #ffffff;
             --text-primary: #111827; 
             --text-secondary: #6b7280; 
+            --primary-action: #2563eb;
+            --primary-hover: #1d4ed8;
             --spacing-sm: 8px;
             --spacing-md: 16px;
             --spacing-lg: 24px;
@@ -18,36 +19,79 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-primary);
             margin: 0;
             padding: var(--spacing-xl);
             display: flex;
             justify-content: center;
+            align-items: center;
+            min-height: 90vh;
         }
 
-        /* Contenedor centralizado y responsivo */
+        /* ESTADO VACÍO (Empty State) */
+        .empty-state {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 48px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .empty-state h2 { margin: 0 0 var(--spacing-sm) 0; }
+        .empty-state p { color: var(--text-secondary); margin-bottom: var(--spacing-lg); }
+
+        /* Estilización del input type="file" para que no se vea por defecto */
+        input[type="file"] {
+            display: block;
+            margin: 0 auto var(--spacing-lg) auto;
+            padding: 10px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 6px;
+            width: 80%;
+            cursor: pointer;
+        }
+
+        /* Botón de acción primaria con alto contraste */
+        .btn-primary {
+            background-color: var(--primary-action);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-primary:disabled { background-color: #93c5fd; cursor: not-allowed; }
+
+        /* DASHBOARD PRINCIPAL (Oculto inicialmente) */
         .dashboard {
-            display: grid;
+            display: none; /* Oculto hasta que haya datos */
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: var(--spacing-lg);
             max-width: 1000px;
             width: 100%;
+            align-self: flex-start;
         }
 
-        /* Componentes aislados (Function First) */
         .card {
             background-color: var(--card-bg);
             border-radius: 8px;
             padding: var(--spacing-lg);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             gap: var(--spacing-sm);
         }
 
-        /* Etiquetas secundarias con énfasis reducido */
         .card-label {
             font-size: 14px;
             color: var(--text-secondary);
@@ -57,120 +101,113 @@
             margin: 0;
         }
 
-        /* Valores primarios con alto contraste y peso */
-        .card-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
-        }
-
-        .card-subtext {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        /* Gestión del espaciado interno para listas de datos */
-        .node-list {
-            list-style: none;
-            padding: 0;
-            margin: var(--spacing-md) 0 0 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-sm);
-        }
-
-        .node-tag {
-            background-color: #e5e7eb;
-            color: #374151;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 14px;
-            font-weight: 500;
-        }
+        .card-value { font-size: 28px; font-weight: 700; margin: 0; }
+        .card-subtext { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+        .node-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+        .node-tag { background-color: #e5e7eb; color: #374151; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 500;}
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <!-- Componente 1: Costo Mínimo -->
+    <!-- Empty State: Subida de archivo -->
+    <div class="empty-state" id="empty-state">
+        <h2>Subir Configuración de Red</h2>
+        <p>Selecciona el archivo JSON o CSV con los datos de subestaciones y cableado para analizar la topología.</p>
+        <form id="upload-form">
+            <input type="file" id="dataset-file" accept=".json, .csv" required>
+            <button type="submit" class="btn-primary" id="btn-submit">Procesar Red Eléctrica</button>
+        </form>
+        <p id="upload-error" style="color: #dc2626; display: none; margin-top: 16px; font-size: 14px;"></p>
+    </div>
+
+    <!-- Dashboard: Resultados de Algoritmos -->
+    <div class="dashboard" id="dashboard">
         <div class="card">
             <p class="card-label">Costo Mínimo de Instalación</p>
-            <p class="card-value" id="val-costo">Cargando...</p>
+            <p class="card-value" id="val-costo">-</p>
             <p class="card-subtext">Calculado por algoritmo MST (Kruskal)</p>
         </div>
-
-        <!-- Componente 2: Flujo Máximo -->
         <div class="card">
             <p class="card-label">Capacidad de Flujo Máximo</p>
-            <p class="card-value" id="val-flujo">Cargando...</p>
+            <p class="card-value" id="val-flujo">-</p>
             <p class="card-subtext" id="sub-flujo">Calculado por Ford-Fulkerson</p>
         </div>
-
-        <!-- Componente 3: Tolerancia a Fallos -->
         <div class="card" style="grid-column: 1 / -1;">
             <p class="card-label">Nodos Críticos Detectados (Vulnerabilidad)</p>
-            <p class="card-value" id="val-criticos-count">Cargando...</p>
-            <ul class="node-list" id="list-criticos">
-                <!-- Inserción dinámica del DOM -->
-            </ul>
+            <p class="card-value" id="val-criticos-count">-</p>
+            <p class="card-subtext" id="tiempo-ejecucion"></p>
+            <ul class="node-list" id="list-criticos"></ul>
         </div>
     </div>
 
     <script>
-        // Configuración de comunicación con la API (Back-end)
         const API_BASE_URL = 'http://localhost:5000/api';
 
-        async function cargarDatosCosto() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/optimization/mst`);
-                const data = await response.json();
-                document.getElementById('val-costo').textContent = `$${data.costo_minimo_instalacion.toLocaleString()}`;
-            } catch (error) {
-                document.getElementById('val-costo').textContent = 'Error de conexión';
-            }
-        }
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('dataset-file');
+            const btnSubmit = document.getElementById('btn-submit');
+            const errorMsg = document.getElementById('upload-error');
+            
+            if (fileInput.files.length === 0) return;
 
-        async function cargarDatosFlujo() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/optimization/flow`);
-                const data = await response.json();
-                document.getElementById('val-flujo').textContent = `${data.flujo_maximo_red.toLocaleString()} MW`;
-                document.getElementById('sub-flujo').textContent = `Conexión evaluada: ${data.origen_evaluado} → ${data.destino_evaluado}`;
-            } catch (error) {
-                document.getElementById('val-flujo').textContent = 'Error de conexión';
-            }
-        }
+            // Preparar el envío del archivo
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
 
-        async function cargarEstadoRed() {
+            // Feedback visual de carga
+            btnSubmit.textContent = 'Procesando algoritmos...';
+            btnSubmit.disabled = true;
+            errorMsg.style.display = 'none';
+
             try {
-                const response = await fetch(`${API_BASE_URL}/network-status`);
-                const data = await response.json();
-                
-                const nodos = data.nodos_criticos || [];
-                document.getElementById('val-criticos-count').textContent = `${nodos.length} subestaciones vulnerables`;
-                
-                const listaElement = document.getElementById('list-criticos');
-                listaElement.innerHTML = ''; 
-                
-                nodos.forEach(nodo => {
-                    const li = document.createElement('li');
-                    li.className = 'node-tag';
-                    li.textContent = nodo;
-                    listaElement.appendChild(li);
+                // Se realiza una única petición para subir el archivo y obtener todos los cálculos
+                const response = await fetch(`${API_BASE_URL}/upload`, {
+                    method: 'POST',
+                    body: formData
                 });
-            } catch (error) {
-                document.getElementById('val-criticos-count').textContent = 'Error de conexión';
-            }
-        }
 
-        // Ejecución secuencial al cargar el documento
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarDatosCosto();
-            cargarDatosFlujo();
-            cargarEstadoRed();
+                const jsonResponse = await response.json();
+
+                if (!response.ok) throw new Error(jsonResponse.error || 'Error desconocido al procesar');
+
+                // Si fue exitoso, poblar la interfaz y cambiar de vista
+                poblarDashboard(jsonResponse.datos);
+                
+                document.getElementById('empty-state').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'grid';
+                document.body.style.alignItems = 'flex-start';
+
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                btnSubmit.textContent = 'Procesar Red Eléctrica';
+                btnSubmit.disabled = false;
+            }
         });
+
+        // Función para inyectar los datos en el HTML usando la respuesta consolidada de la API
+        function poblarDashboard(datos) {
+            document.getElementById('val-costo').textContent = `$${datos.costo_minimo_instalacion.toLocaleString()}`;
+            
+            document.getElementById('val-flujo').textContent = `${datos.flujo_maximo_red.toLocaleString()} MW`;
+            document.getElementById('sub-flujo').textContent = `Conexión evaluada: ${datos.metadata.origen_flujo} → ${datos.metadata.destino_flujo}`;
+            
+            const nodos = datos.nodos_criticos || [];
+            document.getElementById('val-criticos-count').textContent = `${nodos.length} subestaciones vulnerables`;
+            document.getElementById('tiempo-ejecucion').textContent = `Tiempo total de ejecución algorítmica: ${datos.tiempo_ejecucion}s`;
+            
+            const listaElement = document.getElementById('list-criticos');
+            listaElement.innerHTML = ''; 
+            nodos.forEach(nodo => {
+                const li = document.createElement('li');
+                li.className = 'node-tag';
+                li.textContent = nodo;
+                listaElement.appendChild(li);
+            });
+        }
     </script>
 </body>
 </html>
