@@ -402,6 +402,7 @@ curl -X POST -F "file=@dataset.json" http://localhost:5000/api/upload
 ## 🤖 Declaración de uso de IA
 
 Según el reglamento del curso, el grupo debe declarar el uso de herramientas de IA y en qué parte se empleó.
+Use IA para el apartado de html.
 
 > `[Completar con honestidad: herramienta utilizada y partes del proyecto donde se usó, o indicar que no se utilizó IA.]`
 
