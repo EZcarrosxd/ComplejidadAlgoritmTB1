@@ -21,31 +21,43 @@ class ControladorOrquestador:
         """
         inicio_tiempo = time.time()
         
-        # --- Paso A: Lectura de datos ---
         self.nodos = cargar_nodos(self.ruta_dataset)
         self.aristas = cargar_aristas(self.ruta_dataset)
         
-        # --- Paso B: Generación del Grafo ---
         self.red.inicializar_red(self.nodos, self.aristas)
         
-        # --- Paso C: Invocación secuencial de algoritmos ---
         mst, costo_minimo = optimizar_costos_kruskal(self.nodos, self.aristas)
         criticos = encontrar_nodos_criticos(self.nodos, self.red.adyacencia)
         
-        # Determinamos nodos de origen y destino para la evaluación de flujo
         lista_claves = list(self.nodos.keys())
         origen = "N-1" if "N-1" in lista_claves else lista_claves[0]
         destino = lista_claves[-1]
         flujo = calcular_flujo_maximo(self.nodos, self.aristas, origen, destino)
         
+
+        nodos_visuales = []
+        aristas_visuales = []
+        
+        lista_nodos_limitada = lista_claves[:100]
+        for nodo_id in lista_nodos_limitada:
+            color = "#dc2626" if nodo_id in criticos else "#3b82f6"
+            nodos_visuales.append({"id": nodo_id, "label": str(nodo_id), "color": color})
+            
+        for arista in self.aristas:
+            if arista['origen'] in lista_nodos_limitada and arista['destino'] in lista_nodos_limitada:
+                aristas_visuales.append({"from": arista['origen'], "to": arista['destino']})
+
         tiempo_total = time.time() - inicio_tiempo
 
-        # El diccionario consolidado utiliza las claves exactas requeridas por el plan.
         payload = {
             "costo_minimo_instalacion": round(costo_minimo, 2),
             "flujo_maximo_red": flujo,
             "nodos_criticos": criticos,
             "tiempo_ejecucion": round(tiempo_total, 4),
+            "grafo_visual": {
+                "nodos": nodos_visuales,
+                "aristas": aristas_visuales
+            },
             "metadata": {
                 "total_nodos": self.red.obtener_cantidad_nodos(),
                 "total_aristas": len(self.aristas),
