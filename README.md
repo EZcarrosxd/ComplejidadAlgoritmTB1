@@ -20,7 +20,7 @@ python -m venv .venv
 Abrir [el panel](http://127.0.0.1:5000) o
 [la documentación interactiva](http://127.0.0.1:5000/docs).
 Todo funciona en el puerto 5000. Ya no se usa Flask ni un servidor separado en 8000.
-La visualización y tipografías se descargan de CDN; requieren internet.
+Las tipografías se descargan de Google Fonts. El grafo se dibuja con canvas, sin librerías externas.
 
 Para desarrollo con recarga:
 
@@ -30,9 +30,9 @@ Para desarrollo con recarga:
 
 ## Probar la aplicación
 
-1. Subir `dataset/dataset.json` o `dataset/conexiones.csv`.
-2. Ver costo, flujo, nodos críticos y subgrafo de los primeros 100 nodos.
-3. Cambiar origen y destino y pulsar **Recalcular flujo**.
+1. Subir `dataset/dataset.json` o `dataset/conexiones.csv`, o pulsar **Usar una red de ejemplo**.
+2. Ver costo, flujo, nodos críticos y un subgrafo de 200 nodos.
+3. En **Capacidad**, cambiar origen y destino y pulsar **Calcular**.
 4. Pulsar **Cargar otra red** para analizar otro archivo.
 
 El dataset tiene **1500 nodos y 2767 líneas**. Sus conexiones se verificaron contra
@@ -60,6 +60,7 @@ mano, desconexión, aislados, líneas paralelas, validación y una cadena de 150
 | GET | `/api/network-status` | Articulaciones y metadatos del último análisis |
 | GET | `/api/optimization/mst` | Costo, líneas elegidas y componentes |
 | GET | `/api/optimization/flow` | Flujo, corte mínimo y extremos |
+| GET | `/api/ejemplo` | Descarga `dataset/dataset.json` para la red de ejemplo |
 
 La carga conserva el contrato `{"mensaje": "...", "datos": {...}}` y agrega
 `aristas_mst`, `metadata.componentes` y `metadata.red_conectada`.

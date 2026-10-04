@@ -40,7 +40,7 @@ La carga CSV produce los mismos resultados que el JSON, salvo el tiempo medido.
 Comprobado con agent-browser contra Uvicorn en el puerto 5000:
 
 - Carga de la página, CSS y módulos JavaScript sin errores de ejecución.
-- Carga JSON y visualización del subgrafo de 100 nodos.
+- Carga JSON y visualización del subgrafo de 200 nodos.
 - Recálculo manual N-1 → N-2 y visualización de 80 A.
 - Rechazo de origen igual a destino con un mensaje visible.
 - Reinicio y nueva carga CSV.

@@ -16,7 +16,8 @@ El recorrido de una petición es:
 | `backend/algorithms/` | Un algoritmo o estructura auxiliar por archivo |
 | `backend/services/analysis.py` | Ejecutar el caso de uso de análisis |
 | `backend/services/terminals.py` | Elegir y validar extremos del flujo |
-| `backend/services/visualization.py` | Preparar el subgrafo visible |
+| `backend/services/visualization.py` | Elegir y preparar el subgrafo visible |
+| `backend/services/fallas.py` | Medir cuántos nodos aísla cada nodo crítico |
 | `backend/schemas/` | Declarar la estructura de las respuestas de FastAPI |
 | `frontend/templates/` | Fragmentos HTML por sección de la pantalla |
 | `frontend/static/js/` | Módulos por comportamiento de la interfaz |
@@ -47,6 +48,8 @@ En local, la API y el panel pueden servirse en el mismo puerto.
 El frontend también funciona en un alojamiento estático: `bootstrap.js` carga los
 fragmentos HTML antes de iniciar los eventos. No requiere Python ni compilación.
 `config.js` contiene la dirección del backend; vacía significa el mismo origen.
+El grafo se dibuja en un `canvas`; `layout.js` solo acomoda los puntos en pantalla
+y `state.js` guarda el estado de la interfaz. Los resultados siempre vienen del backend.
 Al separar servidores, `ALLOWED_ORIGINS` permite sus dominios exactos mediante CORS.
 Los archivos subidos se leen sin guardarlos con el nombre enviado por el usuario.
 El límite leído por la ruta es 10 MiB; el parser multipart puede usar temporales.

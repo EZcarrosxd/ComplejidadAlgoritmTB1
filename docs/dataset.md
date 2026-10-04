@@ -64,5 +64,5 @@ los nodos: cada extremo debe estar declarado. Sin esa lista, se deducen de las l
 Se rechazan IDs vacíos, bucles, valores negativos/no finitos y filas mal formadas.
 Las líneas paralelas se permiten: sus capacidades se suman en el flujo.
 
-La pantalla dibuja el subgrafo inducido por los primeros 100 nodos e indica el total.
+La pantalla dibuja un subgrafo de 200 nodos elegido alrededor del flujo y los nodos críticos, e indica el total.
 Todos los cálculos usan los 1500 nodos y las 2767 líneas.

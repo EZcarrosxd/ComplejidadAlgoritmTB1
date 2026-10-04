@@ -38,9 +38,9 @@ Campos de cada conexión: `origen`, `destino`, `distancia_m`. Se deriva
 La capacidad de 20 A por línea es una hipótesis del prototipo, no un dato medido.
 No se conocen demanda, coordenadas o voltajes a partir de estas tablas.
 
-La red completa tiene una componente. La GUI muestra el subgrafo inducido por los
-primeros 100 nodos, indicando cuántos se muestran; todos los algoritmos utilizan
-la red completa. El grupo puede obtener una captura de esta pantalla para el informe.
+La red completa tiene una componente. La GUI muestra un subgrafo de 200 nodos que parte
+del camino del flujo, los nodos críticos y los nodos que estos aislarían, y se completa
+con BFS. Indica cuántos se muestran; todos los algoritmos utilizan la red completa. El grupo puede obtener una captura de esta pantalla para el informe.
 
 Para completar la descripción del origen deben documentarse fecha de extracción,
 área geográfica, filtros, cálculo de distancias y correspondencia de IDs con las
