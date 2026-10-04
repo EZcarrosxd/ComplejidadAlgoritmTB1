@@ -20,16 +20,21 @@ def calcular_flujo_maximo(nodos, aristas, origen, destino):
     """
     Calcula el flujo máximo de energía que puede soportar la red.
     """
+    if origen not in nodos or destino not in nodos:
+        raise ValueError(f"El origen ({origen}) y el destino ({destino}) deben existir en la red.")
+    if origen == destino:
+        raise ValueError("El origen y el destino del flujo deben ser nodos distintos.")
+
     grafo_residual = defaultdict(lambda: defaultdict(float))
-    
-    # Construcción del grafo residual inicial
+
+    # Construcción del grafo residual inicial: una línea eléctrica puede
+    # transportar energía en ambos sentidos, así que se registra u -> v y v -> u
     for arista in aristas:
         u = arista['origen']
         v = arista['destino']
         capacidad = arista['capacidad']
         grafo_residual[u][v] += capacidad
-        if v not in grafo_residual:
-            grafo_residual[v] = defaultdict(float)
+        grafo_residual[v][u] += capacidad
 
     # Asegurar la existencia de todos los nodos
     for nodo in nodos.keys():
