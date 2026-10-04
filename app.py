@@ -31,21 +31,28 @@ def upload_dataset():
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
         
+        # Origen y destino del flujo son opcionales; si faltan se eligen automáticamente
+        origen = request.form.get('origen', '').strip() or None
+        destino = request.form.get('destino', '').strip() or None
+
         try:
             # Ejecutamos el flujo matemático con el archivo recién subido
             controlador = ControladorOrquestador(filepath)
-            resultados_globales = controlador.ejecutar_flujo_completo()
-            
-            # Eliminamos el archivo temporal tras el cálculo para no saturar el disco
-            os.remove(filepath)
-            
+            resultados_globales = controlador.ejecutar_flujo_completo(origen, destino)
+
             # Devolvemos todos los resultados consolidados para ahorrar ancho de banda y latencia
             return jsonify({
                 "mensaje": "Red procesada con éxito",
                 "datos": resultados_globales
             }), 200
+        except ValueError as e:
+            # Origen o destino del flujo inválidos
+            return jsonify({"error": str(e)}), 400
         except Exception as e:
             return jsonify({"error": f"Error al procesar los algoritmos: {str(e)}"}), 500
+        finally:
+            # Eliminamos el archivo temporal tras el cálculo para no saturar el disco
+            os.remove(filepath)
     else:
         return jsonify({"error": "Formato de archivo no soportado. Use .json o .csv"}), 400
 
@@ -71,6 +78,7 @@ def get_optimization_flow():
         return jsonify({"error": "Datos no disponibles"}), 500
     return jsonify({
         "flujo_maximo_red": resultados_globales.get("flujo_maximo_red", 0),
+        "lineas_corte_minimo": resultados_globales.get("lineas_corte_minimo", []),
         "origen_evaluado": resultados_globales.get("metadata", {}).get("origen_flujo", ""),
         "destino_evaluado": resultados_globales.get("metadata", {}).get("destino_flujo", "")
     })

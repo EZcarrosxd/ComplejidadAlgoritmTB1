@@ -17,9 +17,10 @@ class ControladorOrquestador:
         self.aristas = None
         self.red = RedElectrica()
 
-    def ejecutar_flujo_completo(self):
+    def ejecutar_flujo_completo(self, origen=None, destino=None):
         """
         Ejecuta secuencialmente la carga, modelado y algoritmos matemáticos.
+        Si no se indica origen y destino del flujo, se usan los nodos más alejados.
         Retorna el payload estructurado cumpliendo el Contrato de Datos (Fase 4.2).
         """
         inicio_tiempo = time.time()
@@ -33,7 +34,11 @@ class ControladorOrquestador:
         criticos = encontrar_nodos_criticos(self.nodos, self.red.adyacencia)
         
         lista_claves = list(self.nodos.keys())
-        origen, destino = encontrar_nodos_mas_alejados(self.nodos, self.red.adyacencia)
+        if bool(origen) != bool(destino):
+            raise ValueError("Indique tanto el origen como el destino del flujo, o ninguno de los dos.")
+        seleccion_manual = bool(origen and destino)
+        if not seleccion_manual:
+            origen, destino = encontrar_nodos_mas_alejados(self.nodos, self.red.adyacencia)
         flujo, lineas_corte = calcular_flujo_maximo(self.nodos, self.aristas, origen, destino)
         
 
@@ -65,7 +70,9 @@ class ControladorOrquestador:
                 "total_nodos": self.red.obtener_cantidad_nodos(),
                 "total_aristas": len(self.aristas),
                 "origen_flujo": origen,
-                "destino_flujo": destino
+                "destino_flujo": destino,
+                "seleccion_flujo": "manual" if seleccion_manual else "automatica",
+                "ids_nodos": lista_claves
             }
         }
         
