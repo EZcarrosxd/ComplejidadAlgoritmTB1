@@ -76,3 +76,9 @@ def test_archivo_faltante_y_grande(client):
     assert client.post("/api/upload").status_code == 422
     archivo = {"file": ("red.json", b" " * (10 * 1024 * 1024 + 1))}
     assert client.post("/api/upload", files=archivo).status_code == 413
+
+
+def test_dataset_de_ejemplo(client, dataset):
+    respuesta = client.get("/api/ejemplo")
+    assert respuesta.status_code == 200
+    assert respuesta.content == dataset

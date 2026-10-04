@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from backend.api import health, pages, results, upload
+from backend.api import example, health, pages, results, upload
 from backend.api.cors import configurar_cors
 from backend.api.errors import registrar_errores
 from backend.config import FRONTEND
@@ -20,6 +20,7 @@ def crear_app():
     configurar_cors(app)
     app.include_router(health.router)
     app.include_router(upload.router)
+    app.include_router(example.router)
     app.include_router(results.router)
     app.include_router(pages.router)
     app.mount("/static", StaticFiles(directory=str(FRONTEND / "static")), name="static")
