@@ -1,8 +1,5 @@
 def encontrar_nodos_criticos(nodos, adyacencia):
-    """
-    Identifica subestaciones que, al fallar, desconectan secciones de la red.
-    DFS iterativo (pila explícita) para no depender del límite de recursión de Python.
-    """
+
     visitado = set()
     nodos_criticos = set()
     tiempo_descubrimiento = {}
@@ -18,7 +15,7 @@ def encontrar_nodos_criticos(nodos, adyacencia):
         tiempo += 1
         hijos_raiz = 0
 
-        # Cada elemento de la pila: (nodo, padre, iterador sobre sus conexiones)
+
         pila = [(raiz, None, iter(adyacencia.get(raiz, [])))]
 
         while pila:
@@ -26,11 +23,11 @@ def encontrar_nodos_criticos(nodos, adyacencia):
             conexion = next(conexiones, None)
 
             if conexion is None:
-                # Se terminó de explorar u: se propaga su low al padre
+
                 pila.pop()
                 if padre_u is not None:
                     low[padre_u] = min(low[padre_u], low[u])
-                    # Condición para nodos no raíz
+
                     if padre_u != raiz and low[u] >= tiempo_descubrimiento[padre_u]:
                         nodos_criticos.add(padre_u)
                 continue
@@ -48,7 +45,7 @@ def encontrar_nodos_criticos(nodos, adyacencia):
             elif v != padre_u:
                 low[u] = min(low[u], tiempo_descubrimiento[v])
 
-        # Condición de punto de articulación para nodo raíz
+
         if hijos_raiz > 1:
             nodos_criticos.add(raiz)
 

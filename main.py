@@ -1,97 +1,28 @@
-# main.py
-import os
-import sys
-import time
+import argparse
 import json
-from data_loader import cargar_nodos, cargar_aristas
-from graph_model import RedElectrica
-from kruskal_mst import optimizar_costos_kruskal
-from ford_fulkerson import calcular_flujo_maximo
-from dfs_connectivity import encontrar_nodos_criticos
-from bfs_recorrido import encontrar_nodos_mas_alejados
+from pathlib import Path
 
-class ControladorOrquestador:
-    def __init__(self, ruta_dataset):
-        self.ruta_dataset = ruta_dataset
-        self.nodos = None
-        self.aristas = None
-        self.red = RedElectrica()
+from backend.config import DATASET
+from backend.data.csv_reader import LectorCsv
+from backend.data.json_reader import LectorJson
+from backend.data.loader import CargadorDataset
+from backend.services.analysis import AnalizadorRed
 
-    def ejecutar_flujo_completo(self, origen=None, destino=None):
-        """
-        Ejecuta secuencialmente la carga, modelado y algoritmos matemáticos.
-        Si no se indica origen y destino del flujo, se usan los nodos más alejados.
-        Retorna el payload estructurado cumpliendo el Contrato de Datos (Fase 4.2).
-        """
-        inicio_tiempo = time.time()
-        
-        self.nodos = cargar_nodos(self.ruta_dataset)
-        self.aristas = cargar_aristas(self.ruta_dataset)
-        
-        self.red.inicializar_red(self.nodos, self.aristas)
-        
-        mst, costo_minimo = optimizar_costos_kruskal(self.nodos, self.aristas)
-        criticos = encontrar_nodos_criticos(self.nodos, self.red.adyacencia)
-        
-        lista_claves = list(self.nodos.keys())
-        if bool(origen) != bool(destino):
-            raise ValueError("Indique tanto el origen como el destino del flujo, o ninguno de los dos.")
-        seleccion_manual = bool(origen and destino)
-        if not seleccion_manual:
-            origen, destino = encontrar_nodos_mas_alejados(self.nodos, self.red.adyacencia)
-        flujo, lineas_corte = calcular_flujo_maximo(self.nodos, self.aristas, origen, destino)
-        
 
-        nodos_visuales = []
-        aristas_visuales = []
-        
-        lista_nodos_limitada = lista_claves[:100]
-        for nodo_id in lista_nodos_limitada:
-            color = "#dc2626" if nodo_id in criticos else "#3b82f6"
-            nodos_visuales.append({"id": nodo_id, "label": str(nodo_id), "color": color})
-            
-        for arista in self.aristas:
-            if arista['origen'] in lista_nodos_limitada and arista['destino'] in lista_nodos_limitada:
-                aristas_visuales.append({"from": arista['origen'], "to": arista['destino']})
-
-        tiempo_total = time.time() - inicio_tiempo
-
-        payload = {
-            "costo_minimo_instalacion": round(costo_minimo, 2),
-            "flujo_maximo_red": flujo,
-            "lineas_corte_minimo": lineas_corte,
-            "nodos_criticos": criticos,
-            "tiempo_ejecucion": round(tiempo_total, 4),
-            "grafo_visual": {
-                "nodos": nodos_visuales,
-                "aristas": aristas_visuales
-            },
-            "metadata": {
-                "total_nodos": self.red.obtener_cantidad_nodos(),
-                "total_aristas": len(self.aristas),
-                "origen_flujo": origen,
-                "destino_flujo": destino,
-                "seleccion_flujo": "manual" if seleccion_manual else "automatica",
-                "ids_nodos": lista_claves
-            }
-        }
-        
-        return payload
-
-# Validación de Resultados Aislados 
-if __name__ == '__main__':
-    # Dataset del repositorio por defecto; se puede pasar otra ruta como argumento
-    ruta_defecto = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dataset", "dataset.json")
-    ruta = sys.argv[1] if len(sys.argv) > 1 else ruta_defecto
-    
-    controlador = ControladorOrquestador(ruta)
+def main():
+    parser = argparse.ArgumentParser(description="Analizar una red eléctrica")
+    parser.add_argument("archivo", nargs="?", type=Path, default=DATASET)
+    parser.add_argument("--origen")
+    parser.add_argument("--destino")
+    args = parser.parse_args()
+    cargador = CargadorDataset({".json": LectorJson(), ".csv": LectorCsv()})
     try:
-        resultados = controlador.ejecutar_flujo_completo()
-        
-        print("--- CONTRATO DE DATOS (JSON PAYLOAD) ---")
-        # Generación del formato universal (JSON) exigido por el contrato
-        json_salida = json.dumps(resultados, indent=4, ensure_ascii=False)
-        print(json_salida)
-        
-    except Exception as e:
-        print(f"La ejecución se detuvo por un error: {e}")
+        red = cargador.cargar(args.archivo.read_bytes(), args.archivo.name)
+        resultado = AnalizadorRed().analizar(red, args.origen, args.destino)
+    except (OSError, ValueError) as error:
+        parser.exit(1, f"Error: {error}\n")
+    print(json.dumps(resultado, indent=2, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

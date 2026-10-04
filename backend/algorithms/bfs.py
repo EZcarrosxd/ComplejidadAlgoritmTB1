@@ -1,10 +1,7 @@
 from collections import deque
 
 def bfs_distancias(adyacencia, inicio):
-    """
-    Recorre la red por niveles y retorna la cantidad de líneas (saltos)
-    que separan a cada nodo alcanzable del nodo de inicio.
-    """
+
     distancias = {inicio: 0}
     cola = deque([inicio])
 
@@ -19,11 +16,7 @@ def bfs_distancias(adyacencia, inicio):
     return distancias
 
 def encontrar_nodos_mas_alejados(nodos, adyacencia):
-    """
-    Elige dos nodos en extremos opuestos de la red mediante doble barrido BFS:
-    desde un nodo cualquiera se busca el más lejano (a) y desde a, el más lejano (b).
-    Sirven como origen y destino por defecto del flujo máximo.
-    """
+
     inicio = next(iter(nodos))
 
     distancias = bfs_distancias(adyacencia, inicio)

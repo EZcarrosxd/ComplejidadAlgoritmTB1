@@ -1,0 +1,10 @@
+export const $ = (id) => document.getElementById(id);
+export const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+export const fmtInt = new Intl.NumberFormat('es-PE');
+export const fmtDecimal = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 2 });
+export const fmtMoney = new Intl.NumberFormat('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const fmtTime = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 4 });
+export const form = $('upload-form');
+export const fileInput = $('dataset-file');
+export const dropzone = $('dropzone');
+export const btnSubmit = $('btn-submit');

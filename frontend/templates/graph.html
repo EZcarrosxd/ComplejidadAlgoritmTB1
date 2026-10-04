@@ -1,0 +1,22 @@
+<section class="panel graph-panel" aria-labelledby="graph-title">
+    <div class="graph-head">
+        <div>
+            <h2 class="panel-title" id="graph-title">Topología de la red</h2>
+            <p class="panel-sub" id="graph-sub">Subgrafo representativo</p>
+        </div>
+        <div class="graph-tools">
+            <ul class="legend" aria-label="Leyenda del grafo">
+                <li><span class="swatch" aria-hidden="true"></span>Nodo eléctrico</li>
+                <li><span class="swatch swatch--critical" aria-hidden="true"></span>Nodo crítico</li>
+            </ul>
+            <button type="button" class="btn btn-secondary" id="btn-fit">
+                <svg class="icon" style="width:16px;height:16px" aria-hidden="true"><use href="#icon-fit"/></svg>
+                Ajustar vista
+            </button>
+        </div>
+    </div>
+    <div class="graph-well">
+        <div id="network-container"></div>
+        <p class="graph-empty" id="network-empty" hidden></p>
+    </div>
+</section>

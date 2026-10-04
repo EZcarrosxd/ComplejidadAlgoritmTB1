@@ -1,0 +1,30 @@
+@media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; grid-template-rows: auto; }
+    .graph-well { flex: none; height: 440px; }
+    .critical { flex: none; }
+    .chips { flex: none; max-height: 240px; }
+}
+
+@media (max-width: 900px) {
+    .upload-view { grid-template-columns: 1fr; }
+    .upload-main { order: -1; padding: 32px 20px; }
+    .intro { padding: 40px 24px; }
+    .intro h1 { font-size: 30px; }
+    .schematic { display: none; }
+}
+
+@media (max-width: 600px) {
+    .topbar-inner, .page { padding-left: 16px; padding-right: 16px; }
+    .page-title { font-size: 26px; }
+    .file-chip { display: none; }
+    .panel { padding: 20px; }
+    .metric-value { font-size: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+    .spinner { animation: none; }
+}

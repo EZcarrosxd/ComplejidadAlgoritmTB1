@@ -1,0 +1,38 @@
+.upload-view {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(420px, 5fr) 6fr;
+}
+
+.intro {
+    background: var(--ink-800); color: #fff;
+    padding: 48px 64px;
+    display: flex; flex-direction: column; gap: 40px;
+    overflow: hidden;
+}
+.intro h1 {
+    font-size: 36px; line-height: 1.15; font-weight: 600;
+    letter-spacing: -.02em; max-width: 18ch;
+}
+.intro-lead { color: var(--on-ink); max-width: 44ch; margin-top: 16px; }
+
+.outcomes { display: grid; gap: 20px; margin-top: 32px; }
+.outcome { position: relative; padding-left: 20px; }
+.outcome::before, .metric::before {
+    content: ""; position: absolute; left: 0; top: 2px; bottom: 2px;
+    width: 4px; border-radius: 4px; background: var(--accent);
+}
+.outcome dt { font-weight: 600; }
+.outcome dd { color: var(--on-ink); font-size: 15px; max-width: 44ch; }
+
+.schematic { margin-top: auto; width: 100%; height: auto; max-height: 260px; }
+
+.upload-main {
+    display: grid; place-items: center;
+    padding: 48px 32px;
+    background: var(--grey-50);
+}
+.upload-form { width: 100%; max-width: 480px; display: grid; gap: 16px; }
+.upload-form h2 { font-size: 24px; line-height: 1.25; font-weight: 600; letter-spacing: -.01em; }
+.form-lead { color: var(--grey-600); }
+.requirements { font-size: 14px; color: var(--grey-600); }

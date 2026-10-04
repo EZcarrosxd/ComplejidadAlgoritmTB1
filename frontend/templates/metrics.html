@@ -1,0 +1,31 @@
+<div class="panel metrics">
+    <section class="metric" style="--accent: var(--green-500)">
+        <h2 class="metric-title">Costo mínimo de instalación</h2>
+        <p class="metric-value"><span class="unit">S/</span><span id="val-costo">–</span></p>
+        <p class="metric-note" id="mst-note">Árbol de expansión mínima, calculado con Kruskal.</p>
+    </section>
+
+    <section class="metric" style="--accent: var(--amber-500)">
+        <h2 class="metric-title">Capacidad de flujo máximo</h2>
+        <p class="metric-value"><span id="val-flujo">–</span><span class="unit">A</span></p>
+        <p class="metric-note" id="flow-note">Calculado con Ford-Fulkerson.</p>
+        <p class="metric-note" id="cut-note"></p>
+        <p class="metric-note">Si el archivo no declara capacidad, se suponen 20 A por línea. El flujo se evalúa en la red original.</p>
+
+        <form class="flow-form" id="flow-form" novalidate>
+            <div class="flow-fields">
+                <label class="field">
+                    <span>Origen</span>
+                    <input type="text" id="flow-origen" list="lista-nodos" autocomplete="off" spellcheck="false" required>
+                </label>
+                <label class="field">
+                    <span>Destino</span>
+                    <input type="text" id="flow-destino" list="lista-nodos" autocomplete="off" spellcheck="false" required>
+                </label>
+            </div>
+            <datalist id="lista-nodos"></datalist>
+            <button type="submit" class="btn btn-secondary" id="btn-flow">Recalcular flujo</button>
+            <p class="flow-error" id="flow-error" role="alert" hidden></p>
+        </form>
+    </section>
+</div>

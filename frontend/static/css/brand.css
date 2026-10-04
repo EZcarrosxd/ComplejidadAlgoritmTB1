@@ -1,0 +1,2 @@
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 600; }
+.logo { width: 32px; height: 32px; flex: none; }
