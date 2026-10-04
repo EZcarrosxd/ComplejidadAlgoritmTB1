@@ -19,7 +19,6 @@ python -m venv .venv
 
 Abrir [el panel](http://127.0.0.1:5000) o
 [la documentación interactiva](http://127.0.0.1:5000/docs).
-Después de instalar, también se puede ejecutar `iniciar.bat`.
 Todo funciona en el puerto 5000. Ya no se usa Flask ni un servidor separado en 8000.
 La visualización y tipografías se descargan de CDN; requieren internet.
 
