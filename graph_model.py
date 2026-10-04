@@ -26,9 +26,13 @@ class RedElectrica:
                     'capacidad': capacidad,
                     'costo': costo
                 })
-                # Nota: Si la red eléctrica permite flujo en ambas direcciones 
-                # con el mismo costo y capacidad, se debe replicar la conexión hacia el origen:
-                # self.adyacencia[destino].append({'destino': origen, 'capacidad': capacidad, 'costo': costo})
+                # Una línea eléctrica conecta ambos extremos, por lo que el grafo es
+                # no dirigido: se replica la conexión hacia el origen
+                self.adyacencia[destino].append({
+                    'destino': origen,
+                    'capacidad': capacidad,
+                    'costo': costo
+                })
 
     def obtener_cantidad_nodos(self):
         return len(self.nodos)
