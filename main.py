@@ -1,4 +1,6 @@
 # main.py
+import os
+import sys
 import time
 import json
 from data_loader import cargar_nodos, cargar_aristas
@@ -70,8 +72,9 @@ class ControladorOrquestador:
 
 # Validación de Resultados Aislados 
 if __name__ == '__main__':
-    # IMPORTANTE: Reemplace esto con su ruta local exacta
-    ruta = r"C:\Users\Carlos\Downloads\dataset.json"
+    # Dataset del repositorio por defecto; se puede pasar otra ruta como argumento
+    ruta_defecto = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dataset", "dataset.json")
+    ruta = sys.argv[1] if len(sys.argv) > 1 else ruta_defecto
     
     controlador = ControladorOrquestador(ruta)
     try:
