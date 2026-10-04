@@ -1,41 +1,9 @@
-<div class="view" id="results-view" hidden>
-    <header class="topbar">
-        <div class="topbar-inner">
-            <div class="brand">
-                <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
-                <span>Análisis de red eléctrica</span>
-            </div>
-            <div class="topbar-actions">
-                <span class="file-chip" title="Archivo analizado">
-                    <svg class="icon" aria-hidden="true"><use href="#icon-file"/></svg>
-                    <span id="file-name">dataset</span>
-                </span>
-                <button type="button" class="btn btn-secondary" id="btn-reset">Cargar otra red</button>
-            </div>
-        </div>
-    </header>
-
-    <main class="page">
-        <div class="page-head">
-            <h1 class="page-title" id="results-title" tabindex="-1">Resultados del análisis</h1>
-            <p class="facts">
-                <span><strong id="fact-nodos">–</strong> nodos eléctricos</span>
-                <span><strong id="fact-aristas">–</strong> líneas de transmisión</span>
-                <span>Calculado en <strong id="fact-tiempo">–</strong></span>
-            </p>
-        </div>
-
-        <div class="layout">
-
-            <div data-include="/templates/graph.html"></div>
-
-
-            <div class="side">
-                <div data-include="/templates/metrics.html"></div>
-
-                <div data-include="/templates/critical.html"></div>
-
-            </div>
-        </div>
-    </main>
+<div class="results-view" id="vista-resultados" hidden>
+    <div class="results-head">
+        <h1 class="results-title" id="titulo-resultados" tabindex="-1">Resultados del análisis</h1>
+        <dl class="facts" id="datos-red"></dl>
+    </div>
+    <div data-include="/templates/metrics.html"></div>
+    <div data-include="/templates/graph.html"></div>
+    <div data-include="/templates/panels.html"></div>
 </div>

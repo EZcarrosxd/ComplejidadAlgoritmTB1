@@ -1,0 +1,45 @@
+.loading-view {
+    display: flex; align-items: center; justify-content: center;
+    padding: 3.5rem var(--gutter); min-height: 36rem;
+}
+
+.loading-inner {
+    width: 100%; max-width: 640px;
+    display: flex; flex-direction: column; align-items: center; gap: 2rem; text-align: center;
+}
+
+.loading-title {
+    margin: 0; font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 650; font-stretch: 110%; letter-spacing: -.02em;
+}
+
+.pct {
+    margin: 0; font-family: var(--mono); font-weight: 500;
+    font-size: clamp(3.5rem, 10vw, 6rem); line-height: .9; letter-spacing: -.04em;
+}
+
+.progress { position: relative; width: 100%; height: 4px; background: var(--line); overflow: hidden; }
+.progress-fill {
+    position: absolute; inset: 0 auto 0 0; width: 0; background: var(--ink);
+    transition: width .35s cubic-bezier(.2, .8, .2, 1);
+}
+.progress-sweep {
+    position: absolute; inset: 0; width: 20%; background: var(--amber);
+    animation: sweep 1.2s linear infinite;
+}
+
+.steps { list-style: none; margin: 0; padding: 0; width: 100%; text-align: left; border-top: 1px solid var(--line); }
+.step {
+    display: grid; grid-template-columns: 2rem 1fr auto; gap: 1rem; align-items: center;
+    padding: .9rem 0; border-bottom: 1px solid var(--line); transition: opacity .3s;
+}
+.step--wait { opacity: .55; }
+.step-mark {
+    display: flex; justify-content: center;
+    font-family: var(--mono); font-size: 1rem; font-weight: 600; color: #9A9484;
+}
+.step--run .step-mark { color: var(--amber-dark); animation: blink .7s steps(2) infinite; }
+.step--done .step-mark { color: var(--lime-dark); }
+.step-label { margin: 0; font-weight: 700; }
+.step-detail { margin: .15rem 0 0; color: var(--muted); font-size: .92rem; }
+.step-status { font-family: var(--mono); color: var(--muted); font-size: .88rem; }

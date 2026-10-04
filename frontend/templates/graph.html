@@ -1,22 +1,25 @@
-<section class="panel graph-panel" aria-labelledby="graph-title">
-    <div class="graph-head">
-        <div>
-            <h2 class="panel-title" id="graph-title">Topología de la red</h2>
-            <p class="panel-sub" id="graph-sub">Subgrafo representativo</p>
-        </div>
-        <div class="graph-tools">
-            <ul class="legend" aria-label="Leyenda del grafo">
-                <li><span class="swatch" aria-hidden="true"></span>Nodo eléctrico</li>
-                <li><span class="swatch swatch--critical" aria-hidden="true"></span>Nodo crítico</li>
-            </ul>
-            <button type="button" class="btn btn-secondary" id="btn-fit">
-                <svg class="icon" style="width:16px;height:16px" aria-hidden="true"><use href="#icon-fit"/></svg>
-                Ajustar vista
-            </button>
-        </div>
+<section class="graph" aria-labelledby="graph-title">
+    <h2 class="sr-only" id="graph-title">Topología de la red</h2>
+    <div class="tabs" role="tablist" aria-label="Vistas del grafo">
+        <button type="button" role="tab" class="tab" data-modo="general" aria-keyshortcuts="1" style="--c: var(--ink)"><span class="swatch" aria-hidden="true"></span>Mapa<span class="key" aria-hidden="true">1</span></button>
+        <button type="button" role="tab" class="tab" data-modo="mst" aria-keyshortcuts="2" style="--c: var(--lime)"><span class="swatch" aria-hidden="true"></span>Menor costo<span class="key" aria-hidden="true">2</span></button>
+        <button type="button" role="tab" class="tab" data-modo="flow" aria-keyshortcuts="3" style="--c: var(--amber)"><span class="swatch" aria-hidden="true"></span>Capacidad<span class="key" aria-hidden="true">3</span></button>
+        <button type="button" role="tab" class="tab" data-modo="fallas" aria-keyshortcuts="4" style="--c: var(--red)"><span class="swatch" aria-hidden="true"></span>Puntos débiles<span class="key" aria-hidden="true">4</span></button>
     </div>
-    <div class="graph-well">
-        <div id="network-container"></div>
-        <p class="graph-empty" id="network-empty" hidden></p>
+    <p class="caption" id="caption"></p>
+    <div class="graph-box">
+        <canvas class="graph-canvas" id="grafo" role="img" aria-label="Mapa de la red"></canvas>
+        <p class="graph-count" id="graph-count"></p>
+        <div class="tip" id="tip" aria-hidden="true"></div>
+        <div class="zoom">
+            <button type="button" id="btn-acercar" aria-label="Acercar">+</button>
+            <button type="button" id="btn-alejar" aria-label="Alejar">−</button>
+            <button type="button" id="btn-ajustar" aria-keyshortcuts="F">Ajustar</button>
+        </div>
+        <ul class="legend" aria-label="Leyenda">
+            <li><span class="lg-dot" aria-hidden="true"></span>Punto</li>
+            <li><span class="lg-diamond" aria-hidden="true"></span>Punto débil</li>
+            <li><span class="lg-line" id="leyenda-color" aria-hidden="true"></span><span id="leyenda-linea">Línea</span></li>
+        </ul>
     </div>
 </section>

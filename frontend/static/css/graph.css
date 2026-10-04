@@ -1,24 +1,68 @@
-.graph-panel { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
-.graph-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; }
-.panel-title { font-size: 18px; line-height: 1.3; font-weight: 600; }
-.panel-sub { font-size: 14px; color: var(--grey-600); }
-.graph-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; color: var(--grey-700); }
-.legend li { display: flex; align-items: center; gap: 8px; }
-.swatch {
-    width: 12px; height: 12px; border-radius: 50%;
-    background: #3b82f6; box-shadow: inset 0 0 0 2px #1d4ed8;
+.graph { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+.tabs {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem 1.75rem;
+    border-bottom: 1px solid var(--line);
 }
-.swatch--critical {
-    border-radius: 2px; background: #dc2626; box-shadow: inset 0 0 0 2px #991b1b;
-    transform: rotate(45deg) scale(.85);
+.tab {
+    display: flex; align-items: center; gap: .6rem; min-height: 2.85rem; padding: 0 .15rem;
+    background: transparent; color: #6B665A; border: 0; border-bottom: 2px solid transparent;
+    margin-bottom: -1px; font-size: .95rem; font-weight: 700; cursor: pointer;
+    transition: border-color .2s, color .2s;
 }
-.graph-well {
-    position: relative; flex: 1; min-height: 0;
-    border-radius: 10px; background: var(--grey-50); overflow: hidden;
+.tab .swatch { width: .9rem; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.key { font-family: var(--mono); font-size: .75rem; font-weight: 500; opacity: .65; }
+
+.caption { margin: 0; max-width: 38rem; color: var(--muted); line-height: 1.5; }
+
+.graph-box {
+    position: relative; width: 100%; height: clamp(24rem, 60vh, 44rem);
+    background: var(--well); overflow: hidden;
 }
-#network-container { position: absolute; inset: 0; }
-.graph-empty {
-    position: absolute; inset: 0; display: grid; place-items: center;
-    padding: 24px; text-align: center; color: var(--grey-600); max-width: 48ch; margin: 0 auto;
+.graph-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    display: block; touch-action: none; cursor: crosshair;
+}
+
+.graph-count {
+    position: absolute; top: .9rem; left: 50%; transform: translateX(-50%); margin: 0;
+    font-family: var(--mono); font-size: .78rem; color: var(--muted);
+    background: var(--well); padding: .2rem .5rem; white-space: nowrap;
+}
+
+.tip {
+    position: absolute; left: 0; top: 0; pointer-events: none; opacity: 0;
+    background: var(--ink); color: var(--white); padding: .5rem .7rem;
+    font-size: .85rem; line-height: 1.35; min-width: 9rem; text-align: left; transition: opacity .12s;
+}
+.tip-id { font-family: var(--mono); font-weight: 600; font-size: 1rem; }
+.tip-crit { color: #FF8A7E; font-weight: 650; }
+.tip-act { margin-top: .25rem; font-weight: 700; }
+
+.zoom {
+    position: absolute; left: .9rem; bottom: .9rem;
+    display: flex; border: 1px solid var(--border); background: var(--white);
+}
+.zoom button {
+    min-width: 2.75rem; height: 2.75rem; padding: 0 .85rem; background: transparent; border: 0;
+    color: var(--ink); font-size: 1.15rem; cursor: pointer;
+}
+.zoom button + button { border-left: 1px solid var(--border); }
+.zoom button:last-child { font-size: .85rem; font-weight: 700; }
+.zoom button:hover { background: var(--ink); color: var(--white); }
+
+.legend {
+    position: absolute; right: .9rem; bottom: .9rem; list-style: none; margin: 0;
+    padding: .5rem .75rem; background: var(--well); display: flex; flex-wrap: wrap;
+    justify-content: flex-end; gap: .35rem 1rem; font-size: .8rem; color: var(--ink-soft);
+    max-width: calc(100% - 13rem);
+}
+.legend li { display: flex; align-items: center; gap: .4rem; }
+.lg-dot { width: 7px; height: 7px; background: var(--ink); }
+.lg-diamond { width: 8px; height: 8px; background: var(--red); transform: rotate(45deg); }
+.lg-line { width: 16px; height: 3px; background: var(--ink); }
+
+@media (max-width: 560px) {
+    .legend { max-width: calc(100% - 1.8rem); bottom: 4.4rem; }
 }

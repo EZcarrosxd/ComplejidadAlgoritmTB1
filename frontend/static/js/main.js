@@ -1,15 +1,12 @@
+import './views.js';
 import './upload.js';
-import './flow-form.js';
-import { $, form, fileInput } from './dom.js';
-import { syncFileState } from './file-selection.js';
-import { showView } from './views.js';
-import { destruirGrafo, ajustarGrafo } from './graph.js';
-
-$('btn-reset').addEventListener('click', () => {
-    destruirGrafo();
-    form.reset();
-    syncFileState();
-    showView('upload');
-    fileInput.focus();
-});
-$('btn-fit').addEventListener('click', ajustarGrafo);
+import './loading.js';
+import './results.js';
+import './graph.js';
+import './panel-general.js';
+import './panel-mst.js';
+import './panel-flow.js';
+import './panel-fallas.js';
+import './help.js';
+import './keyboard.js';
+import './hero-fx.js';

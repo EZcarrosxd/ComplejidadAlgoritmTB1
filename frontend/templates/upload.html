@@ -1,30 +1,28 @@
-<main class="upload-main">
-    <form class="upload-form" id="upload-form" novalidate>
-        <h2>Sube tu dataset</h2>
-        <p class="form-lead">Elige el archivo con los nodos eléctricos y las líneas que los conectan.</p>
-
+<div class="upload-view" id="vista-upload">
+    <form class="upload-form" id="form-upload" novalidate>
         <label class="dropzone" id="dropzone">
-            <input type="file" id="dataset-file" class="sr-only" accept=".json,.csv">
-            <span class="dz-icon">
-                <svg class="icon icon-empty" aria-hidden="true"><use href="#icon-upload"/></svg>
-                <svg class="icon icon-filled" aria-hidden="true"><use href="#icon-check"/></svg>
+            <input type="file" id="archivo" accept=".json,.csv" aria-describedby="req-text">
+            <span class="dz-icon" aria-hidden="true">
+                <svg class="dz-ok" width="24" height="24" viewBox="0 0 28 28"><path d="M5 14l6 6L23 8" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="square"/></svg>
+                <svg class="dz-up" width="24" height="24" viewBox="0 0 28 28"><path d="M14 20V5M7 11l7-7 7 7M4 24h20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
             </span>
-            <span class="dz-text">
-                <span class="dz-title" id="dz-title">Arrastra tu archivo aquí</span>
-                <span class="dz-hint" id="dz-hint">o haz clic para elegirlo desde tu equipo</span>
-            </span>
+            <span class="dz-title" id="dz-title">Arrastra tu archivo aquí</span>
+            <span class="dz-hint" id="dz-hint">o haz clic para elegirlo desde tu equipo</span>
         </label>
-
-        <p class="requirements">Acepta .json y .csv con al menos 1500 nodos eléctricos.</p>
-
-        <button type="submit" class="btn btn-primary" id="btn-submit" disabled>
-            <span class="spinner" aria-hidden="true"></span>
-            <span id="btn-label">Analizar red</span>
-        </button>
+        <p class="req" id="req-text">Archivos .csv o .json, hasta 10 MB.</p>
 
         <div class="alert" id="upload-error" role="alert" hidden>
-            <svg class="icon" aria-hidden="true"><use href="#icon-alert"/></svg>
-            <p id="upload-error-text"></p>
+            <span class="alert-icon" aria-hidden="true">!</span>
+            <div>
+                <p class="alert-title" id="error-titulo"></p>
+                <p class="alert-fix"><strong>Qué hacer: </strong><span id="error-fix"></span></p>
+            </div>
         </div>
+
+        <button type="submit" class="btn-submit" id="btn-analizar" disabled>Elige un archivo primero</button>
+        <div class="divider" aria-hidden="true"><span></span>o<span></span></div>
+        <button type="button" class="btn-outline btn-demo" id="btn-demo">
+            Usar una red de ejemplo<span>1500 puntos</span>
+        </button>
     </form>
-</main>
+</div>

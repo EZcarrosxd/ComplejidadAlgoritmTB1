@@ -1,18 +1,23 @@
-import { $ } from './dom.js';
+import { $, anunciar, irA } from './dom.js';
+import { estado, actualizar, suscribir, toca } from './state.js';
 
-export function showView(name) {
-    const enResultados = name === 'results';
-    $('upload-view').hidden = enResultados;
-    $('results-view').hidden = !enResultados;
-    window.scrollTo(0, 0);
-    if (enResultados) $('results-title').focus({ preventScroll: true });
-}
+suscribir((s, cambios) => {
+    if (!toca(cambios, 'fase')) return;
+    $('vista-upload').hidden = s.fase !== 'upload';
+    $('vista-loading').hidden = s.fase !== 'loading';
+    $('vista-resultados').hidden = s.fase !== 'results';
+    $('btn-otra').hidden = s.fase !== 'results';
+    if (s.fase === 'results') {
+        setTimeout(() => $('titulo-resultados').focus({ preventScroll: true }), 60);
+    }
+});
 
-export function setStatus(text) { $('status').textContent = text; }
+$('btn-otra').addEventListener('click', () => {
+    actualizar({ fase: 'upload', archivo: null, error: null, falla: null, sel: null, datos: null, modelo: null });
+    anunciar('Listo para analizar otra red.');
+    irA('analizar');
+});
 
-
-export function showError(message) {
-    $('upload-error-text').textContent = message;
-    $('upload-error').hidden = false;
-}
-export function hideError() { $('upload-error').hidden = true; }
+$('btn-inicio').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: estado.quieto ? 'auto' : 'smooth' });
+});

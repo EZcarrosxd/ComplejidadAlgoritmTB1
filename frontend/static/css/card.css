@@ -1,0 +1,16 @@
+.analizar { scroll-margin-top: 4.5rem; }
+
+.card {
+    width: 100%; max-width: var(--max);
+    background: var(--white); border: 1px solid var(--line-soft); border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(43, 42, 37, .04), 0 12px 32px -18px rgba(43, 42, 37, .12);
+    overflow: hidden; padding-top: clamp(2rem, 4vw, 3rem);
+    display: flex; flex-direction: column; align-items: center; gap: .5rem; text-align: center;
+}
+
+.card-body { width: 100%; text-align: center; }
+
+.card-actions {
+    display: flex; justify-content: flex-end; min-height: 0;
+    padding: 0 clamp(1rem, 3vw, 2.5rem);
+}

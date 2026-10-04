@@ -1,44 +1,28 @@
-<aside class="intro">
-    <div class="brand">
-        <svg class="logo" aria-hidden="true"><use href="#logo"/></svg>
-        <span>Análisis de red eléctrica</span>
+<section class="hero" id="inicio">
+    <h1 class="hero-title">Análisis de red eléctrica</h1>
+    <p class="hero-lead">Encuentra el cableado más barato y los puntos débiles de tu red.</p>
+    <div class="hero-actions">
+        <a href="#analizar" class="btn-cta">Analizar mi red <span class="mono" aria-hidden="true">→</span></a>
     </div>
+</section>
 
-    <div>
-        <h1>Analiza una red de nodos eléctricos</h1>
-        <p class="intro-lead">Sube el dataset con los nodos eléctricos y las líneas de transmisión. Obtendrás tres resultados:</p>
-
-        <dl class="outcomes">
-            <div class="outcome" style="--accent: var(--green-500)">
-                <dt>Costo mínimo de instalación</dt>
-                <dd>La red más barata que mantiene todos los nodos eléctricos conectados. Se calcula con Kruskal.</dd>
-            </div>
-            <div class="outcome" style="--accent: var(--amber-500)">
-                <dt>Flujo máximo</dt>
-                <dd>Cuánto flujo puede circular entre dos nodos eléctricos. Se calcula con Ford-Fulkerson.</dd>
-            </div>
-            <div class="outcome" style="--accent: var(--red-600)">
-                <dt>Nodos críticos</dt>
-                <dd>Los que dejan secciones de la red incomunicadas si fallan. Se detectan con DFS.</dd>
-            </div>
-        </dl>
+<section class="producto" id="producto">
+    <h2 class="section-title">Qué obtienes</h2>
+    <div class="features">
+        <article class="feature" style="--c: var(--lime)">
+            <span class="feature-bar" aria-hidden="true"></span>
+            <h3>Menor costo</h3>
+            <p>El cableado más barato que llega a todos los puntos.</p>
+        </article>
+        <article class="feature" style="--c: var(--amber)">
+            <span class="feature-bar" aria-hidden="true"></span>
+            <h3>Capacidad</h3>
+            <p>Cuánta corriente puede pasar entre dos puntos.</p>
+        </article>
+        <article class="feature" style="--c: var(--red)">
+            <span class="feature-bar" aria-hidden="true"></span>
+            <h3>Puntos débiles</h3>
+            <p>Los puntos que, si fallan, dejan zonas sin luz.</p>
+        </article>
     </div>
-
-
-    <svg class="schematic" viewBox="0 0 500 250" aria-hidden="true" focusable="false">
-        <path d="M28 196L96 118M28 196L112 222M96 118L186 62M96 118L196 168M112 222L196 168M186 62L282 112M196 168L282 112M196 168L296 226M282 112L366 48M282 112L382 150M296 226L382 150M366 48L462 96M382 150L462 96M382 150L470 210M462 96L470 210M186 62L276 22M276 22L366 48"
-              fill="none" stroke="hsl(217 30% 38%)" stroke-width="1.5" stroke-linecap="round"/>
-        <polyline points="28,196 96,118 186,62 282,112 382,150 470,210"
-                  fill="none" stroke="var(--amber-500)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <g fill="var(--blue-500)" stroke="var(--ink-800)" stroke-width="3">
-            <circle cx="28" cy="196" r="6"/><circle cx="96" cy="118" r="6"/><circle cx="112" cy="222" r="6"/>
-            <circle cx="186" cy="62" r="6"/><circle cx="282" cy="112" r="6"/><circle cx="296" cy="226" r="6"/>
-            <circle cx="366" cy="48" r="6"/><circle cx="462" cy="96" r="6"/><circle cx="470" cy="210" r="6"/>
-            <circle cx="276" cy="22" r="6"/>
-        </g>
-        <g fill="var(--red-600)" stroke="var(--ink-800)" stroke-width="3">
-            <rect x="189" y="161" width="14" height="14" transform="rotate(45 196 168)"/>
-            <rect x="375" y="143" width="14" height="14" transform="rotate(45 382 150)"/>
-        </g>
-    </svg>
-</aside>
+</section>

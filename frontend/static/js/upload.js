@@ -1,38 +1,70 @@
-import { $, form, fileInput, btnSubmit } from './dom.js';
-import { showView, setStatus, showError, hideError } from './views.js';
-import { analizarRed, MENSAJE_SIN_CONEXION } from './api.js';
-import { poblarDashboard } from './dashboard.js';
-import { dibujarGrafo } from './graph.js';
+import { $, anunciar } from './dom.js';
+import { estado, actualizar, suscribir, toca } from './state.js';
+import { validarArchivo } from './errors.js';
+import { analizar } from './analysis.js';
+import { obtenerEjemplo } from './api.js';
 
-function setLoading(loading) {
-    btnSubmit.classList.toggle('is-loading', loading);
-    btnSubmit.setAttribute('aria-busy', String(loading));
-    $('btn-label').textContent = loading ? 'Analizando red…' : 'Analizar red';
-    btnSubmit.disabled = loading || !fileInput.files[0];
-    fileInput.disabled = loading;
+const entrada = $('archivo');
+const zona = $('dropzone');
+
+function formatearBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1048576).toFixed(1)} MB`;
 }
 
-form.addEventListener('submit', async (e) => {
+function tomar(archivo) {
+    if (!archivo) return;
+    const error = validarArchivo(archivo);
+    actualizar({ archivo: error ? null : archivo, error, arrastrando: false });
+    anunciar(error ? error.titulo : `Archivo listo: ${archivo.name}`);
+}
+
+entrada.addEventListener('change', () => tomar(entrada.files[0]));
+
+['dragenter', 'dragover'].forEach((tipo) => zona.addEventListener(tipo, (e) => {
     e.preventDefault();
+    if (!estado.arrastrando) actualizar({ arrastrando: true });
+}));
+zona.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    actualizar({ arrastrando: false });
+});
+zona.addEventListener('drop', (e) => {
+    e.preventDefault();
+    tomar(e.dataTransfer.files[0]);
+    actualizar({ arrastrando: false });
+});
+['dragover', 'drop'].forEach((tipo) => window.addEventListener(tipo, (e) => e.preventDefault()));
 
-    const file = fileInput.files[0];
-    if (!file) return;
+$('form-upload').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const archivo = estado.archivo;
+    if (archivo) analizar(async () => archivo, archivo.name);
+});
 
-    setLoading(true);
-    hideError();
-    setStatus('Analizando la red. Esto puede tardar unos segundos.');
+$('btn-demo').addEventListener('click', () => analizar(obtenerEjemplo, 'Red de ejemplo'));
 
-    try {
-        const datos = await analizarRed(file);
+suscribir((s, cambios) => {
+    if (!toca(cambios, 'archivo', 'arrastrando', 'error')) return;
+    const archivo = s.archivo;
+    zona.classList.toggle('has-file', Boolean(archivo));
+    zona.classList.toggle('is-dragging', s.arrastrando);
+    $('dz-title').textContent = s.arrastrando
+        ? 'Suelta el archivo para cargarlo'
+        : archivo ? archivo.name : 'Arrastra tu archivo aquí';
+    $('dz-hint').textContent = archivo
+        ? `${formatearBytes(archivo.size)}. Haz clic para elegir otro archivo.`
+        : 'o haz clic para elegirlo desde tu equipo';
+    if (!archivo) entrada.value = '';
 
-        poblarDashboard(datos, file.name);
-        showView('results');
-        requestAnimationFrame(() => dibujarGrafo(datos));
-        setStatus('Análisis completo.');
-    } catch (error) {
-        showError(error instanceof TypeError ? MENSAJE_SIN_CONEXION : error.message);
-        setStatus('El análisis falló.');
-    } finally {
-        setLoading(false);
+    const boton = $('btn-analizar');
+    boton.disabled = !archivo;
+    boton.textContent = archivo ? 'Analizar red' : 'Elige un archivo primero';
+
+    $('upload-error').hidden = !s.error;
+    if (s.error) {
+        $('error-titulo').textContent = s.error.titulo;
+        $('error-fix').textContent = s.error.fix;
     }
 });

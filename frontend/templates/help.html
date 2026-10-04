@@ -1,0 +1,40 @@
+<div class="help-backdrop" id="ayuda" hidden>
+    <div class="help" role="dialog" aria-modal="true" aria-labelledby="help-title">
+        <div class="help-head">
+            <h2 id="help-title">Ayuda y accesibilidad</h2>
+            <button type="button" class="btn-dark" id="btn-cerrar-ayuda">Cerrar (Esc)</button>
+        </div>
+        <section>
+            <h3>Accesibilidad</h3>
+            <div class="toggles">
+                <button type="button" class="toggle" id="btn-texto-grande" aria-pressed="false"><span class="knob" aria-hidden="true"></span>Texto grande</button>
+                <button type="button" class="toggle" id="btn-animaciones" aria-pressed="true"><span class="knob" aria-hidden="true"></span>Animaciones</button>
+            </div>
+        </section>
+        <section>
+            <h3>Cómo usarlo</h3>
+            <ol class="help-steps">
+                <li>Sube un archivo .json o .csv, o usa la red de ejemplo.</li>
+                <li>Espera unos segundos mientras el servidor calcula los tres resultados.</li>
+                <li>Cambia de vista y haz clic en los puntos para explorar.</li>
+            </ol>
+        </section>
+        <section>
+            <h3>Qué significa cada color</h3>
+            <ul class="help-colors">
+                <li><span class="c-sq" style="--c: var(--lime)" aria-hidden="true"></span><span><strong>Verde:</strong> el cableado más barato.</span></li>
+                <li><span class="c-sq" style="--c: var(--amber)" aria-hidden="true"></span><span><strong>Ámbar:</strong> por dónde pasa la corriente.</span></li>
+                <li><span class="c-sq c-sq--diamond" style="--c: var(--red)" aria-hidden="true"></span><span><strong>Rombo rojo:</strong> punto débil.</span></li>
+            </ul>
+        </section>
+        <section>
+            <h3>Atajos de teclado</h3>
+            <dl class="help-keys">
+                <dt>1 2 3 4</dt><dd>Cambiar de vista</dd>
+                <dt>F</dt><dd>Centrar el mapa</dd>
+                <dt>+ −</dt><dd>Acercar y alejar</dd>
+                <dt>Esc</dt><dd>Cerrar la ayuda o restaurar un nodo que falló</dd>
+            </dl>
+        </section>
+    </div>
+</div>

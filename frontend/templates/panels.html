@@ -1,0 +1,60 @@
+<section class="panels" aria-label="Detalle de la vista">
+    <div class="panel" id="panel-general">
+        <div class="sel" id="seleccion" hidden>
+            <div class="sel-head"><p class="sel-id" id="sel-id"></p><p class="sel-kind" id="sel-tipo"></p></div>
+            <p class="muted" id="sel-grado"></p>
+            <div class="sel-actions">
+                <button type="button" class="btn-outline" id="sel-origen">Usar como origen</button>
+                <button type="button" class="btn-outline" id="sel-destino">Usar como destino</button>
+                <button type="button" class="btn-outline btn-danger" id="sel-falla">Simular falla</button>
+            </div>
+        </div>
+        <p class="note" id="nota-general">Haz clic en un punto del mapa para ver sus datos.</p>
+    </div>
+
+    <div class="panel" id="panel-mst" hidden>
+        <h2 class="panel-title">Menor costo</h2>
+        <p class="warn" id="aviso-bosque" role="note" hidden></p>
+        <dl class="rows" id="filas-mst"></dl>
+        <div><button type="button" class="btn-dark" id="btn-repetir">Repetir animación</button></div>
+    </div>
+
+    <div class="panel" id="panel-flow" hidden>
+        <h2 class="panel-title">Capacidad</h2>
+        <p class="flow-summary" id="resumen-flujo"></p>
+        <form class="flow-form" id="form-flujo" novalidate>
+            <div class="flow-fields">
+                <label>Origen
+                    <input type="text" id="origen" list="lista-nodos" autocomplete="off" spellcheck="false" placeholder="N-1">
+                </label>
+                <button type="button" class="swap" id="btn-intercambiar" aria-label="Intercambiar origen y destino">⇄</button>
+                <label>Destino
+                    <input type="text" id="destino" list="lista-nodos" autocomplete="off" spellcheck="false" placeholder="N-2">
+                </label>
+            </div>
+            <datalist id="lista-nodos"></datalist>
+            <p class="hint">O haz clic en el mapa. Si una línea no indica capacidad, se suponen 20 A.</p>
+            <p class="alert-inline" id="error-flujo" role="alert" hidden></p>
+            <div class="flow-buttons">
+                <button type="submit" class="btn-dark" id="btn-calcular">Calcular</button>
+                <button type="button" class="btn-ghost" id="btn-deshacer" disabled>Deshacer</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="panel" id="panel-fallas" hidden>
+        <h2 class="panel-title">Puntos débiles</h2>
+        <p class="note" id="nota-criticos"></p>
+        <div class="fail-box" id="falla" role="status" hidden>
+            <p class="fail-title" id="falla-titulo"></p>
+            <p id="falla-texto"></p>
+            <button type="button" class="btn-dark" id="btn-restaurar" aria-keyshortcuts="Escape">Restaurar nodo (Esc)</button>
+        </div>
+        <p class="note note--italic" id="sin-falla">Haz clic en un punto del mapa o de la lista para simular que falla.</p>
+        <div class="crit">
+            <h3 id="conteo-criticos"></h3>
+            <ul class="crit-list" id="lista-criticos"></ul>
+            <button type="button" class="btn-ghost" id="btn-ver-todos" hidden></button>
+        </div>
+    </div>
+</section>

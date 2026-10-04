@@ -4,25 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análisis de red eléctrica</title>
+    <meta name="description" content="Encuentra el cableado más barato y los puntos débiles de tu red eléctrica.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-
-
-    <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
-    <p id="page-loading" role="status">Cargando la página…</p>
+    <canvas class="hero-fx" id="hero-fx" aria-hidden="true"></canvas>
+    <a class="skip-link" href="#analizar">Saltar al análisis</a>
+    <p class="sr-only" id="anuncio" role="status" aria-live="polite"></p>
+    <p class="page-loading" id="page-loading" role="status">Cargando la página…</p>
     <noscript>Activa JavaScript para analizar la red.</noscript>
-    <div data-include="/templates/icons.html"></div>
-    <div class="upload-view view" id="upload-view">
-        <div data-include="/templates/intro.html"></div>
-        <div data-include="/templates/upload.html"></div>
+
+    <div class="page">
+        <div data-include="/templates/header.html"></div>
+        <main class="contenido" id="contenido">
+            <div data-include="/templates/intro.html"></div>
+            <div data-include="/templates/analizar.html"></div>
+        </main>
+        <div data-include="/templates/footer.html"></div>
     </div>
-    <div data-include="/templates/results.html"></div>
+    <div data-include="/templates/help.html"></div>
+
     <script type="module" src="/static/js/bootstrap.js"></script>
 </body>
 </html>
