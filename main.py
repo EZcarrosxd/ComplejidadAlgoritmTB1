@@ -8,6 +8,7 @@ from graph_model import RedElectrica
 from kruskal_mst import optimizar_costos_kruskal
 from ford_fulkerson import calcular_flujo_maximo
 from dfs_connectivity import encontrar_nodos_criticos
+from bfs_recorrido import encontrar_nodos_mas_alejados
 
 class ControladorOrquestador:
     def __init__(self, ruta_dataset):
@@ -32,8 +33,7 @@ class ControladorOrquestador:
         criticos = encontrar_nodos_criticos(self.nodos, self.red.adyacencia)
         
         lista_claves = list(self.nodos.keys())
-        origen = "N-1" if "N-1" in lista_claves else lista_claves[0]
-        destino = lista_claves[-1]
+        origen, destino = encontrar_nodos_mas_alejados(self.nodos, self.red.adyacencia)
         flujo, lineas_corte = calcular_flujo_maximo(self.nodos, self.aristas, origen, destino)
         
 
