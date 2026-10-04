@@ -2,6 +2,8 @@ from collections import defaultdict, deque
 
 from .corte import obtener_corte_minimo
 
+MAXIMO_CAMINOS = 80
+
 def bfs_camino(grafo_residual, origen, destino, padres):
     visitado = {u: False for u in grafo_residual}
     cola = deque([origen])
@@ -18,7 +20,7 @@ def bfs_camino(grafo_residual, origen, destino, padres):
                     return True
     return False
 
-def calcular_flujo_maximo(nodos, aristas, origen, destino):
+def calcular_flujo_maximo(nodos, aristas, origen, destino, caminos=None):
 
     if origen not in nodos or destino not in nodos:
         raise ValueError(f"El origen ({origen}) y el destino ({destino}) deben existir en la red.")
@@ -55,6 +57,7 @@ def calcular_flujo_maximo(nodos, aristas, origen, destino):
 
         flujo_maximo += flujo_camino
         v = destino
+        camino = [destino]
 
 
         while v != origen:
@@ -62,6 +65,10 @@ def calcular_flujo_maximo(nodos, aristas, origen, destino):
             grafo_residual[u][v] -= flujo_camino
             grafo_residual[v][u] += flujo_camino
             v = padres[v]
+            camino.append(v)
+
+        if caminos is not None and len(caminos) < MAXIMO_CAMINOS:
+            caminos.append(camino[::-1])
 
     lineas_corte = obtener_corte_minimo(grafo_residual, aristas, origen)
 

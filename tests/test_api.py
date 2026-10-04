@@ -25,8 +25,15 @@ def test_dataset_completo_y_consultas(client, dataset):
     assert datos["flujo_maximo_red"] == 20
     assert len(datos["aristas_mst"]) == 1499
     assert len(datos["nodos_criticos"]) == 14
-    assert len(datos["grafo_visual"]["nodos"]) == 100
+    assert len(datos["grafo_visual"]["nodos"]) == 200
     assert "from" in datos["grafo_visual"]["aristas"][0]
+    assert all(n["grado"] > 0 for n in datos["grafo_visual"]["nodos"])
+    assert len(datos["impacto_criticos"]) == 14
+    visibles = {n["id"] for n in datos["grafo_visual"]["nodos"]}
+    assert set(datos["nodos_criticos"]) <= visibles
+    assert set(datos["caminos_flujo"][0]) <= visibles
+    assert datos["caminos_flujo"][0][0] == datos["metadata"]["origen_flujo"]
+    assert datos["metadata"]["costo_total_red"] > datos["costo_minimo_instalacion"]
     assert client.get("/api/network-status").json()["metadata"] == datos["metadata"]
     assert client.get("/api/optimization/mst").json()["aristas_mst"] == datos["aristas_mst"]
     assert client.get("/api/optimization/flow").json()["flujo_maximo_red"] == 20
