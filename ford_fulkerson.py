@@ -64,4 +64,28 @@ def calcular_flujo_maximo(nodos, aristas, origen, destino):
             grafo_residual[v][u] += flujo_camino
             v = padres[v]
 
-    return flujo_maximo
+    lineas_corte = obtener_corte_minimo(grafo_residual, aristas, origen)
+
+    return flujo_maximo, lineas_corte
+
+def obtener_corte_minimo(grafo_residual, aristas, origen):
+    """
+    Con el flujo máximo ya calculado, los nodos alcanzables desde el origen en el
+    grafo residual forman un lado del corte. Las líneas que cruzan al otro lado son
+    el corte mínimo: el menor conjunto de líneas cuya falla aísla el destino.
+    """
+    alcanzables = {origen}
+    cola = deque([origen])
+
+    while cola:
+        u = cola.popleft()
+        for v, capacidad in grafo_residual[u].items():
+            if v not in alcanzables and capacidad > 0:
+                alcanzables.add(v)
+                cola.append(v)
+
+    return [
+        {'origen': arista['origen'], 'destino': arista['destino']}
+        for arista in aristas
+        if (arista['origen'] in alcanzables) != (arista['destino'] in alcanzables)
+    ]

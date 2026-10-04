@@ -34,7 +34,7 @@ class ControladorOrquestador:
         lista_claves = list(self.nodos.keys())
         origen = "N-1" if "N-1" in lista_claves else lista_claves[0]
         destino = lista_claves[-1]
-        flujo = calcular_flujo_maximo(self.nodos, self.aristas, origen, destino)
+        flujo, lineas_corte = calcular_flujo_maximo(self.nodos, self.aristas, origen, destino)
         
 
         nodos_visuales = []
@@ -54,6 +54,7 @@ class ControladorOrquestador:
         payload = {
             "costo_minimo_instalacion": round(costo_minimo, 2),
             "flujo_maximo_red": flujo,
+            "lineas_corte_minimo": lineas_corte,
             "nodos_criticos": criticos,
             "tiempo_ejecucion": round(tiempo_total, 4),
             "grafo_visual": {
