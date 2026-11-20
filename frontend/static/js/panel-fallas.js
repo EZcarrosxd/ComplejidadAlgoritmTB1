@@ -2,11 +2,10 @@ import { $, crear, formatoEntero, plural } from './dom.js';
 import { estado, actualizar, suscribir, toca } from './estado.js';
 import { simularFalla, restaurar } from './acciones.js';
 
-const MOSTRAR = 12;
+const MOSTRAR = 5;
 
 function pintarFalla(falla) {
     $('falla').hidden = !falla;
-    $('sin-falla').hidden = Boolean(falla);
     if (!falla) return;
     $('falla').classList.toggle('is-split', falla.perdidos > 0);
     $('falla-titulo').textContent = `Si falla ${falla.id}`;
@@ -40,15 +39,12 @@ suscribir((s, cambios) => {
     const maximo = Math.max(1, ...lista.map((c) => c.nodos_aislados));
     const visibles = s.todosCriticos ? lista : lista.slice(0, MOSTRAR);
 
-    $('nota-criticos').hidden = lista.length > 0;
-    $('nota-criticos').textContent = 'No se encontraron puntos débiles';
-    $('conteo-criticos').textContent = plural(lista.length, 'punto débil', 'puntos débiles');
     pintarFalla(s.falla);
     $('lista-criticos').replaceChildren(...visibles.map((c) => crearItem(c, maximo, s.falla)));
 
     const verTodos = $('btn-ver-todos');
     verTodos.hidden = lista.length <= MOSTRAR;
-    verTodos.textContent = s.todosCriticos ? 'Ver menos' : `Ver todos (${formatoEntero.format(lista.length)})`;
+    verTodos.textContent = s.todosCriticos ? 'Ver menos' : `Ver los ${formatoEntero.format(lista.length)}`;
 });
 
 $('btn-restaurar').addEventListener('click', restaurar);

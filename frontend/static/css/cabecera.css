@@ -21,6 +21,16 @@
 .brand path:first-of-type { stroke: var(--border); }
 .brand path:nth-of-type(2) { stroke: var(--amber); }
 
+.nav-acciones { display: flex; align-items: center; gap: 1rem; }
+.nav-otra {
+    padding: .35rem 0; background: none; border: 0; border-radius: 0; border-bottom: 1px solid transparent;
+    color: var(--ink-soft); font-size: .85rem; font-weight: 600; white-space: nowrap; cursor: pointer;
+}
+@media (max-width: 480px) {
+    .brand span { display: none; }
+}
+.nav-otra:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
 .nav-help {
     min-height: 2.25rem; padding: 0 1rem; background: var(--ink);
     border: 0; border-radius: var(--radio-sm);

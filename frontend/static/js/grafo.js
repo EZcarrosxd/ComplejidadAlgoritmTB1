@@ -42,10 +42,10 @@ function mostrarCostoParcial(m, kruskal) {
     if (parcial) {
         const cantidad = Math.floor(m.mst.length * kruskal);
         const fraccion = cantidad > 0 ? m.fraccionCosto[cantidad - 1] : 0;
-        $('valor-mst').textContent = `S/ ${formatoMoneda.format(total * fraccion)}`;
+        $('respuesta-valor').textContent = `S/ ${formatoMoneda.format(total * fraccion)}`;
         animacion.costoParcial = true;
     } else if (animacion.costoParcial) {
-        $('valor-mst').textContent = `S/ ${formatoMoneda.format(total)}`;
+        if (estado.modo === 'mst') $('respuesta-valor').textContent = `S/ ${formatoMoneda.format(total)}`;
         animacion.costoParcial = false;
     }
 }
@@ -113,6 +113,7 @@ suscribir((s, cambios) => {
     if (toca(cambios, 'fase') && s.fase === 'resultados') {
         vista.movida = false;
         animacion.entrada = ahora();
+        animacion.kruskal = ahora();
     }
     if (toca(cambios, 'modo') && s.modo === 'mst') animacion.kruskal = ahora();
     if (toca(cambios, 'fase', 'modelo')) redimensionar();

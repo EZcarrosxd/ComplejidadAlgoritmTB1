@@ -1,24 +1,7 @@
-<nav class="opciones" id="opciones" aria-label="Opciones de cálculo"></nav>
-<section class="pasos" id="reproductor" aria-label="Paso a paso" hidden>
-    <div class="pasos-encabezado">
-        <p class="pasos-complejidad" id="complejidad"></p>
-        <button type="button" class="btn-pasos" id="btn-pasos" aria-pressed="false">Paso a paso</button>
-    </div>
-    <div class="pasos-controles" id="controles-pasos" hidden>
-        <input class="pasos-barra" type="range" id="barra-pasos" min="0" max="1" value="0" aria-label="Paso del algoritmo">
-        <div class="pasos-fila">
-            <span class="pasos-contador" id="contador-pasos"></span>
-            <div class="pasos-botones">
-                <button type="button" id="btn-paso-anterior" aria-label="Paso anterior" aria-keyshortcuts="ArrowLeft">Anterior</button>
-                <button type="button" id="btn-reproducir" aria-keyshortcuts="Space">Pausar</button>
-                <button type="button" id="btn-paso-siguiente" aria-label="Paso siguiente" aria-keyshortcuts="ArrowRight">Siguiente</button>
-            </div>
-        </div>
-        <div class="pasos-velocidad" role="group" aria-label="Velocidad">
-            <button type="button" data-velocidad="4" aria-pressed="false">Lento</button>
-            <button type="button" data-velocidad="40" aria-pressed="true">Normal</button>
-            <button type="button" data-velocidad="400" aria-pressed="false">Rápido</button>
-        </div>
-        <p class="pasos-texto" id="texto-paso" aria-live="polite"></p>
-    </div>
+<div class="preguntas" id="preguntas" role="group" aria-label="Preguntas"></div>
+<section class="respuesta" aria-live="polite">
+    <h2 class="respuesta-pregunta" id="pregunta"></h2>
+    <p class="respuesta-valor" id="respuesta-valor"></p>
+    <p class="respuesta-detalle" id="respuesta-detalle"></p>
+    <div class="metodos" id="metodos" role="group" aria-label="Método"></div>
 </section>

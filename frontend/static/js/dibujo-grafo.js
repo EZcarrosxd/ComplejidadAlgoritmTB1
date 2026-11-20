@@ -163,7 +163,7 @@ export function dibujarRombos(c) {
 export function dibujarEtiquetas(c) {
     const { ctx, m, pos } = c;
     if (vista.escala <= 2.4) return;
-    ctx.font = '500 11px "IBM Plex Mono", monospace';
+    ctx.font = '500 11px Inter, sans-serif';
     ctx.lineJoin = 'round';
     ctx.lineWidth = 3;
     ctx.strokeStyle = COLOR.well;

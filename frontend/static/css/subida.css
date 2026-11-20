@@ -79,11 +79,6 @@
 }
 .con-archivo .dropzone:hover .selector-archivo { background: var(--well); border-color: var(--ink); }
 
-.lista-resultados { margin: 0; padding: 0; list-style: none; display: grid; gap: .6rem; }
-.lista-resultados li {
-    display: flex; align-items: center; gap: .65rem; padding: .85rem 1rem;
-    background: var(--well); border: 1px solid var(--line); border-radius: var(--radio-sm); font-weight: 600;
-}
 
 @media (max-width: 900px) {
     .con-archivo .upload-form { grid-template-columns: 1fr; min-height: 0; }

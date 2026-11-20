@@ -6,7 +6,7 @@ export const estado = {
     pasos: [],
     datos: null,
     modelo: null,
-    modo: 'general',
+    modo: 'mst',
     sel: null,
     falla: null,
     todosCriticos: false,
@@ -18,7 +18,6 @@ export const estado = {
     calculando: false,
     paso: null,
     reproduciendo: false,
-    velocidad: 40,
     ayuda: false,
     grande: false,
 };

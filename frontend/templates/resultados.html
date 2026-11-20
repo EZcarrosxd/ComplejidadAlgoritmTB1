@@ -2,16 +2,29 @@
     <div data-include="/templates/grafo.html"></div>
     <aside class="barra-lateral" aria-labelledby="titulo-resultados">
         <div class="barra-contenido">
-            <div class="results-head">
-                <h1 class="results-title" id="titulo-resultados" tabindex="-1">Resultados del análisis</h1>
-                <dl class="facts" id="datos-red"></dl>
-            </div>
+            <h1 class="sr-only" id="titulo-resultados" tabindex="-1">Resultados del análisis</h1>
             <div data-include="/templates/metricas.html"></div>
-            <p class="caption" id="caption"></p>
+            <canvas class="vista-extra" id="vista-extra" aria-hidden="true" hidden></canvas>
             <div data-include="/templates/paneles.html"></div>
         </div>
-        <div class="barra-pie">
-            <button type="button" class="btn-submit" id="btn-otra" hidden>Cargar otra red</button>
+        <div class="barra-pie" id="reproductor">
+            <button type="button" class="btn-submit" id="btn-pasos">Ver paso a paso</button>
+            <div class="pasos-controles" id="controles-pasos" hidden>
+                <div class="pasos-cabecera">
+                    <span class="pasos-complejidad" id="complejidad"></span>
+                    <button type="button" class="pasos-salir" id="btn-salir-pasos" aria-keyshortcuts="Escape">Salir</button>
+                </div>
+                <p class="pasos-texto" id="texto-paso" aria-live="polite"></p>
+                <input class="pasos-barra" type="range" id="barra-pasos" min="0" max="1" value="0" aria-label="Paso del algoritmo">
+                <div class="pasos-fila">
+                    <span class="pasos-contador" id="contador-pasos"></span>
+                    <div class="pasos-botones">
+                        <button type="button" id="btn-paso-anterior" aria-label="Paso anterior" aria-keyshortcuts="ArrowLeft">‹</button>
+                        <button type="button" id="btn-reproducir" aria-keyshortcuts="Space">Pausar</button>
+                        <button type="button" id="btn-paso-siguiente" aria-label="Paso siguiente" aria-keyshortcuts="ArrowRight">›</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </aside>
 </div>

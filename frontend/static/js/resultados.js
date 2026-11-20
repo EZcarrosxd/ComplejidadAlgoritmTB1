@@ -1,61 +1,79 @@
-import { $, crear, formatoEntero, formatoSegundos } from './dom.js';
+import { $, crear, formatoEntero } from './dom.js';
 import { suscribir, toca } from './estado.js';
 import { cambiarModo } from './acciones.js';
-import { ALGORITMOS, CATALOGO } from './algoritmos.js';
+import { ALGORITMOS, GRUPOS, grupoDe, responder } from './algoritmos.js';
 
-const PANELES_PROPIOS = ['general', 'mst', 'flujo', 'fallas'];
+const PANELES = { flujo: 'panel-flujo', fallas: 'panel-fallas' };
 
-function pintarHechos(meta, tiempo) {
-    const filas = [
-        ['Puntos', formatoEntero.format(meta.total_nodos), ''],
-        ['Líneas', formatoEntero.format(meta.total_aristas), ''],
-        ['Estado', meta.red_conectada ? 'Conectada' : `${meta.componentes} partes`, meta.red_conectada ? 'ok' : 'warn-text'],
-        ['Cálculo', `${formatoSegundos.format(tiempo)} s`, ''],
-    ];
-    $('datos-red').replaceChildren(...filas.map(([clave, valor, clase]) => {
-        const fila = crear('div');
-        fila.append(crear('dt', '', clave), crear('dd', clase, valor));
-        return fila;
-    }));
-}
-
-function crearOpcion(algoritmo) {
-    const boton = crear('button', 'opcion');
+function crearBoton(clase, texto, modo, color) {
+    const boton = crear('button', clase, texto);
     boton.type = 'button';
-    boton.dataset.modo = algoritmo.id;
-    boton.style.setProperty('--c', algoritmo.color);
+    boton.dataset.modo = modo;
+    boton.style.setProperty('--c', color);
     boton.setAttribute('aria-pressed', 'false');
-    const nombre = crear('span', 'opcion-nombre');
-    nombre.append(crear('span', 'opcion-titulo', algoritmo.nombre), crear('span', 'opcion-tecnica', algoritmo.tecnica));
-    const valor = crear('span', 'opcion-valor');
-    valor.id = `valor-${algoritmo.id}`;
-    boton.append(nombre, valor);
-    boton.addEventListener('click', () => cambiarModo(algoritmo.id));
+    boton.addEventListener('click', () => cambiarModo(modo));
     return boton;
 }
 
-function pintarDatos(datos) {
-    const meta = datos.metadata;
-    pintarHechos(meta, datos.tiempo_ejecucion);
-    for (const algoritmo of CATALOGO) $(`valor-${algoritmo.id}`).textContent = algoritmo.valor(datos);
-    $('graph-count').textContent =
-        `Mostrando ${formatoEntero.format(datos.grafo_visual.nodos.length)} de ${formatoEntero.format(meta.total_nodos)} puntos`;
+function pintarPreguntas() {
+    $('preguntas').replaceChildren(...GRUPOS.map((grupo) =>
+        crearBoton('pregunta', grupo.nombre, grupo.metodos[0], ALGORITMOS.get(grupo.metodos[0]).color)));
 }
 
-function pintarModo(modo) {
-    const algoritmo = ALGORITMOS.get(modo);
-    document.querySelectorAll('.opcion').forEach((boton) => boton.setAttribute('aria-pressed', String(boton.dataset.modo === modo)));
-    $('caption').textContent = algoritmo.problema;
+function pintarMetodos(grupo) {
+    const metodos = grupo.metodos.length > 1
+        ? grupo.metodos.map((modo) => crearBoton('metodo', ALGORITMOS.get(modo).nombre, modo, ALGORITMOS.get(modo).color))
+        : [];
+    $('metodos').replaceChildren(...metodos);
+}
+
+function pintarRespuesta(s) {
+    const algoritmo = ALGORITMOS.get(s.modo);
+    const grupo = grupoDe(s.modo);
+    const [valor, detalle] = responder(s.modo, s.datos);
+    $('pregunta').textContent = grupo.pregunta;
+    const espacio = valor.startsWith('S/') ? -1 : valor.indexOf(' ');
+    $('respuesta-valor').replaceChildren(
+        espacio < 0 ? valor : valor.slice(0, espacio),
+        ...(espacio < 0 ? [] : [crear('span', 'respuesta-unidad', valor.slice(espacio + 1))]),
+    );
+    $('respuesta-valor').style.setProperty('--c', algoritmo.color);
+    $('respuesta-detalle').textContent = detalle;
+    if (grupo.metodos.join() !== $('metodos').dataset.grupo) {
+        pintarMetodos(grupo);
+        $('metodos').dataset.grupo = grupo.metodos.join();
+    }
+    document.querySelectorAll('.pregunta').forEach((boton) => {
+        boton.setAttribute('aria-pressed', String(grupoDe(boton.dataset.modo) === grupo));
+    });
+    document.querySelectorAll('.metodo').forEach((boton) => boton.setAttribute('aria-pressed', String(boton.dataset.modo === s.modo)));
+}
+
+function pintarMapa(s) {
+    const algoritmo = ALGORITMOS.get(s.modo);
     $('leyenda-linea').textContent = algoritmo.leyenda;
     $('leyenda-color').style.background = algoritmo.color;
     $('grafo').setAttribute('aria-label', `Mapa de la red, ${algoritmo.nombre}`);
-    PANELES_PROPIOS.forEach((m) => { $(`panel-${m}`).hidden = m !== modo; });
-    $('panel-algoritmo').hidden = PANELES_PROPIOS.includes(modo);
+    const meta = s.datos.metadata;
+    $('graph-count').textContent = meta.red_conectada
+        ? `${formatoEntero.format(meta.total_nodos)} puntos`
+        : `${formatoEntero.format(meta.total_nodos)} puntos en ${meta.componentes} partes`;
 }
 
-$('opciones').replaceChildren(...CATALOGO.map(crearOpcion));
+function pintarPaneles(s) {
+    const enPasos = s.paso !== null;
+    $('panel-flujo').hidden = enPasos || s.modo !== 'flujo';
+    $('panel-fallas').hidden = enPasos || s.modo !== 'fallas';
+    $('panel-general').hidden = enPasos || Boolean(PANELES[s.modo]);
+}
+
+pintarPreguntas();
 
 suscribir((s, cambios) => {
-    if (toca(cambios, 'datos') && s.datos) pintarDatos(s.datos);
-    if (toca(cambios, 'modo')) pintarModo(s.modo);
+    if (!s.datos) return;
+    if (toca(cambios, 'modo', 'datos')) {
+        pintarRespuesta(s);
+        pintarMapa(s);
+    }
+    if (toca(cambios, 'modo', 'paso')) pintarPaneles(s);
 });

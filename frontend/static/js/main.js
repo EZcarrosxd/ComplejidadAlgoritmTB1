@@ -4,7 +4,6 @@ import './progreso.js';
 import './resultados.js';
 import './grafo.js';
 import './panel-general.js';
-import './panel-mst.js';
 import './panel-flujo.js';
 import './panel-fallas.js';
 import './panel-algoritmo.js';

@@ -207,95 +207,78 @@ function capaBacktracking(d, m, k) {
 
 export const CATALOGO = [
     {
-        id: 'general', nombre: 'Mapa', tecnica: 'Red completa', color: '#1F1E1B', complejidad: 'O(V + E)',
-        problema: 'Arrastra para moverte y haz clic en un punto para ver sus datos', leyenda: 'Línea',
-        valor: (d) => `${formatoEntero.format(d.metadata.total_nodos)} puntos`,
-        pasos: () => [],
-    },
-    {
         id: 'bfs', nombre: 'BFS', tecnica: 'Recorrido en grafos', color: '#2F6F8F', complejidad: 'O(V + E)',
-        problema: 'Hasta dónde llega la energía desde el origen, nivel por nivel', leyenda: 'Nivel de alcance',
-        valor: (d) => `${d.algoritmos.bfs.nivel_maximo} niveles`,
+        leyenda: 'Nivel de alcance',
         pasos: (d) => d.algoritmos.bfs.pasos,
         capa: capaBfs,
         textoPaso: ([id, nivel]) => `Visita ${id} en el nivel ${nivel}`,
     },
     {
         id: 'fallas', nombre: 'DFS de Tarjan', tecnica: 'Recorrido en grafos', color: '#C23B2C', complejidad: 'O(V + E)',
-        problema: 'Haz clic en un punto para ver qué pasa si falla', leyenda: 'Zona sin luz',
-        valor: (d) => `${formatoEntero.format(d.nodos_criticos.length)} débiles`,
+        leyenda: 'Zona sin luz',
         pasos: (d) => d.algoritmos.dfs.pasos,
         capa: capaDfs,
         textoPaso: (id, d) => (d.algoritmos.dfs.criticos.includes(id) ? `Descubre ${id}, un punto débil` : `Descubre ${id}`),
     },
     {
         id: 'union_find', nombre: 'Union-Find', tecnica: 'UFDS', color: '#7A5C99', complejidad: 'O(E α(V))',
-        problema: 'Cómo se unen las zonas al agregar cada línea', leyenda: 'Línea que une zonas',
-        valor: (d) => `${d.algoritmos.union_find.componentes} ${d.algoritmos.union_find.componentes === 1 ? 'grupo' : 'grupos'}`,
+        leyenda: 'Línea que une zonas',
         pasos: (d) => d.algoritmos.union_find.pasos,
         capa: capaUnionFind,
         textoPaso: ([a, b, une]) => (une ? `Une ${a} con ${b}` : `${a} y ${b} ya estaban unidos`),
     },
     {
         id: 'mst', nombre: 'Kruskal', tecnica: 'MST', color: '#3E7B3A', complejidad: 'O(E log E)',
-        problema: 'En verde, el cableado más barato que conecta toda la red', leyenda: 'Cableado más barato',
-        valor: (d) => soles(d.costo_minimo_instalacion),
+        leyenda: 'Cableado más barato',
         pasos: (d) => d.algoritmos.kruskal.pasos,
         capa: capaKruskal,
         textoPaso: ([a, b, acepta]) => (acepta ? `Acepta la línea ${a} con ${b}` : `Descarta ${a} con ${b} porque forma un ciclo`),
     },
     {
         id: 'prim', nombre: 'Prim', tecnica: 'MST', color: '#2F7F6F', complejidad: 'O(E log V)',
-        problema: 'El mismo cableado mínimo, creciendo desde un solo punto', leyenda: 'Árbol de Prim',
-        valor: (d) => soles(d.algoritmos.prim.costo),
+        leyenda: 'Árbol de Prim',
         pasos: (d) => d.algoritmos.prim.pasos,
         capa: capaPrim,
         textoPaso: ([a, b]) => `Agrega ${b} desde ${a}`,
     },
     {
         id: 'merge_sort', nombre: 'Merge Sort', tecnica: 'Divide y vencerás', color: '#8A6D3B', complejidad: 'O(E log E)',
-        problema: 'Ordena las líneas por costo antes de Kruskal\nMás oscuro es más caro', leyenda: 'Costo de la línea',
-        valor: (d) => `${formatoEntero.format(d.algoritmos.merge_sort.pasos.length)} mezclas`,
+        leyenda: 'Costo de la línea',
         pasos: (d) => d.algoritmos.merge_sort.pasos,
         capa: capaMergeSort,
         textoPaso: ([inicio, medio, fin]) => `Mezcla ${formatoEntero.format(medio - inicio)} y ${formatoEntero.format(fin - medio)} líneas ya ordenadas`,
     },
     {
         id: 'flujo', nombre: 'Edmonds-Karp', tecnica: 'Flujo máximo', color: '#A5620E', complejidad: 'O(V E²)',
-        problema: 'Haz clic en dos puntos para medir la capacidad entre ellos', leyenda: 'Corriente',
-        valor: (d) => `${formatoNumero.format(d.flujo_maximo_red)} A`,
+        leyenda: 'Corriente',
         pasos: (d) => d.caminos_flujo,
         capa: capaFlujo,
         textoPaso: (camino, d, k) => `Camino de aumento ${k} con ${camino.length - 1} líneas`,
     },
     {
         id: 'bellman_ford', nombre: 'Bellman-Ford', tecnica: 'Rutas mínimas', color: '#9C4F2E', complejidad: 'O(V E)',
-        problema: 'La ruta de menor costo entre el origen y el destino', leyenda: 'Ruta de menor costo',
-        valor: (d) => soles(d.algoritmos.bellman_ford.costo),
+        leyenda: 'Ruta de menor costo',
         pasos: (d) => d.algoritmos.bellman_ford.pasos,
         capa: capaBellmanFord,
         textoPaso: ([iteracion, a, b]) => `Iteración ${iteracion}: mejora ${b} pasando por ${a}`,
     },
     {
         id: 'floyd_warshall', nombre: 'Floyd-Warshall', tecnica: 'Rutas mínimas', color: '#4F5FA8', complejidad: 'O(V³)',
-        problema: 'Distancias entre todos los puntos de la zona del origen', leyenda: 'Zona analizada',
-        valor: (d) => `${d.algoritmos.floyd_warshall.nodos.length} × ${d.algoritmos.floyd_warshall.nodos.length}`,
+        leyenda: 'Zona analizada',
         pasos: (d) => d.algoritmos.floyd_warshall.pasos,
         capa: capaFloydWarshall,
         textoPaso: ([id, mejoras]) => `Pasa por ${id} y mejora ${mejoras} distancias`,
     },
     {
         id: 'mochila', nombre: 'Mochila 0/1', tecnica: 'Programación dinámica', color: '#A07A12', complejidad: 'O(n × P)',
-        problema: 'Qué puntos débiles reforzar con el presupuesto disponible', leyenda: 'Punto reforzado',
-        valor: (d) => `${formatoEntero.format(d.algoritmos.mochila.valor)} protegidos`,
+        leyenda: 'Punto reforzado',
         pasos: (d) => d.algoritmos.mochila.items,
         capa: capaMochila,
         textoPaso: (item) => `Decide si reforzar ${item.id} por ${soles(item.costo)}`,
     },
     {
         id: 'backtracking', nombre: 'Backtracking', tecnica: 'Fuerza bruta y backtracking', color: '#8C4A68', complejidad: 'O(2ⁿ) con poda',
-        problema: 'El mismo refuerzo explorando combinaciones y podando las que no mejoran', leyenda: 'Punto reforzado',
-        valor: (d) => `${formatoEntero.format(d.algoritmos.backtracking.explorados)} nodos`,
+        leyenda: 'Punto reforzado',
         pasos: (d) => d.algoritmos.backtracking.pasos,
         capa: capaBacktracking,
         textoPaso: ([profundidad, id]) => (id ? `Nivel ${profundidad}: prueba reforzar ${id}` : `Nivel ${profundidad}: poda la rama`),
@@ -312,3 +295,47 @@ export function crearCapa(datos, modelo, modo, paso) {
     if (paso === null && MODOS_CON_DIBUJO_PROPIO.has(modo)) return null;
     return algoritmo.capa(datos, modelo, paso);
 }
+
+const entero = (valor) => formatoEntero.format(valor);
+const plural = (n, uno, varios) => `${entero(n)} ${n === 1 ? uno : varios}`;
+
+const RESPUESTAS = {
+    mst: (d) => {
+        const meta = d.metadata;
+        const ahorro = Math.round((1 - d.costo_minimo_instalacion / meta.costo_total_red) * 100);
+        return [soles(d.costo_minimo_instalacion), meta.red_conectada
+            ? `Ahorra ${ahorro} % frente a usar todas las líneas`
+            : `La red tiene ${meta.componentes} partes separadas`];
+    },
+    prim: (d) => [soles(d.algoritmos.prim.costo), d.algoritmos.prim.costo === d.costo_minimo_instalacion
+        ? 'Mismo costo que Kruskal, creciendo desde un punto'
+        : 'El costo difiere del de Kruskal'],
+    merge_sort: (d) => [plural(d.algoritmos.merge_sort.costos.length, 'línea', 'líneas'), 'Ordenadas de la más barata a la más cara'],
+    flujo: (d) => [`${formatoNumero.format(d.flujo_maximo_red)} A`, `De ${d.metadata.origen_flujo} a ${d.metadata.destino_flujo}`],
+    bellman_ford: (d) => [soles(d.algoritmos.bellman_ford.costo), `Ruta más barata de ${d.algoritmos.bellman_ford.origen} a ${d.algoritmos.bellman_ford.destino}`],
+    bfs: (d) => [plural(d.algoritmos.bfs.nivel_maximo, 'salto', 'saltos'), `Desde ${d.algoritmos.bfs.origen} hasta el punto más lejano`],
+    floyd_warshall: (d) => [plural(d.algoritmos.floyd_warshall.nodos.length, 'punto', 'puntos'), `Todas sus distancias, cerca de ${d.algoritmos.bfs.origen}`],
+    fallas: (d) => [plural(d.nodos_criticos.length, 'punto débil', 'puntos débiles'), 'Toca uno para ver qué pasa si falla'],
+    union_find: (d) => [plural(d.algoritmos.union_find.componentes, 'grupo', 'grupos'), d.algoritmos.union_find.componentes === 1
+        ? 'Toda la red está conectada' : 'La red tiene partes separadas'],
+    mochila: (d) => [plural(d.algoritmos.mochila.valor, 'punto protegido', 'puntos protegidos'),
+        `Reforzando ${plural(d.algoritmos.mochila.elegidos.length, 'punto', 'puntos')} con ${soles(d.algoritmos.mochila.costo)}`],
+    backtracking: (d) => {
+        const a = d.algoritmos.backtracking;
+        return [plural(a.valor, 'punto protegido', 'puntos protegidos'), a.combinaciones === null
+            ? `Revisó ${entero(a.explorados)} combinaciones`
+            : `Revisó ${entero(a.explorados)} de ${entero(a.combinaciones)} combinaciones`];
+    },
+};
+
+export const responder = (modo, datos) => RESPUESTAS[modo](datos);
+
+export const GRUPOS = [
+    { id: 'costo', nombre: 'Costo', pregunta: '¿Cuánto cuesta conectar la red?', metodos: ['mst', 'prim', 'merge_sort'] },
+    { id: 'capacidad', nombre: 'Capacidad', pregunta: '¿Cuánta corriente puede pasar?', metodos: ['flujo'] },
+    { id: 'rutas', nombre: 'Rutas', pregunta: '¿Por dónde llega la energía?', metodos: ['bellman_ford', 'bfs', 'floyd_warshall'] },
+    { id: 'fallas', nombre: 'Fallas', pregunta: '¿Dónde puede cortarse la red?', metodos: ['fallas', 'union_find'] },
+    { id: 'refuerzo', nombre: 'Refuerzo', pregunta: '¿Qué conviene reforzar?', metodos: ['mochila', 'backtracking'] },
+];
+
+export const grupoDe = (modo) => GRUPOS.find((grupo) => grupo.metodos.includes(modo)) ?? GRUPOS[0];

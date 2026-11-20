@@ -1,22 +1,9 @@
-import { $, crear, formatoNumero } from './dom.js';
+import { $ } from './dom.js';
 import { estado, actualizar, suscribir, toca } from './estado.js';
 import { recalcularFlujo, deshacerFlujo } from './flujo.js';
 
 const origen = $('origen');
 const destino = $('destino');
-
-function pintarResumen(datos) {
-    const meta = datos.metadata;
-    const resumen = $('resumen-flujo');
-    resumen.replaceChildren(
-        crear('strong', '', `${formatoNumero.format(datos.flujo_maximo_red)} A`), ' de ',
-        crear('strong', '', meta.origen_flujo), ' a ',
-        crear('strong', '', meta.destino_flujo),
-    );
-    if (meta.seleccion_flujo === 'automatica') {
-        resumen.append(crear('br'), 'Extremos elegidos automáticamente: dos puntos muy alejados entre sí');
-    }
-}
 
 function pintarOpciones(ids) {
     $('lista-nodos').replaceChildren(...ids.map((id) => {
@@ -27,7 +14,6 @@ function pintarOpciones(ids) {
 }
 
 suscribir((s, cambios) => {
-    if (toca(cambios, 'datos') && s.datos) pintarResumen(s.datos);
     if (toca(cambios, 'fase') && s.fase === 'resultados') pintarOpciones(s.datos.metadata.ids_nodos);
     if (toca(cambios, 'origen') && origen.value !== s.origen) origen.value = s.origen;
     if (toca(cambios, 'destino') && destino.value !== s.destino) destino.value = s.destino;

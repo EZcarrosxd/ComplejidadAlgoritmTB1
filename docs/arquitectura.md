@@ -83,6 +83,8 @@ El grafo tiene dos motores de dibujo con la misma interfaz
 `motor-canvas.js` usa canvas 2D y queda como respaldo con `?motor=canvas`
 `grafo.js` elige el motor y lleva el bucle de animación compartido
 `distribucion.js` ubica los puntos con Pivot MDS a partir de distancias BFS
+`algoritmos.js` agrupa los algoritmos en cinco preguntas: costo, capacidad, rutas, fallas y refuerzo
+`reproductor.js` recorre los pasos de cada algoritmo sobre el mapa
 `estado.js` guarda el estado de la interfaz
 
 Los resultados siempre vienen del backend

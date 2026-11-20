@@ -2,7 +2,7 @@ import { estado } from './estado.js';
 import { cambiarModo, restaurar } from './acciones.js';
 import { abrirAyuda, cerrarAyuda } from './ayuda.js';
 import { acercar, alejar, centrar } from './grafo.js';
-import { CATALOGO } from './algoritmos.js';
+import { GRUPOS } from './algoritmos.js';
 import { alternarReproduccion, avanzarPaso, cerrarPasos } from './reproductor.js';
 
 window.addEventListener('keydown', (e) => {
@@ -18,7 +18,7 @@ window.addEventListener('keydown', (e) => {
     if (estado.fase !== 'resultados' || estado.ayuda) return;
 
     const numero = Number(e.key);
-    if (Number.isInteger(numero) && numero >= 1 && numero <= 9) cambiarModo(CATALOGO[numero - 1].id);
+    if (Number.isInteger(numero) && numero >= 1 && numero <= GRUPOS.length) cambiarModo(GRUPOS[numero - 1].metodos[0]);
     else if (e.key === 'ArrowRight' && estado.paso !== null) { e.preventDefault(); avanzarPaso(1); }
     else if (e.key === 'ArrowLeft' && estado.paso !== null) { e.preventDefault(); avanzarPaso(-1); }
     else if (e.key === ' ' && estado.paso !== null && etiqueta !== 'BUTTON') { e.preventDefault(); alternarReproduccion(); }

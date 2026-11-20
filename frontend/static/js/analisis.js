@@ -21,7 +21,7 @@ function paso(i, cambios) {
 
 function reiniciar(nombre) {
     actualizar({
-        fase: 'progreso', error: null, modo: 'general', sel: null, falla: null, todosCriticos: false,
+        fase: 'progreso', error: null, modo: 'mst', sel: null, falla: null, todosCriticos: false,
         errorFlujo: '', previo: null, siguiente: 'origen',
         pasos: PASOS.map(([titulo, detalle]) => ({ titulo, detalle, estado: 'pendiente', mensaje: 'En espera' })),
     });

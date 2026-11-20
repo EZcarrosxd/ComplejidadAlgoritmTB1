@@ -1,37 +1,10 @@
-import { $, crear, formatoEntero, formatoMoneda } from './dom.js';
+import { $ } from './dom.js';
 import { suscribir, toca } from './estado.js';
 import { ordenMergeSort } from './algoritmos.js';
 
 const ALTO_VISTA = 112;
 const FONDO = '#FAF8F5';
 const TEXTO = '#6B665E';
-const soles = (valor) => `S/ ${formatoMoneda.format(valor)}`;
-const entero = (valor) => formatoEntero.format(valor);
-
-const FILAS = {
-    bfs: (a) => [['Origen', a.origen], ['Puntos alcanzados', entero(a.alcance)], ['Niveles', entero(a.nivel_maximo)]],
-    union_find: (a) => {
-        const unen = a.pasos.filter((p) => p[2]).length;
-        return [['Líneas que unen zonas', entero(unen)], ['Líneas que forman ciclo', entero(a.pasos.length - unen)], ['Grupos al final', entero(a.componentes)]];
-    },
-    prim: (a, d) => [['Punto inicial', a.inicio], ['Costo total', soles(a.costo)],
-        ['Coincide con Kruskal', a.costo === d.costo_minimo_instalacion ? 'Sí' : 'No']],
-    merge_sort: (a) => [['Líneas ordenadas', entero(a.costos.length)], ['Mezclas', entero(a.pasos.length)],
-        ['Línea más barata', soles(Math.min(...a.costos))], ['Línea más cara', soles(Math.max(...a.costos))]],
-    bellman_ford: (a) => [['Origen', a.origen], ['Destino', a.destino], ['Líneas en la ruta', entero(a.camino.length - 1)],
-        ['Iteraciones', entero(a.iteraciones)], ['Mejoras de distancia', entero(a.relajaciones)]],
-    floyd_warshall: (a) => {
-        const valores = a.matriz.flat().filter((v) => v !== null);
-        return [['Puntos de la zona', entero(a.nodos.length)], ['Pares conectados', entero(valores.length - a.nodos.length)],
-            ['Distancia máxima', soles(Math.max(...valores))]];
-    },
-    mochila: (a) => [['Presupuesto', soles(a.presupuesto)], ['Costo usado', soles(a.costo)],
-        ['Puntos reforzados', a.elegidos.join('\n')], ['Puntos protegidos', entero(a.valor)]],
-    backtracking: (a, d) => [['Fuerza bruta', a.combinaciones === null ? 'No aplica' : `${entero(a.combinaciones)} combinaciones`],
-        ['Backtracking', `${entero(a.explorados)} nodos`], ['Ramas podadas', entero(a.podados)],
-        ['Coincide con programación dinámica', a.valor === d.algoritmos.mochila.valor ? 'Sí' : 'No']],
-};
-
 function prepararLienzo() {
     const lienzo = $('vista-extra');
     const ancho = lienzo.clientWidth || 320;
@@ -42,7 +15,7 @@ function prepararLienzo() {
     ctx.setTransform(escala, 0, 0, escala, 0, 0);
     ctx.fillStyle = FONDO;
     ctx.fillRect(0, 0, ancho, ALTO_VISTA);
-    ctx.font = '500 10px "IBM Plex Mono", monospace';
+    ctx.font = '500 10px Inter, sans-serif';
     return { ctx, ancho, alto: ALTO_VISTA };
 }
 
@@ -166,25 +139,14 @@ const VISTAS = {
     floyd_warshall: vistaFloydWarshall, mochila: vistaMochila, backtracking: vistaBacktracking,
 };
 
-function pintarFilas(s) {
-    const filas = FILAS[s.modo];
-    $('filas-algoritmo').replaceChildren(...filas(s.datos.algoritmos[s.modo], s.datos).map(([clave, valor]) => {
-        const fila = crear('div');
-        fila.append(crear('dt', '', clave), crear('dd', '', valor));
-        return fila;
-    }));
-}
-
 function pintarVista(s) {
     const vista = VISTAS[s.modo];
-    $('vista-extra').hidden = !vista;
-    if (!vista) return;
+    $('vista-extra').hidden = !vista || s.paso === null;
+    if ($('vista-extra').hidden) return;
     const algoritmo = { ...s.datos.algoritmos[s.modo], __datos: s.datos };
     vista(prepararLienzo(), algoritmo, s.paso);
 }
 
 suscribir((s, cambios) => {
-    if (!s.datos || !FILAS[s.modo]) return;
-    if (toca(cambios, 'modo', 'datos')) pintarFilas(s);
-    if (toca(cambios, 'modo', 'datos', 'paso')) pintarVista(s);
+    if (s.datos && toca(cambios, 'modo', 'datos', 'paso')) pintarVista(s);
 });

@@ -8,6 +8,7 @@ body {
     background: var(--fondo);
     color: var(--ink);
     font-family: var(--sans);
+    font-variant-numeric: tabular-nums;
 }
 
 a { color: var(--acento-fuerte); }

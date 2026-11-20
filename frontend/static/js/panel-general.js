@@ -8,7 +8,6 @@ suscribir((s, cambios) => {
     const i = m && s.sel ? m.indices.get(s.sel) : undefined;
     const haySeleccion = i !== undefined;
     $('seleccion').hidden = !haySeleccion;
-    $('nota-general').hidden = haySeleccion;
     if (!haySeleccion) return;
     $('sel-id').textContent = s.sel;
     $('sel-tipo').textContent = m.esCritico[i] ? 'Punto débil' : '';
