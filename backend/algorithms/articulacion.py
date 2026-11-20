@@ -1,4 +1,4 @@
-def encontrar_nodos_criticos(nodos, adyacencia):
+def encontrar_nodos_criticos(nodos, adyacencia, orden=None):
 
     visitado = set()
     nodos_criticos = set()
@@ -11,6 +11,8 @@ def encontrar_nodos_criticos(nodos, adyacencia):
             continue
 
         visitado.add(raiz)
+        if orden is not None:
+            orden.append(raiz)
         tiempo_descubrimiento[raiz] = low[raiz] = tiempo
         tiempo += 1
         hijos_raiz = 0
@@ -36,6 +38,8 @@ def encontrar_nodos_criticos(nodos, adyacencia):
 
             if v not in visitado:
                 visitado.add(v)
+                if orden is not None:
+                    orden.append(v)
                 tiempo_descubrimiento[v] = low[v] = tiempo
                 tiempo += 1
                 if u == raiz:

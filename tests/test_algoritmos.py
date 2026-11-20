@@ -3,7 +3,16 @@ import pytest
 from backend.algorithms.articulacion import encontrar_nodos_criticos
 from backend.algorithms.componentes import separar_componentes
 from backend.algorithms.flujo import calcular_flujo_maximo
+from backend.algorithms.bellman_ford import calcular_rutas_bellman_ford, reconstruir_camino
+from backend.algorithms.floyd_warshall import calcular_distancias_floyd_warshall
 from backend.algorithms.kruskal import optimizar_costos_kruskal
+from backend.algorithms.merge_sort import ordenar_con_merge_sort
+from backend.algorithms.mochila import (
+    resolver_mochila_backtracking,
+    resolver_mochila_dinamica,
+    resolver_mochila_fuerza_bruta,
+)
+from backend.algorithms.prim import optimizar_costos_prim
 from backend.domain.red import RedElectrica
 from backend.services.analisis import AnalizadorRed
 from backend.services.fallas import medir_impacto, resumir_impacto
@@ -84,6 +93,41 @@ def test_impacto_de_nodos_criticos():
 def test_visibles_parten_de_las_semillas():
     nodos = dict.fromkeys(str(i) for i in range(300))
     red = RedElectrica(nodos, [linea(str(i), str(i + 1)) for i in range(299)])
-    visibles = elegir_visibles(red, ["150", "150"])
+    visibles = elegir_visibles(red, ["150", "150"], limite=200)
     assert len(visibles) == 200 and visibles[0] == "150"
     assert set(visibles) == {str(i) for i in range(50, 250)}
+
+
+def test_prim_y_kruskal_dan_el_mismo_costo():
+    nodos = dict.fromkeys("ABCD")
+    aristas = [linea("A", "B", 1), linea("B", "C", 4), linea("A", "C", 2), linea("C", "D", 3), linea("B", "D", 5)]
+    _, costo_kruskal = optimizar_costos_kruskal(nodos, aristas)
+    arbol, costo_prim = optimizar_costos_prim(nodos, aristas, "A")
+    assert costo_prim == costo_kruskal == 6
+    assert len(arbol) == 3
+
+
+def test_merge_sort_ordena_y_registra_mezclas():
+    mezclas = []
+    assert ordenar_con_merge_sort([5, 1, 4, 2, 3], lambda x: x, mezclas) == [1, 2, 3, 4, 5]
+    assert len(mezclas) == 4
+
+
+def test_bellman_ford_y_floyd_warshall_coinciden():
+    nodos = dict.fromkeys("ABCD")
+    aristas = [linea("A", "B", 1), linea("B", "C", 1), linea("A", "C", 5), linea("C", "D", 2)]
+    distancia, padre, _ = calcular_rutas_bellman_ford(nodos, aristas, "A")
+    assert distancia["D"] == 4
+    assert reconstruir_camino(padre, "D") == ["A", "B", "C", "D"]
+    matriz = calcular_distancias_floyd_warshall(list("ABCD"), aristas)
+    assert matriz[0][3] == 4 and matriz[3][0] == 4
+
+
+def test_mochila_dinamica_backtracking_y_fuerza_bruta_coinciden():
+    costos, valores, presupuesto = [4, 3, 2, 5], [9, 6, 4, 10], 7
+    valor_dp, elegidos, _ = resolver_mochila_dinamica(costos, valores, presupuesto)
+    valor_bt, _, contador = resolver_mochila_backtracking(costos, valores, presupuesto)
+    valor_fb, _, combinaciones = resolver_mochila_fuerza_bruta(costos, valores, presupuesto)
+    assert valor_dp == valor_bt == valor_fb == 15
+    assert sum(costos[i] for i in elegidos) <= presupuesto
+    assert combinaciones == 16 and contador["explorados"] < combinaciones

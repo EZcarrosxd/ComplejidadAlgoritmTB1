@@ -24,8 +24,14 @@ def test_dataset_completo_y_consultas(client, dataset):
     assert datos["costo_minimo_instalacion"] == 132156.46
     assert datos["flujo_maximo_red"] == 20
     assert len(datos["aristas_mst"]) == 1499
+    algoritmos = datos["algoritmos"]
+    assert algoritmos["prim"]["costo"] == algoritmos["kruskal"]["costo"] == 132156.46
+    assert algoritmos["bfs"]["alcance"] == 1500
+    assert algoritmos["union_find"]["componentes"] == 1
+    assert algoritmos["mochila"]["valor"] == algoritmos["backtracking"]["valor"]
+    assert algoritmos["bellman_ford"]["camino"][0] == datos["metadata"]["origen_flujo"]
     assert len(datos["nodos_criticos"]) == 14
-    assert len(datos["grafo_visual"]["nodos"]) == 200
+    assert len(datos["grafo_visual"]["nodos"]) == 1500
     assert "from" in datos["grafo_visual"]["aristas"][0]
     assert all(n["grado"] > 0 for n in datos["grafo_visual"]["nodos"])
     assert len(datos["impacto_criticos"]) == 14

@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel
 from .red import GrafoVisual, ImpactoCritico, Linea, LineaCorte
@@ -27,6 +27,7 @@ class ResultadoAnalisis(BaseModel):
     impacto_criticos: list[ImpactoCritico]
     tiempo_ejecucion: float
     grafo_visual: GrafoVisual
+    algoritmos: dict[str, Any]
     metadata: Metadata
 
 

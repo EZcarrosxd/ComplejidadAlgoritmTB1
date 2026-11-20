@@ -3,12 +3,12 @@ from collections import deque
 from backend.config import LIMITE_VISUAL
 
 
-def elegir_visibles(red, semillas):
-    visibles = dict.fromkeys(list(dict.fromkeys(semillas))[:LIMITE_VISUAL])
+def elegir_visibles(red, semillas, limite=LIMITE_VISUAL):
+    visibles = dict.fromkeys(list(dict.fromkeys(semillas))[:limite])
     pendientes = deque(visibles)
     restantes = iter(red.nodos)
 
-    while len(visibles) < min(LIMITE_VISUAL, len(red.nodos)):
+    while len(visibles) < min(limite, len(red.nodos)):
         if not pendientes:
             nodo = next(n for n in restantes if n not in visibles)
             visibles[nodo] = None
@@ -17,7 +17,7 @@ def elegir_visibles(red, semillas):
         u = pendientes.popleft()
         for conexion in red.adyacencia[u]:
             v = conexion["destino"]
-            if v not in visibles and len(visibles) < LIMITE_VISUAL:
+            if v not in visibles and len(visibles) < limite:
                 visibles[v] = None
                 pendientes.append(v)
 

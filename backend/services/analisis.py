@@ -1,5 +1,6 @@
 from time import perf_counter
 
+from .calculos import calcular_algoritmos
 from .capacidad import analizar_capacidad
 from .costo import analizar_costo
 from .fallas import analizar_fallas, resumir_impacto, semillas_de_impacto
@@ -25,6 +26,7 @@ class AnalizadorRed:
             "nodos_criticos": criticos,
             "impacto_criticos": resumir_impacto(impacto, visibles),
             "grafo_visual": grafo,
+            "algoritmos": calcular_algoritmos(red, capacidad, criticos, impacto),
             "tiempo_ejecucion": round(perf_counter() - inicio, 6),
             "metadata": {
                 "total_nodos": len(red.nodos),
