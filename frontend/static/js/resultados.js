@@ -1,16 +1,9 @@
-import { $, crear, formatoEntero, formatoMoneda, formatoSegundos } from './dom.js';
+import { $, crear, formatoEntero, formatoSegundos } from './dom.js';
 import { suscribir, toca } from './estado.js';
 import { cambiarModo } from './acciones.js';
+import { ALGORITMOS, CATALOGO } from './algoritmos.js';
 
-const MODOS = ['general', 'mst', 'flujo', 'fallas'];
-const INDICACIONES = {
-    general: 'Arrastra para moverte y haz clic en un punto para ver sus datos',
-    mst: 'En verde, el cableado más barato',
-    flujo: 'Haz clic en dos puntos para medir la capacidad entre ellos',
-    fallas: 'Haz clic en un punto para ver qué pasa si falla',
-};
-const LEYENDA = { general: 'Línea', mst: 'Cableado más barato', flujo: 'Corriente', fallas: 'Zona sin luz' };
-const COLOR = { general: 'var(--ink)', mst: 'var(--lime)', flujo: 'var(--amber)', fallas: 'var(--red)' };
+const PANELES_PROPIOS = ['general', 'mst', 'flujo', 'fallas'];
 
 function pintarHechos(meta, tiempo) {
     const filas = [
@@ -26,31 +19,43 @@ function pintarHechos(meta, tiempo) {
     }));
 }
 
+function crearOpcion(algoritmo) {
+    const boton = crear('button', 'opcion');
+    boton.type = 'button';
+    boton.dataset.modo = algoritmo.id;
+    boton.style.setProperty('--c', algoritmo.color);
+    boton.setAttribute('aria-pressed', 'false');
+    const nombre = crear('span', 'opcion-nombre');
+    nombre.append(crear('span', 'opcion-titulo', algoritmo.nombre), crear('span', 'opcion-tecnica', algoritmo.tecnica));
+    const valor = crear('span', 'opcion-valor');
+    valor.id = `valor-${algoritmo.id}`;
+    boton.append(nombre, valor);
+    boton.addEventListener('click', () => cambiarModo(algoritmo.id));
+    return boton;
+}
+
 function pintarDatos(datos) {
     const meta = datos.metadata;
     pintarHechos(meta, datos.tiempo_ejecucion);
-    $('val-costo').textContent = formatoMoneda.format(datos.costo_minimo_instalacion);
-    $('val-criticos').textContent = formatoEntero.format(datos.nodos_criticos.length);
-    const formatoFlujo = Number.isInteger(datos.flujo_maximo_red) ? formatoEntero : formatoMoneda;
-    $('val-flujo').textContent = formatoFlujo.format(datos.flujo_maximo_red);
+    for (const algoritmo of CATALOGO) $(`valor-${algoritmo.id}`).textContent = algoritmo.valor(datos);
     $('graph-count').textContent =
         `Mostrando ${formatoEntero.format(datos.grafo_visual.nodos.length)} de ${formatoEntero.format(meta.total_nodos)} puntos`;
 }
 
 function pintarModo(modo) {
-    document.querySelectorAll('.metric').forEach((boton) => boton.setAttribute('aria-pressed', String(boton.dataset.modo === modo)));
-    $('caption').textContent = INDICACIONES[modo];
-    $('leyenda-linea').textContent = LEYENDA[modo];
-    $('leyenda-color').style.background = COLOR[modo];
-    $('grafo').setAttribute('aria-label', `Mapa de la red, ${INDICACIONES[modo]}`);
-    MODOS.forEach((m) => { $(`panel-${m}`).hidden = m !== modo; });
+    const algoritmo = ALGORITMOS.get(modo);
+    document.querySelectorAll('.opcion').forEach((boton) => boton.setAttribute('aria-pressed', String(boton.dataset.modo === modo)));
+    $('caption').textContent = algoritmo.problema;
+    $('leyenda-linea').textContent = algoritmo.leyenda;
+    $('leyenda-color').style.background = algoritmo.color;
+    $('grafo').setAttribute('aria-label', `Mapa de la red, ${algoritmo.nombre}`);
+    PANELES_PROPIOS.forEach((m) => { $(`panel-${m}`).hidden = m !== modo; });
+    $('panel-algoritmo').hidden = PANELES_PROPIOS.includes(modo);
 }
+
+$('opciones').replaceChildren(...CATALOGO.map(crearOpcion));
 
 suscribir((s, cambios) => {
     if (toca(cambios, 'datos') && s.datos) pintarDatos(s.datos);
     if (toca(cambios, 'modo')) pintarModo(s.modo);
-});
-
-document.querySelectorAll('.metric').forEach((boton) => {
-    boton.addEventListener('click', () => cambiarModo(boton.dataset.modo));
 });

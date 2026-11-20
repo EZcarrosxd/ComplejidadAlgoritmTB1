@@ -16,6 +16,9 @@ export const estado = {
     errorFlujo: '',
     previo: null,
     calculando: false,
+    paso: null,
+    reproduciendo: false,
+    velocidad: 40,
     ayuda: false,
     grande: false,
 };

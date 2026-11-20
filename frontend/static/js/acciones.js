@@ -2,13 +2,12 @@ import { estado, actualizar } from './estado.js';
 import { anunciar, plural } from './dom.js';
 import { describirFalla } from './modelo.js';
 import { recalcularFlujo } from './flujo.js';
-
-const NOMBRES = { general: 'Mapa', mst: 'Menor costo', flujo: 'Capacidad', fallas: 'Puntos débiles' };
+import { ALGORITMOS } from './algoritmos.js';
 
 export function cambiarModo(modo) {
     if (estado.modo === modo) return;
     actualizar({ modo });
-    anunciar(`Vista: ${NOMBRES[modo]}`);
+    anunciar(`Opción: ${ALGORITMOS.get(modo).nombre}`);
 }
 
 export function simularFalla(id) {

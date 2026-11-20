@@ -7,7 +7,7 @@ export const puntero = { bajoPuntero: -1 };
 
 const lienzo = $('grafo');
 const tip = $('tip');
-const ACCION = { general: 'Clic: ver datos', mst: 'Clic: ver datos', flujo: 'Clic: elegir', fallas: 'Clic: simular falla' };
+const ACCION = { flujo: 'Clic: elegir', fallas: 'Clic: simular falla' };
 
 function ubicar(evento) {
     const rectangulo = lienzo.getBoundingClientRect();
@@ -21,7 +21,7 @@ function mostrarTip(i, p) {
         crear('div', 'tip-id', m.ids[i]),
         crear('div', '', plural(m.grado[i], 'conexión', 'conexiones')),
         ...(m.esCritico[i] ? [crear('div', 'tip-crit', 'Punto débil')] : []),
-        crear('div', 'tip-act', ACCION[estado.modo]),
+        crear('div', 'tip-act', ACCION[estado.modo] ?? 'Clic: ver datos'),
     );
     const x = Math.min(p.x + 16, lienzo.clientWidth - 170), y = Math.max(p.y - 70, 8);
     tip.style.transform = `translate(${x}px, ${y}px)`;

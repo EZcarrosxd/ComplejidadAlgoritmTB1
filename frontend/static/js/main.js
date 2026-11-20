@@ -7,5 +7,7 @@ import './panel-general.js';
 import './panel-mst.js';
 import './panel-flujo.js';
 import './panel-fallas.js';
+import './panel-algoritmo.js';
+import './reproductor.js';
 import './ayuda.js';
 import './teclado.js';
