@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from .dependencies import obtener_resultado
+from .dependencias import obtener_resultado
 
 router = APIRouter(prefix="/api", tags=["Último análisis"])
 

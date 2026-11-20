@@ -1,8 +1,14 @@
 from collections import Counter
 
+from backend.algorithms.articulacion import encontrar_nodos_criticos
 from backend.algorithms.componentes import separar_componentes
 
 AISLADOS_EN_SEMILLA = 5
+
+
+def analizar_fallas(red):
+    criticos = sorted(encontrar_nodos_criticos(red.nodos, red.adyacencia))
+    return criticos, medir_impacto(red, criticos)
 
 
 def medir_impacto(red, criticos):

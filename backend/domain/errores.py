@@ -1,0 +1,2 @@
+class ErrorValidacionDatos(ValueError):
+    pass

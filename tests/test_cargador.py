@@ -2,10 +2,10 @@ import json
 
 import pytest
 
-from backend.data.csv_reader import LectorCsv
-from backend.data.json_reader import LectorJson
-from backend.data.loader import CargadorDataset
-from backend.domain.errors import DatasetValidationError
+from backend.data.lector_csv import LectorCsv
+from backend.data.lector_json import LectorJson
+from backend.data.cargador import CargadorDataset
+from backend.domain.errores import ErrorValidacionDatos
 
 
 def cargar(datos):
@@ -17,7 +17,7 @@ def cargar(datos):
 @pytest.mark.parametrize("campo", ["costo", "capacidad", "distancia_m"])
 def test_numeros_invalidos(valor, campo):
     fila = {"origen": "A", "destino": "B", "distancia_m": 2, campo: valor}
-    with pytest.raises(DatasetValidationError):
+    with pytest.raises(ErrorValidacionDatos):
         cargar({"conexiones": [fila]})
 
 
@@ -32,14 +32,14 @@ def test_nodos_aislados_se_conservan_y_capacidad_explicita():
 
 @pytest.mark.parametrize("nodos", [[{"id": "A"}, {"id": "A"}], [{"id": "A"}]])
 def test_nodos_repetidos_o_extremo_inexistente(nodos):
-    with pytest.raises(DatasetValidationError):
+    with pytest.raises(ErrorValidacionDatos):
         cargar({"nodos": nodos, "conexiones": [
             {"origen": "A", "destino": "B", "costo": 1}]})
 
 
 @pytest.mark.parametrize("fila", [None, {}, {"origen": "A", "destino": "A", "costo": 0}])
 def test_conexiones_invalidas(fila):
-    with pytest.raises(DatasetValidationError):
+    with pytest.raises(ErrorValidacionDatos):
         cargar({"conexiones": [fila]})
 
 

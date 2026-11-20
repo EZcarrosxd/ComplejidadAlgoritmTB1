@@ -1,7 +1,7 @@
 from typing import Literal
 
 from pydantic import BaseModel
-from .network import GrafoVisual, ImpactoCritico, Linea, LineaCorte
+from .red import GrafoVisual, ImpactoCritico, Linea, LineaCorte
 
 
 class Metadata(BaseModel):

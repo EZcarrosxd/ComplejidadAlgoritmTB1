@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.factory import crear_app
+from backend.fabrica import crear_app
 
 
 @pytest.fixture

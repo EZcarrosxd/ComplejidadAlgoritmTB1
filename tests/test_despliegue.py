@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.factory import crear_app
+from backend.fabrica import crear_app
 
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def test_preflight_con_dominio_exacto(deployed, origen, permitido):
 
 
 def test_frontend_sin_jinja(client):
-    for ruta in ["/", "/templates/results.html", "/templates/metrics.html",
+    for ruta in ["/", "/templates/resultados.html", "/templates/metricas.html",
                  "/static/js/bootstrap.js", "/static/js/config.js"]:
         respuesta = client.get(ruta)
         assert respuesta.status_code == 200

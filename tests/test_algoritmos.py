@@ -4,10 +4,10 @@ from backend.algorithms.articulacion import encontrar_nodos_criticos
 from backend.algorithms.componentes import separar_componentes
 from backend.algorithms.flujo import calcular_flujo_maximo
 from backend.algorithms.kruskal import optimizar_costos_kruskal
-from backend.domain.network import RedElectrica
-from backend.services.analysis import AnalizadorRed
+from backend.domain.red import RedElectrica
+from backend.services.analisis import AnalizadorRed
 from backend.services.fallas import medir_impacto, resumir_impacto
-from backend.services.visualization import elegir_visibles
+from backend.services.visualizacion import elegir_visibles
 
 
 def linea(a, b, costo=1, capacidad=1):

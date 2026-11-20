@@ -1,4 +1,4 @@
-from backend.factory import crear_app
+from backend.fabrica import crear_app
 
 app = crear_app()
 

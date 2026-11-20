@@ -23,9 +23,9 @@ def bfs_camino(grafo_residual, origen, destino, padres):
 def calcular_flujo_maximo(nodos, aristas, origen, destino, caminos=None):
 
     if origen not in nodos or destino not in nodos:
-        raise ValueError(f"El origen ({origen}) y el destino ({destino}) deben existir en la red.")
+        raise ValueError(f"El origen ({origen}) y el destino ({destino}) deben existir en la red")
     if origen == destino:
-        raise ValueError("El origen y el destino del flujo deben ser nodos distintos.")
+        raise ValueError("El origen y el destino del flujo deben ser nodos distintos")
 
     grafo_residual = defaultdict(lambda: defaultdict(float))
 

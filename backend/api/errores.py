@@ -12,6 +12,6 @@ def registrar_errores(app):
     @app.exception_handler(RequestValidationError)
     async def error_peticion(request, error):
         return JSONResponse(
-            {"error": "Petición inválida. Envíe el archivo en el campo file."},
+            {"error": "Envíe el archivo en el campo file"},
             status_code=422,
         )
