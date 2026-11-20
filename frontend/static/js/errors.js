@@ -1,8 +1,14 @@
-import { ErrorServidor, MENSAJE_SIN_CONEXION } from './api.js';
+import { ErrorServidor, LIMITE_ESPERA_MINUTOS, MENSAJE_SIN_CONEXION } from './api.js';
 
 const FORMATO = 'Usa un .json con la lista "conexiones" (origen, destino y distancia_m) o un .csv con las columnas origen,destino,distancia_m.';
 
 export function explicarError(error) {
+    if (error?.name === 'TimeoutError') {
+        return {
+            titulo: `Se agotó el tiempo de espera de ${LIMITE_ESPERA_MINUTOS} minutos.`,
+            fix: 'Vuelve a intentar el análisis.',
+        };
+    }
     if (error instanceof ErrorServidor) {
         if (error.estadoHttp === 413) {
             return { titulo: error.message, fix: 'Reduce el archivo o divide la red en partes más pequeñas.' };
@@ -14,7 +20,7 @@ export function explicarError(error) {
     }
     return {
         titulo: MENSAJE_SIN_CONEXION,
-        fix: 'Puede estar iniciándose; la primera vez tarda hasta un minuto. Espera un momento y vuelve a intentarlo.',
+        fix: 'Verifica tu conexión o espera un momento si el servidor está iniciándose. Luego vuelve a intentarlo.',
     };
 }
 

@@ -1,6 +1,7 @@
 import { API_URL } from './config.js';
 
 export const MENSAJE_SIN_CONEXION = 'No se pudo conectar con el servidor.';
+export const LIMITE_ESPERA_MINUTOS = 5;
 
 const base = () => API_URL.trim().replace(/\/+$/, '');
 
@@ -8,6 +9,21 @@ export class ErrorServidor extends Error {
     constructor(mensaje, estadoHttp) {
         super(mensaje);
         this.estadoHttp = estadoHttp;
+    }
+}
+
+export async function conLimiteDeEspera(operacion, control = new AbortController()) {
+    const temporizador = setTimeout(() => {
+        control.abort(new DOMException('Tiempo de espera agotado.', 'TimeoutError'));
+    }, LIMITE_ESPERA_MINUTOS * 60_000);
+
+    try {
+        return await operacion(control.signal);
+    } catch (error) {
+        // La lectura del cuerpo puede informar un AbortError genérico.
+        throw control.signal.aborted ? control.signal.reason : error;
+    } finally {
+        clearTimeout(temporizador);
     }
 }
 

@@ -81,8 +81,8 @@ comprobar primero `/health`, después `API_URL` y finalmente `ALLOWED_ORIGINS`.
 Si cambias `config.js`, volver a publicar y recargar el navegador sin caché.
 
 Los servicios gratuitos de Render pueden suspenderse por inactividad: la primera
-consulta puede tardar mientras inicia. No se agregó un timeout corto ni reintentos
-automáticos que dupliquen los cálculos.
+consulta puede tardar mientras inicia. La interfaz espera hasta cinco minutos por
+análisis o recálculo, incluida la descarga inicial si se usa la red de ejemplo.
 
 El resultado se guarda en memoria: los GET del último análisis son compartidos y
 se reinician al reiniciar el proceso. Mantener un worker. El panel usa directamente

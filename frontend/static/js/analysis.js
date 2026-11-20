@@ -1,5 +1,5 @@
 import { estado, actualizar } from './state.js';
-import { analizarRed } from './api.js';
+import { analizarRed, conLimiteDeEspera, LIMITE_ESPERA_MINUTOS } from './api.js';
 import { explicarError } from './errors.js';
 import { crearModelo } from './model.js';
 import { asentar } from './layout.js';
@@ -12,7 +12,7 @@ const PASOS = [
     ['Capacidad', 'Ford-Fulkerson'],
     ['Dibujando el mapa', ''],
 ];
-const AVISO_INICIO = 'El servidor puede estar iniciándose; la primera vez tarda hasta un minuto.';
+const AVISO_INICIO = `El servidor puede estar iniciándose. La espera máxima es de ${LIMITE_ESPERA_MINUTOS} minutos.`;
 
 let trabajo = null;
 
@@ -40,8 +40,11 @@ export async function analizar(obtenerArchivo, nombre) {
     const inicio = performance.now();
 
     try {
-        const archivo = await obtenerArchivo(control.signal);
-        const datos = await analizarRed(archivo, { signal: control.signal });
+        const { archivo, datos } = await conLimiteDeEspera(async (signal) => {
+            const archivo = await obtenerArchivo(signal);
+            const datos = await analizarRed(archivo, { signal });
+            return { archivo, datos };
+        }, control);
         clearTimeout(aviso);
         const segundos = fmtSeg.format((performance.now() - inicio) / 1000);
         paso(0, { estado: 'done', status: `${segundos} s`, detalle: archivo.name });

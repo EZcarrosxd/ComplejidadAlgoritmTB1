@@ -1,5 +1,5 @@
 import { estado, actualizar } from './state.js';
-import { analizarRed } from './api.js';
+import { analizarRed, conLimiteDeEspera } from './api.js';
 import { explicarError } from './errors.js';
 import { crearModelo, describirFalla } from './model.js';
 import { anunciar, fmtNum } from './dom.js';
@@ -29,7 +29,7 @@ export async function recalcularFlujo(origen, destino, registrar = true) {
     actualizar({ calculando: true, errorFlujo: '', origen, destino, siguiente: 'origen' });
 
     try {
-        const datos = await analizarRed(estado.archivo, { origen, destino });
+        const datos = await conLimiteDeEspera((signal) => analizarRed(estado.archivo, { origen, destino, signal }));
         const modelo = crearModelo(datos, estado.modelo);
         actualizar({
             datos,
