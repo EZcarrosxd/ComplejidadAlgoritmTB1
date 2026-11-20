@@ -1,0 +1,21 @@
+.btn-outline,
+.btn-dark,
+.btn-ghost {
+    min-height: 2.75rem; padding: 0 1.25rem;
+    font-weight: 600; font-size: .95rem; cursor: pointer; border-radius: 999px;
+}
+.btn-outline { background: var(--white); border: 1px solid var(--border); color: var(--ink); }
+.btn-outline:hover { background: var(--well); border-color: var(--ink); }
+.btn-sm { min-height: 2.5rem; padding: 0 1rem; font-size: .875rem; }
+
+.btn-danger { border-color: var(--red-dark); color: var(--red-dark); }
+.btn-danger:hover { background: var(--red-dark); color: var(--white); }
+
+.btn-dark { background: var(--acento); border: 0; color: var(--white); }
+.btn-dark:hover { background: var(--ink-soft); }
+
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+.btn-ghost:hover:not(:disabled) { border-color: var(--ink); }
+.btn-ghost:disabled { color: var(--muted); background: var(--line-soft); cursor: not-allowed; }
+
+button:disabled { cursor: not-allowed; }

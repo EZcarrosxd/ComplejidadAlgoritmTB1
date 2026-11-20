@@ -1,0 +1,56 @@
+.results-view {
+    display: grid; grid-template-columns: minmax(0, 1fr) var(--ancho-barra);
+    height: calc(100vh - var(--alto-cabecera));
+}
+
+.results-head { display: flex; flex-direction: column; gap: .75rem; }
+
+.results-title {
+    margin: 0; font-size: 1.5rem; font-weight: 700;
+    letter-spacing: -.02em; line-height: 1.15;
+}
+.results-title:focus { outline: none; }
+
+.facts {
+    margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .4rem 1rem; font-size: .85rem;
+}
+.facts div { display: flex; gap: .4rem; align-items: baseline; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; font-family: var(--mono); font-weight: 600; }
+.facts .ok { color: var(--lime-dark); }
+.facts .warn-text { color: var(--amber-dark); }
+
+.metrics { display: grid; gap: .5rem; }
+
+.metric {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "titulo valor" "cta valor";
+    align-items: center; gap: .2rem 1rem; padding: .85rem 1rem; text-align: left;
+    background: var(--white); border: 1px solid var(--line); border-radius: var(--radio);
+    color: var(--ink); cursor: pointer;
+}
+.metric:hover { border-color: var(--border); background: var(--well); }
+.metric[aria-pressed="true"] { border-color: var(--ink); background: var(--well); box-shadow: inset 0 0 0 1px var(--ink); }
+
+.metric-title {
+    grid-area: titulo; display: flex; align-items: center; gap: .5rem;
+    font-size: .88rem; font-weight: 650; color: var(--ink-soft);
+}
+.swatch { flex: none; width: .6rem; height: .6rem; border-radius: 50%; background: var(--c); }
+
+.metric-value {
+    grid-area: valor; display: flex; align-items: baseline; gap: .3rem;
+    font-weight: 700; font-size: 1.5rem;
+    line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums;
+}
+.metric-value small { font-size: .55em; font-weight: 600; }
+.metric-cta { grid-area: cta; color: var(--muted); font-size: .78rem; font-weight: 600; }
+
+.caption {
+    margin: 0; padding: .75rem 1rem; border-radius: var(--radio-sm);
+    background: var(--well); color: var(--ink-soft); font-size: .9rem; line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+    .results-view { grid-template-columns: 1fr; height: auto; }
+}

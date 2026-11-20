@@ -1,0 +1,47 @@
+<div class="upload-view" id="vista-upload">
+    <form class="upload-form" id="form-upload" novalidate>
+        <div class="upload-area">
+            <label class="dropzone" id="dropzone">
+                <input type="file" id="archivo" accept=".json,.csv" aria-labelledby="dz-title" aria-describedby="req-text">
+                <span class="archivo-elegido" id="archivo-elegido" hidden>
+                    <span class="archivo-icono" id="archivo-tipo" aria-hidden="true"></span>
+                    <span class="archivo-nombre" id="archivo-nombre"></span>
+                    <span class="archivo-tamano" id="archivo-tamano"></span>
+                </span>
+                <span class="selector-archivo">
+                    <svg width="22" height="22" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 20V5M7 11l7-7 7 7M4 24h20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"/></svg>
+                    <span id="dz-title">Seleccionar archivo</span>
+                </span>
+                <span class="dz-hint" id="dz-hint">o arrástralo aquí</span>
+            </label>
+            <p class="req" id="req-text"><span>CSV o JSON</span> <span>Hasta 10&nbsp;MiB</span> <span>Mínimo 1500&nbsp;nodos</span></p>
+
+            <div class="alert" id="upload-error" role="alert" hidden>
+                <span class="alert-icon" aria-hidden="true">!</span>
+                <div>
+                    <p class="alert-title" id="error-titulo"></p>
+                    <p class="alerta-indicacion"><strong>Qué hacer: </strong><span id="error-indicacion"></span></p>
+                </div>
+            </div>
+
+            <div class="upload-alternativa" id="upload-alternativa">
+                <button type="button" class="btn-demo" id="btn-demo">Usar la red de ejemplo <span aria-hidden="true">→</span></button>
+            </div>
+        </div>
+
+        <aside class="barra-lateral barra-analizar" id="panel-analizar" aria-labelledby="titulo-panel-analizar" hidden>
+            <div class="barra-contenido">
+                <h2 class="barra-titulo" id="titulo-panel-analizar">Analizar red</h2>
+                <p class="barra-texto">El servidor calculará tres resultados</p>
+                <ul class="lista-resultados">
+                    <li style="--c: var(--lime)"><span class="swatch" aria-hidden="true"></span>Menor costo de cableado</li>
+                    <li style="--c: var(--amber)"><span class="swatch" aria-hidden="true"></span>Capacidad entre dos puntos</li>
+                    <li style="--c: var(--red)"><span class="swatch" aria-hidden="true"></span>Puntos débiles de la red</li>
+                </ul>
+            </div>
+            <div class="barra-pie">
+                <button type="submit" class="btn-submit" id="btn-analizar" disabled>Analizar red <span aria-hidden="true">→</span></button>
+            </div>
+        </aside>
+    </form>
+</div>

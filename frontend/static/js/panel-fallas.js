@@ -1,6 +1,6 @@
-import { $, crear, fmtInt, plural } from './dom.js';
-import { estado, actualizar, suscribir, toca } from './state.js';
-import { simularFalla, restaurar } from './actions.js';
+import { $, crear, formatoEntero, plural } from './dom.js';
+import { estado, actualizar, suscribir, toca } from './estado.js';
+import { simularFalla, restaurar } from './acciones.js';
 
 const MOSTRAR = 12;
 
@@ -11,8 +11,8 @@ function pintarFalla(falla) {
     $('falla').classList.toggle('is-split', falla.perdidos > 0);
     $('falla-titulo').textContent = `Si falla ${falla.id}`;
     $('falla-texto').textContent = falla.perdidos > 0
-        ? `${plural(falla.perdidos, 'punto queda', 'puntos quedan')} sin luz.`
-        : 'La red sigue funcionando.';
+        ? `${plural(falla.perdidos, 'punto queda', 'puntos quedan')} sin luz`
+        : 'La red sigue funcionando';
 }
 
 function crearItem(critico, maximo, falla) {
@@ -41,14 +41,14 @@ suscribir((s, cambios) => {
     const visibles = s.todosCriticos ? lista : lista.slice(0, MOSTRAR);
 
     $('nota-criticos').hidden = lista.length > 0;
-    $('nota-criticos').textContent = 'No se encontraron puntos débiles.';
+    $('nota-criticos').textContent = 'No se encontraron puntos débiles';
     $('conteo-criticos').textContent = plural(lista.length, 'punto débil', 'puntos débiles');
     pintarFalla(s.falla);
     $('lista-criticos').replaceChildren(...visibles.map((c) => crearItem(c, maximo, s.falla)));
 
     const verTodos = $('btn-ver-todos');
     verTodos.hidden = lista.length <= MOSTRAR;
-    verTodos.textContent = s.todosCriticos ? 'Ver menos' : `Ver todos (${fmtInt.format(lista.length)})`;
+    verTodos.textContent = s.todosCriticos ? 'Ver menos' : `Ver todos (${formatoEntero.format(lista.length)})`;
 });
 
 $('btn-restaurar').addEventListener('click', restaurar);

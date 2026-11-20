@@ -1,0 +1,17 @@
+<div class="results-view" id="vista-resultados" hidden>
+    <div data-include="/templates/grafo.html"></div>
+    <aside class="barra-lateral" aria-labelledby="titulo-resultados">
+        <div class="barra-contenido">
+            <div class="results-head">
+                <h1 class="results-title" id="titulo-resultados" tabindex="-1">Resultados del análisis</h1>
+                <dl class="facts" id="datos-red"></dl>
+            </div>
+            <div data-include="/templates/metricas.html"></div>
+            <p class="caption" id="caption"></p>
+            <div data-include="/templates/paneles.html"></div>
+        </div>
+        <div class="barra-pie">
+            <button type="button" class="btn-submit" id="btn-otra" hidden>Cargar otra red</button>
+        </div>
+    </aside>
+</div>

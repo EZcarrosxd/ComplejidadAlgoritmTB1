@@ -1,12 +1,13 @@
-import { cargarFragmentos } from './fragments.js';
+import { cargarFragmentos } from './fragmentos.js';
 
 try {
     await cargarFragmentos(document);
     await import('./main.js');
+    document.querySelector('.page').inert = false;
     document.getElementById('page-loading').remove();
 } catch (error) {
     const aviso = document.getElementById('page-loading');
     aviso.setAttribute('role', 'alert');
-    aviso.textContent = 'No se pudo iniciar la página. Recarga e inténtalo nuevamente.';
+    aviso.textContent = 'Recarga la página para intentar iniciarla de nuevo';
     console.error(error);
 }

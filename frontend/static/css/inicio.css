@@ -1,0 +1,23 @@
+.analizar { scroll-margin-top: 5rem; }
+
+.hero {
+    display: grid; justify-items: center; gap: 2rem;
+    padding: clamp(2.5rem, 6vw, 4rem) var(--gutter) 4rem;
+    text-align: center;
+}
+
+.hero-intro { display: grid; justify-items: center; gap: .75rem; }
+
+.hero-title {
+    margin: 0; font-weight: 750; font-size: clamp(2rem, 4vw, 2.75rem);
+    line-height: 1.1; letter-spacing: -.035em; text-wrap: balance;
+}
+
+.hero-lead {
+    margin: 0; max-width: 40rem;
+    font-size: clamp(1rem, 1.8vw, 1.2rem); line-height: 1.5;
+    color: var(--ink-soft); text-wrap: pretty;
+}
+
+.hero.con-archivo { padding: 0; gap: 0; }
+.hero.con-archivo .hero-intro { display: none; }

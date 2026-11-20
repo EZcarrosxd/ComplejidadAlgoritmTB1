@@ -1,13 +1,13 @@
-<section class="analizar" id="analizar">
-    <div class="card">
-        <h2 class="section-title">Analiza tu red</h2>
-        <div class="card-body">
-            <div class="card-actions">
-                <button type="button" class="btn-outline btn-sm" id="btn-otra" hidden>Cargar otra red</button>
-            </div>
-            <div data-include="/templates/upload.html"></div>
-            <div data-include="/templates/loading.html"></div>
-            <div data-include="/templates/results.html"></div>
-        </div>
+<section class="analizar" id="analizar" aria-label="Herramienta de análisis">
+    <div class="hero" id="inicio">
+        <header class="hero-intro">
+            <h1 class="hero-title" id="titulo-analizar">Analiza una red eléctrica</h1>
+            <p class="hero-lead">Calcula el costo de cableado, estima la capacidad entre dos puntos e identifica dónde podría desconectarse la red</p>
+        </header>
+        <div data-include="/templates/subida.html"></div>
+    </div>
+    <div class="espacio-trabajo" id="espacio-trabajo" hidden>
+        <div data-include="/templates/progreso.html"></div>
+        <div data-include="/templates/resultados.html"></div>
     </div>
 </section>

@@ -1,6 +1,6 @@
 import { API_URL } from './config.js';
 
-export const MENSAJE_SIN_CONEXION = 'No se pudo conectar con el servidor.';
+export const MENSAJE_SIN_CONEXION = 'No se pudo conectar con el servidor';
 export const LIMITE_ESPERA_MINUTOS = 5;
 
 const base = () => API_URL.trim().replace(/\/+$/, '');
@@ -14,20 +14,19 @@ export class ErrorServidor extends Error {
 
 export async function conLimiteDeEspera(operacion, control = new AbortController()) {
     const temporizador = setTimeout(() => {
-        control.abort(new DOMException('Tiempo de espera agotado.', 'TimeoutError'));
+        control.abort(new DOMException('Tiempo de espera agotado', 'TimeoutError'));
     }, LIMITE_ESPERA_MINUTOS * 60_000);
 
     try {
         return await operacion(control.signal);
     } catch (error) {
-        // La lectura del cuerpo puede informar un AbortError genérico.
         throw control.signal.aborted ? control.signal.reason : error;
     } finally {
         clearTimeout(temporizador);
     }
 }
 
-export async function analizarRed(archivo, { origen, destino, signal } = {}) {
+export async function analizarRed(archivo, { origen, destino, senal } = {}) {
     const formulario = new FormData();
     formulario.append('file', archivo);
     if (origen && destino) {
@@ -35,19 +34,19 @@ export async function analizarRed(archivo, { origen, destino, signal } = {}) {
         formulario.append('destino', destino);
     }
 
-    const respuesta = await fetch(`${base()}/api/upload`, { method: 'POST', body: formulario, signal });
+    const respuesta = await fetch(`${base()}/api/upload`, { method: 'POST', body: formulario, signal: senal });
     const json = await respuesta.json().catch(() => ({}));
 
     if (!respuesta.ok) {
-        throw new ErrorServidor(json.error || `El servidor respondió con error ${respuesta.status}.`, respuesta.status);
+        throw new ErrorServidor(json.error || `El servidor respondió con error ${respuesta.status}`, respuesta.status);
     }
-    if (!json.datos) throw new ErrorServidor('Respuesta inesperada. Revisa la URL del backend.', 0);
+    if (!json.datos) throw new ErrorServidor('Respuesta inesperada\nRevisa la URL del backend', 0);
     return json.datos;
 }
 
-export async function obtenerEjemplo(signal) {
-    const respuesta = await fetch(`${base()}/api/ejemplo`, { signal });
-    if (!respuesta.ok) throw new ErrorServidor('No se pudo descargar la red de ejemplo.', respuesta.status);
+export async function obtenerEjemplo(senal) {
+    const respuesta = await fetch(`${base()}/api/ejemplo`, { signal: senal });
+    if (!respuesta.ok) throw new ErrorServidor('No se pudo descargar la red de ejemplo', respuesta.status);
     const contenido = await respuesta.blob();
     return new File([contenido], 'dataset.json', { type: 'application/json' });
 }

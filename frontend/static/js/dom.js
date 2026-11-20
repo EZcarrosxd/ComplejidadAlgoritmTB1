@@ -1,11 +1,9 @@
-import { estado } from './state.js';
-
 export const $ = (id) => document.getElementById(id);
 
-export const fmtInt = new Intl.NumberFormat('es-PE');
-export const fmtNum = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 2 });
-export const fmtMoney = new Intl.NumberFormat('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-export const fmtSeg = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 });
+export const formatoEntero = new Intl.NumberFormat('es-PE');
+export const formatoNumero = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 2 });
+export const formatoMoneda = new Intl.NumberFormat('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const formatoSegundos = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 3 });
 
 export function anunciar(texto) {
     $('anuncio').textContent = texto;
@@ -21,10 +19,9 @@ export function crear(etiqueta, clase, texto) {
 export function irA(id) {
     const destino = $(id);
     if (!destino) return;
-    const top = destino.getBoundingClientRect().top + window.scrollY - 64;
-    window.scrollTo({ top, behavior: estado.quieto ? 'auto' : 'smooth' });
+    destino.scrollIntoView({ block: 'start' });
 }
 
 export function plural(n, singular, varios) {
-    return `${fmtInt.format(n)} ${n === 1 ? singular : varios}`;
+    return `${formatoEntero.format(n)} ${n === 1 ? singular : varios}`;
 }

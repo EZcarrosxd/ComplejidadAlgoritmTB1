@@ -4,30 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análisis de red eléctrica</title>
-    <meta name="description" content="Encuentra el cableado más barato y los puntos débiles de tu red eléctrica.">
+    <meta name="description" content="Analiza el costo de cableado, la capacidad y la conectividad de una red eléctrica">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400..800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
-    <canvas class="hero-fx" id="hero-fx" aria-hidden="true"></canvas>
     <a class="skip-link" href="#analizar">Saltar al análisis</a>
     <p class="sr-only" id="anuncio" role="status" aria-live="polite"></p>
-    <p class="page-loading" id="page-loading" role="status">Cargando la página…</p>
-    <noscript>Activa JavaScript para analizar la red.</noscript>
+    <p class="page-loading" id="page-loading" role="status">Cargando la página</p>
+    <noscript>Activa JavaScript para analizar la red</noscript>
 
-    <div class="page">
-        <div data-include="/templates/header.html"></div>
+    <div class="page" inert>
+        <div data-include="/templates/cabecera.html"></div>
         <main class="contenido" id="contenido">
-            <div data-include="/templates/intro.html"></div>
             <div data-include="/templates/analizar.html"></div>
         </main>
-        <div data-include="/templates/footer.html"></div>
     </div>
-    <div data-include="/templates/help.html"></div>
+    <div data-include="/templates/ayuda.html"></div>
 
     <script type="module" src="/static/js/bootstrap.js"></script>
 </body>

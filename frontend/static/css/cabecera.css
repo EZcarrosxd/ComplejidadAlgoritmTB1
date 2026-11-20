@@ -1,0 +1,29 @@
+.site-header {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--white); border-bottom: 1px solid var(--line);
+}
+
+.nav {
+    padding: 0 var(--gutter); min-height: var(--alto-cabecera);
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+
+.brand {
+    display: flex; align-items: center; gap: .65rem;
+    background: none; border: 0; padding: 0; color: var(--ink); cursor: pointer;
+    font-weight: 750; font-size: 1.075rem; letter-spacing: -.025em; text-align: left;
+}
+
+.brand svg { flex: none; }
+.brand rect:first-of-type { fill: var(--ink); }
+.brand rect:nth-of-type(2) { fill: var(--amber); }
+.brand rect:nth-of-type(3) { fill: var(--red); }
+.brand path:first-of-type { stroke: var(--border); }
+.brand path:nth-of-type(2) { stroke: var(--amber); }
+
+.nav-help {
+    min-height: 2.25rem; padding: 0 1rem; background: var(--ink);
+    border: 0; border-radius: var(--radio-sm);
+    color: var(--white); font-size: .85rem; font-weight: 650; cursor: pointer;
+}
+.nav-help:hover { background: var(--ink-soft); }

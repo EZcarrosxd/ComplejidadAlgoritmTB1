@@ -1,11 +1,11 @@
 import { $, plural } from './dom.js';
-import { estado, actualizar, suscribir, toca } from './state.js';
-import { cambiarModo, simularFalla } from './actions.js';
+import { estado, actualizar, suscribir, toca } from './estado.js';
+import { cambiarModo, simularFalla } from './acciones.js';
 
 suscribir((s, cambios) => {
     if (!toca(cambios, 'sel', 'modelo')) return;
     const m = s.modelo;
-    const i = m && s.sel ? m.idx.get(s.sel) : undefined;
+    const i = m && s.sel ? m.indices.get(s.sel) : undefined;
     const haySeleccion = i !== undefined;
     $('seleccion').hidden = !haySeleccion;
     $('nota-general').hidden = haySeleccion;
@@ -17,13 +17,13 @@ suscribir((s, cambios) => {
 
 $('sel-origen').addEventListener('click', () => {
     const id = estado.sel;
-    cambiarModo('flow');
+    cambiarModo('flujo');
     actualizar({ origen: id, siguiente: 'destino' });
 });
 
 $('sel-destino').addEventListener('click', () => {
     const id = estado.sel;
-    cambiarModo('flow');
+    cambiarModo('flujo');
     actualizar({ destino: id, siguiente: 'origen' });
 });
 

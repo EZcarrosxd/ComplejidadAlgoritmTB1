@@ -1,0 +1,90 @@
+.upload-view { width: min(100%, 34rem); }
+
+.upload-form { display: grid; }
+.upload-area { display: grid; justify-items: center; gap: .9rem; }
+
+.dropzone {
+    position: relative; display: grid; justify-items: center; align-content: center;
+    gap: .6rem; width: 100%; padding: 1rem;
+    border: 2px dashed transparent; border-radius: var(--radio); cursor: pointer;
+}
+.dropzone input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.dropzone:focus-within .selector-archivo { outline: 3px solid var(--acento-fuerte); outline-offset: 4px; }
+.dropzone.is-dragging { border-color: var(--ink); background: var(--acento-suave); }
+
+.selector-archivo, .btn-submit {
+    background: var(--acento); border: 1px solid var(--acento); border-radius: var(--radio);
+    color: var(--white); font-weight: 700;
+}
+
+.selector-archivo {
+    display: inline-flex; align-items: center; justify-content: center; gap: .75rem;
+    width: min(100%, 20rem); min-height: 4.75rem; padding: .75rem 1.5rem;
+    font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+    box-shadow: 0 6px 18px rgba(31, 30, 27, .18);
+}
+.selector-archivo svg { flex: none; }
+.dropzone:hover .selector-archivo { background: var(--ink-soft); }
+
+.dz-hint { color: var(--muted); font-size: .85rem; }
+.req {
+    margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem 1.25rem;
+    font-size: .8rem; color: var(--muted); line-height: 1.5;
+}
+
+.alert {
+    width: 100%; text-align: left; display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: .85rem;
+    padding: 1rem; background: var(--red-bg); border: 1px solid var(--red-dark); border-radius: var(--radio);
+}
+.alert-icon {
+    width: 2rem; height: 2rem; background: var(--red-dark); color: var(--white);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; border-radius: 6px;
+}
+.alert-title { margin: 0 0 .25rem; color: var(--red-dark); font-weight: 700; white-space: pre-line; overflow-wrap: anywhere; }
+.alerta-indicacion { margin: 0; color: var(--ink); line-height: 1.5; overflow-wrap: anywhere; }
+
+.btn-demo {
+    min-height: 2.5rem; padding: .35rem 1rem; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--white); color: var(--ink); font-size: .9rem; font-weight: 650; cursor: pointer;
+}
+.btn-demo span { margin-left: .2rem; }
+.btn-demo:hover { border-color: var(--ink); }
+
+.btn-submit { width: 100%; min-height: 3.75rem; font-size: 1.15rem; cursor: pointer; }
+.btn-submit:hover:not(:disabled) { background: var(--ink-soft); }
+
+.archivo-elegido {
+    display: grid; justify-items: center; gap: .4rem; width: 12.5rem; padding: 1.25rem 1rem;
+    background: var(--white); border: 1px solid var(--line); border-radius: var(--radio);
+    box-shadow: var(--sombra);
+}
+.archivo-icono {
+    display: flex; align-items: center; justify-content: center;
+    width: 5rem; height: 6.5rem; margin-bottom: .4rem; border-radius: 6px;
+    background: var(--acento-suave); color: var(--ink-soft);
+    font-family: var(--mono); font-weight: 600; font-size: .95rem;
+}
+.archivo-nombre { font-weight: 650; font-size: .85rem; overflow-wrap: anywhere; }
+.archivo-tamano { font-size: .8rem; color: var(--muted); }
+
+.con-archivo .upload-view { width: 100%; }
+.con-archivo .upload-form {
+    grid-template-columns: minmax(0, 1fr) var(--ancho-barra);
+    min-height: calc(100vh - var(--alto-cabecera));
+}
+.con-archivo .upload-area { align-content: center; padding: 2rem var(--gutter); }
+.con-archivo .selector-archivo {
+    width: auto; min-height: 2.75rem; padding: 0 1.1rem; font-size: .9rem; box-shadow: none;
+    background: var(--white); color: var(--ink); border-color: var(--border); border-radius: 999px;
+}
+.con-archivo .dropzone:hover .selector-archivo { background: var(--well); border-color: var(--ink); }
+
+.lista-resultados { margin: 0; padding: 0; list-style: none; display: grid; gap: .6rem; }
+.lista-resultados li {
+    display: flex; align-items: center; gap: .65rem; padding: .85rem 1rem;
+    background: var(--well); border: 1px solid var(--line); border-radius: var(--radio-sm); font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .con-archivo .upload-form { grid-template-columns: 1fr; min-height: 0; }
+}
