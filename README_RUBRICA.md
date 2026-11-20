@@ -1,9 +1,12 @@
 # Correspondencia con la rúbrica TB1
 
-Se revisaron el enunciado, la rúbrica TB1 y el caso **8: Diseño de redes eléctricas**.
+Se revisaron el enunciado, la rúbrica TB1 y el caso **8: Diseño de redes eléctricas**
+
 El anexo Waze es otro caso: tráfico por hora y búsqueda de rutas urbanas no son
-requisitos específicos del proyecto elegido. La lista del caso enumera técnicas
-aplicables; no exige implementar todas.
+requisitos específicos del proyecto elegido
+
+La lista del caso enumera técnicas
+aplicables; no exige implementar todas
 
 ## Evidencia para los criterios
 
@@ -16,37 +19,52 @@ aplicables; no exige implementar todas.
 
 La implementación aporta evidencia técnica. **No implica automáticamente una nota
 20/20**: la rúbrica del Hito 1 califica principalmente el informe y la procedencia
-real de los datos. Los puntos pendientes no deben presentarse como completados.
+real de los datos
+
+Los puntos pendientes no deben presentarse como completados
 
 ## Requisitos técnicos atendidos
 
-- Backend y algoritmos implementados en Python, con FastAPI.
-- GUI funcional para cargar, visualizar y volver a calcular.
-- Mínimo de 1500 nodos validado en cada carga (500 por integrante para tres personas).
-- Subgrafo visible con contador; cálculos sobre la red completa.
-- JSON y CSV incluidos producen resultados equivalentes.
-- MST con sus líneas, flujo máximo/corte y articulaciones.
-- Pruebas reproducibles y explicación de complejidad.
-- Funciones simples, módulos de menos de 100 líneas y SOLID documentado.
+- Backend y algoritmos implementados en Python, con FastAPI
+- GUI funcional para cargar, visualizar y volver a calcular
+- Mínimo de 1500 nodos validado en cada carga (500 por integrante para tres personas)
+- Subgrafo visible con contador; cálculos sobre la red completa
+- JSON y CSV incluidos producen resultados equivalentes
+- MST con sus líneas, flujo máximo/corte y articulaciones
+- Pruebas reproducibles y explicación de complejidad
+- Funciones simples, módulos de menos de 100 líneas y SOLID documentado
 
 ## Diferencias entre objetivos y garantías
 
-El caso busca costo mínimo, soporte de demanda y robustez. Este prototipo entrega
-indicadores separados para estudiarlos. No resuelve una optimización conjunta:
+El caso busca costo mínimo, soporte de demanda y robustez
+
+Este prototipo entrega
+indicadores separados para estudiarlos
+
+No resuelve una optimización conjunta:
 Kruskal no conserva redundancia y la capacidad supuesta no demuestra una demanda
-real. Para esa validación se necesitan demandas, capacidades justificadas y un
-análisis eléctrico adicional. Estas limitaciones están explícitas en la propuesta.
+real
+
+Para esa validación se necesitan demandas, capacidades justificadas y un
+análisis eléctrico adicional
+
+Estas limitaciones están explícitas en la propuesta
 
 ## Entregables según el enunciado
 
 TB1: descripción del problema, descripción y visualización del dataset, propuesta
-preliminar. Fecha indicada: **04/10/2026, 23:59**, exposición en semana 7.
-El enunciado general establece un informe de 4 a 10 páginas y grupo de tres.
+preliminar
 
-Hito 2: actualizar lo anterior y añadir propuesta detallada y diseño del aplicativo.
+Fecha indicada: **04/10/2026, 23:59**, exposición en semana 7
+
+El enunciado general establece un informe de 4 a 10 páginas y grupo de tres
+
+Hito 2: actualizar lo anterior y añadir propuesta detallada y diseño del aplicativo
+
 Hito 3: añadir pruebas, interpretación, conclusiones y referencias; entregar código,
-dataset, informe y video según los nombres/formato del enunciado.
+dataset, informe y video según los nombres/formato del enunciado
 
-El grupo debe declarar el uso de IA y explicar el código en la sustentación.
+El grupo debe declarar el uso de IA y explicar el código en la sustentación
+
 La migración, modularización, revisión de validaciones, documentación y pruebas de
-esta versión se prepararon con ayuda de Codex; cada integrante debe revisarlas.
+esta versión se prepararon con ayuda de Codex; cada integrante debe revisarlas

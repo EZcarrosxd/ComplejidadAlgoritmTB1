@@ -1,14 +1,20 @@
 # Diseño y análisis de redes eléctricas
 
-Caso 8 del curso 1ACC0184, ciclo 2026-20. Aplicación en **FastAPI** y Python,
-con interfaz HTML, CSS y JavaScript dividida en módulos pequeños.
+Caso 8 del curso 1ACC0184, ciclo 2026-20
+
+Aplicación modular en **FastAPI** y Python, con módulos de costo, capacidad, fallas y visualización
+
+La API y la consola comparten la carga y el análisis de la red
+
+La interfaz usa HTML, CSS y JavaScript
 
 Calcula costo mínimo con Kruskal + UFDS, capacidad entre dos nodos con
-Ford-Fulkerson usando BFS (Edmonds-Karp) y puntos de articulación con DFS.
+Ford-Fulkerson usando BFS (Edmonds-Karp) y puntos de articulación con DFS
 
 ## Ejecutar en Windows
 
-Se recomienda Python 3.10 o superior; validado en Python 3.14.
+Se recomienda Python 3.10 o superior; validado en Python 3.14
+
 Desde la carpeta del proyecto:
 
 ```powershell
@@ -18,9 +24,15 @@ python -m venv .venv
 ```
 
 Abrir [el panel](http://127.0.0.1:5000) o
-[la documentación interactiva](http://127.0.0.1:5000/docs).
-Todo funciona en el puerto 5000. Ya no se usa Flask ni un servidor separado en 8000.
-Las tipografías se descargan de Google Fonts. El grafo se dibuja con canvas, sin librerías externas.
+[la documentación interactiva](http://127.0.0.1:5000/docs)
+
+Todo funciona en el puerto 5000
+
+Ya no se usa Flask ni un servidor separado en 8000
+
+Las tipografías se descargan de Google Fonts
+
+El grafo se dibuja con canvas, sin librerías externas
 
 Para desarrollo con recarga:
 
@@ -30,14 +42,19 @@ Para desarrollo con recarga:
 
 ## Probar la aplicación
 
-1. Subir `dataset/dataset.json` o `dataset/conexiones.csv`, o pulsar **Usar una red de ejemplo**.
-2. Ver costo, flujo, nodos críticos y un subgrafo de 200 nodos.
-3. En **Capacidad**, cambiar origen y destino y pulsar **Calcular**.
-4. Pulsar **Cargar otra red** para analizar otro archivo.
+1. Seleccionar o arrastrar `dataset/dataset.json` o `dataset/conexiones.csv` y pulsar **Analizar red**. También puedes pulsar **Usar la red de ejemplo** desde el inicio
+2. Al terminar el análisis, revisar costo, flujo, nodos críticos y un subgrafo de 200 nodos
+3. En **Capacidad**, cambiar origen y destino y pulsar **Calcular**
+4. Pulsar **Cargar otra red** para analizar otro archivo
 
-El dataset tiene **1500 nodos y 2767 líneas**. Sus conexiones se verificaron contra
-`dataset/Dataset.pdf`. La descripción y las fuentes están en [docs/dataset.md](docs/dataset.md).
-No se suben PDFs ni `precios.csv`: el lector acepta una red en JSON o CSV.
+El dataset tiene **1500 nodos y 2767 líneas**
+
+Sus conexiones se verificaron contra
+`dataset/Dataset.pdf`
+
+La descripción y las fuentes están en [docs/datos.md](docs/datos.md)
+
+No se suben PDFs ni `precios.csv`: el lector acepta una red en JSON o CSV
 
 ## Pruebas y consola
 
@@ -48,9 +65,10 @@ No se suben PDFs ni `precios.csv`: el lector acepta una red en JSON o CSV.
 .\.venv\Scripts\python main.py dataset/conexiones.csv --origen N-1 --destino N-2
 ```
 
-La consola devuelve JSON y termina con código distinto de cero si hay un error.
+La consola devuelve JSON y termina con código distinto de cero si hay un error
+
 Las pruebas incluyen el dataset real del repositorio, redes pequeñas calculables a
-mano, desconexión, aislados, líneas paralelas, validación y una cadena de 1500 nodos.
+mano, desconexión, aislados, líneas paralelas, validación y una cadena de 1500 nodos
 
 ## API
 
@@ -63,26 +81,35 @@ mano, desconexión, aislados, líneas paralelas, validación y una cadena de 150
 | GET | `/api/ejemplo` | Descarga `dataset/dataset.json` para la red de ejemplo |
 
 La carga conserva el contrato `{"mensaje": "...", "datos": {...}}` y agrega
-`aristas_mst`, `metadata.componentes` y `metadata.red_conectada`.
-Errores: 400 archivo o extremos inválidos, 404 sin análisis previo, 413 archivo mayor
-que 10 MiB y 422 falta el campo `file`. El mensaje está en `error`.
+`aristas_mst`, `metadata.componentes` y `metadata.red_conectada`
 
-Los GET comparten el último resultado dentro de **un proceso**. Es una aplicación
-local de demostración: no tiene sesiones por usuario ni persistencia.
+Errores: 400 archivo o extremos inválidos, 404 sin análisis previo, 413 archivo mayor
+que 10 MiB y 422 falta el campo `file`
+
+El mensaje está en `error`
+
+Los GET comparten el último resultado dentro de **un proceso**
+
+Es una aplicación
+local de demostración: no tiene sesiones por usuario ni persistencia
 
 ## Guías del proyecto
 
-- [Arquitectura y SOLID](docs/arquitectura.md): responsabilidades y orden de lectura.
-- [Algoritmos](docs/algoritmos.md): lógica, complejidad y bibliografía.
-- [Dataset](docs/dataset.md): formatos, procedencia y supuestos.
-- [Rúbrica](README_RUBRICA.md): evidencia disponible y pendientes del informe.
-- [Base del informe TB1](docs/informe_tb1.md): problema, datos y propuesta.
-- [Publicación manual](docs/despliegue-manual.md): frontend en Cloudflare Pages y API en Render.
+- [Arquitectura modular y SOLID](docs/arquitectura.md) — módulos, dependencias y orden de lectura
+- [Algoritmos](docs/algoritmos.md): lógica, complejidad y bibliografía
+- [Dataset](docs/datos.md): formatos, procedencia y supuestos
+- [Rúbrica](README_RUBRICA.md): evidencia disponible y pendientes del informe
+- [Base del informe TB1](docs/informe_tb1.md): problema, datos y propuesta
+- [Publicación manual](docs/despliegue-manual.md): frontend en Cloudflare Pages y API en Render
 
-Para publicarlos separados, el frontend es estático y no necesita compilación.
+Para publicarlos separados, el frontend es estático y no necesita compilación
+
 Configurar la dirección del backend en `frontend/static/js/config.js` y los dominios
-permitidos en la variable `ALLOWED_ORIGINS` del panel de Render.
+permitidos en la variable `ALLOWED_ORIGINS` del panel de Render
 
-El modelo supone 20 A cuando el dataset no declara capacidad. El flujo y la
-robustez se analizan en la red original; el MST solo minimiza cableado.
-No demuestra por sí solo que un diseño físico satisfaga demanda o tolere fallas.
+El modelo supone 20 A cuando el dataset no declara capacidad
+
+El flujo y la
+robustez se analizan en la red original; el MST solo minimiza cableado
+
+No demuestra por sí solo que un diseño físico satisfaga demanda o tolere fallas
