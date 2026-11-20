@@ -7,6 +7,7 @@ try {
     document.getElementById('page-loading').remove();
 } catch (error) {
     const aviso = document.getElementById('page-loading');
+    aviso.classList.remove('sr-only');
     aviso.setAttribute('role', 'alert');
     aviso.textContent = 'Recarga la página para intentar iniciarla de nuevo';
     console.error(error);
