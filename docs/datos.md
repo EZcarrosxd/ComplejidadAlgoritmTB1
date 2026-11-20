@@ -89,6 +89,7 @@ Se rechazan IDs vacíos, bucles, valores negativos/no finitos y filas mal formad
 
 Las líneas paralelas se permiten: sus capacidades se suman en el flujo
 
-La pantalla dibuja un subgrafo de 200 nodos elegido alrededor del flujo y los nodos críticos, e indica el total
+La pantalla dibuja la red completa hasta 5000 nodos
+Con más nodos dibuja un subgrafo elegido alrededor del flujo y los nodos críticos, e indica el total
 
 Todos los cálculos usan los 1500 nodos y las 2767 líneas

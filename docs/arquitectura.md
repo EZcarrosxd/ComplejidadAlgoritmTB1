@@ -78,8 +78,12 @@ No requiere Python ni compilación
 
 `config.js` contiene la dirección del backend; vacía significa el mismo origen
 
-El grafo se dibuja en un `canvas`; `distribucion.js` solo acomoda los puntos en pantalla
-y `estado.js` guarda el estado de la interfaz
+El grafo tiene dos motores de dibujo con la misma interfaz
+`motor-three.js` usa three.js con WebGL y es el que se carga por defecto
+`motor-canvas.js` usa canvas 2D y queda como respaldo con `?motor=canvas`
+`grafo.js` elige el motor y lleva el bucle de animación compartido
+`distribucion.js` ubica los puntos con Pivot MDS a partir de distancias BFS
+`estado.js` guarda el estado de la interfaz
 
 Los resultados siempre vienen del backend
 

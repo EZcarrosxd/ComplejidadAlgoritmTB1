@@ -14,6 +14,23 @@ Se eligen técnicas permitidas por el enunciado para el caso 8
 | DFS, articulaciones | Detectar nodos cuya falla aumenta las componentes | O(V + E) | O(V) |
 | Ford-Fulkerson con BFS (Edmonds-Karp) | Capacidad máxima entre origen y destino | O(V E²) | O(V + E) |
 | Recorrido residual | Obtener el corte de mínima capacidad | O(V + E) | O(V) |
+| BFS desde el origen | Medir el alcance de la energía por niveles | O(V + E) | O(V) |
+| Union-Find en orden de carga | Ver cómo se unen las zonas línea por línea | O(E α(V)) | O(V) |
+| Prim con montículo | Validar el costo mínimo de Kruskal desde un solo punto | O(E log V) | O(V + E) |
+| Merge Sort | Ordenar las líneas por costo antes de Kruskal | O(E log E) | O(E) |
+| Bellman-Ford | Ruta de menor costo entre origen y destino | O(V E) | O(V) |
+| Floyd-Warshall | Distancias entre todos los pares de una zona de 24 puntos | O(k³) | O(k²) |
+| Mochila 0/1 con programación dinámica | Elegir qué puntos débiles reforzar con un presupuesto | O(n P) | O(n P) |
+| Backtracking con poda y fuerza bruta | Resolver el mismo refuerzo y validar la programación dinámica | O(2ⁿ) | O(n) |
+
+En la mochila n es la cantidad de puntos débiles y P el presupuesto en soles
+El presupuesto es el 40 % del costo de reforzar todos los puntos débiles
+Reforzar un punto cuesta lo mismo que duplicar sus líneas y protege a los puntos que quedarían sin luz
+
+Floyd-Warshall usa una zona de k puntos alrededor del origen porque O(V³) con 1500 puntos supera tres mil millones de operaciones
+
+Cada algoritmo devuelve sus pasos para el modo paso a paso de la interfaz
+Bellman-Ford y backtracking guardan como máximo 4000 pasos repartidos de forma uniforme
 
 La cota habitual de Edmonds-Karp supone trabajar sobre los vértices incidentes de
 la red

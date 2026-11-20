@@ -43,7 +43,7 @@ Para desarrollo con recarga:
 ## Probar la aplicación
 
 1. Seleccionar o arrastrar `dataset/dataset.json` o `dataset/conexiones.csv` y pulsar **Analizar red**. También puedes pulsar **Usar la red de ejemplo** desde el inicio
-2. Al terminar el análisis, revisar costo, flujo, nodos críticos y un subgrafo de 200 nodos
+2. Al terminar el análisis, revisar costo, flujo, nodos críticos y la red completa en el mapa
 3. En **Capacidad**, cambiar origen y destino y pulsar **Calcular**
 4. Pulsar **Cargar otra red** para analizar otro archivo
 

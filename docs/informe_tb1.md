@@ -60,7 +60,8 @@ No se conocen demanda, coordenadas o voltajes a partir de estas tablas
 
 La red completa tiene una componente
 
-La GUI muestra un subgrafo de 200 nodos que parte
+La GUI muestra la red completa hasta 5000 nodos
+Con redes más grandes muestra un subgrafo de 5000 nodos que parte
 del camino del flujo, los nodos críticos y los nodos que estos aislarían, y se completa
 con BFS
 
