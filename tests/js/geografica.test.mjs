@@ -1,15 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { cargarGrafoDesdeJson, esJsonGeografico } from '../../frontend/static/js/datos-georreferenciados.js';
-import { crearEscena, dibujarRed, encuadrar, nodoCercano } from '../../frontend/static/js/proyeccion-geografica.js';
+import { cargarGrafoDesdeJson, crearGrafoCompacto, esJsonGeografico } from '../../frontend/static/js/datos-georreferenciados.js';
+import { caminosSeleccionados, crearEscena, dibujarRed, encuadrar, nodoCercano } from '../../frontend/static/js/proyeccion-geografica.js';
 
 function punto(id, coordenadas) {
     return { type: 'Feature', id, geometry: { type: 'Point', coordinates: coordenadas }, properties: { tipo_nodo: 'estructura_bt' } };
 }
 
-function arista(id, clase, origen, destino, camino, alternativas) {
-    const properties = { clase, origen, destino };
+function arista(id, clase, origen, destino, camino, alternativas, peso_mm = 1000) {
+    const properties = { clase, origen, destino, peso_mm };
     if (alternativas) properties.alternativas = alternativas;
     return { type: 'Feature', id, geometry: { type: 'LineString', coordinates: camino }, properties };
 }
@@ -48,15 +48,47 @@ test('carga el paquete y conserva las coordenadas originales', () => {
     assert.equal(grafo.tramos[0], paquete.tramos_documentados.features[0].geometry.coordinates);
 });
 
-test('rechaza un escenario distinto', () => {
-    const paquete = { ...paqueteDePrueba(), alternativa: 'B_k6' };
-    assert.throws(() => cargarGrafoDesdeJson(paquete), /escenario A/);
+test('rechaza un escenario distinto de A y B', () => {
+    const paquete = { ...paqueteDePrueba(), alternativa: 'C_k6' };
+    assert.throws(() => cargarGrafoDesdeJson(paquete), /alternativa A o B/);
 });
 
-test('rechaza una candidata ajena al escenario A', () => {
+test('rechaza una candidata ajena a la alternativa del archivo', () => {
     const paquete = paqueteDePrueba();
-    paquete.conexiones_candidatas.features[0].properties.alternativas = ['B_k6'];
-    assert.throws(() => cargarGrafoDesdeJson(paquete), /ajenas al escenario A/);
+    paquete.conexiones_candidatas.features[0].properties.alternativas = ['B_k8'];
+    assert.throws(() => cargarGrafoDesdeJson(paquete), /ajenas a la alternativa A/);
+});
+
+test('acepta la alternativa B con sus propias candidatas', () => {
+    const paquete = { ...paqueteDePrueba(), alternativa: 'B_k8' };
+    paquete.conexiones_candidatas.features[0].properties.alternativas = ['A_k4', 'B_k8'];
+    const grafo = cargarGrafoDesdeJson(paquete);
+    assert.equal(grafo.alternativa, 'B_k8');
+    assert.equal(grafo.candidatas.length, 1);
+});
+
+test('el grafo compacto conserva extremos y pesos en el orden de las aristas', () => {
+    const paquete = paqueteDePrueba();
+    paquete.tramos_documentados.features[0].properties.peso_mm = 1234;
+    paquete.conexiones_candidatas.features[0].properties.peso_mm = 1110;
+    const compacto = crearGrafoCompacto(cargarGrafoDesdeJson(paquete), 'kruskal');
+    assert.deepEqual(compacto, { algoritmo: 'kruskal', nodos: ['N1', 'N2', 'N3'], aristas: [[0, 1, 1234], [1, 2, 1110]] });
+});
+
+test('rechaza una arista sin longitud entera en milímetros', () => {
+    const paquete = paqueteDePrueba();
+    paquete.conexiones_candidatas.features[0].properties.peso_mm = 12.5;
+    assert.throws(() => cargarGrafoDesdeJson(paquete), /milímetros/);
+});
+
+test('las aristas elegidas se dibujan desde sus geometrías originales', () => {
+    const escena = crearEscena(cargarGrafoDesdeJson(paqueteDePrueba()));
+    const [tramo, candidata] = caminosSeleccionados(escena, [0, 1]);
+    assert.equal(tramo, escena.tramos[0]);
+    assert.equal(candidata, escena.candidatas[0]);
+    const contexto = contextoFalso();
+    dibujarRed(contexto, escena, encuadrar(escena, 400, 300), 400, 300, 1, [candidata]);
+    assert.equal(contexto.llamadas.moveTo, 3);
 });
 
 test('rechaza una arista con un extremo inexistente', () => {
@@ -116,5 +148,17 @@ test('el dataset del escenario A se dibuja completo en sus coordenadas', { skip:
     const contexto = contextoFalso();
     dibujarRed(contexto, escena, encuadrar(escena, 1072, 932), 1072, 932);
     assert.equal(contexto.llamadas.moveTo, 315 + 17503);
+    assert.equal(grafo.conexiones.length, 17818);
     assert.equal(contexto.llamadas.fillRect, 1 + 7208);
+});
+
+const rutaDatasetB = process.env.DATASET_OSINERGMIN_B;
+
+test('el dataset de la alternativa B conserva todas sus aristas para el analisis', { skip: !rutaDatasetB }, () => {
+    const grafo = cargarGrafoDesdeJson(JSON.parse(readFileSync(rutaDatasetB, 'utf8')));
+    assert.equal(grafo.alternativa, 'B_k8');
+    assert.equal(grafo.nodos.length, 7208);
+    assert.equal(grafo.tramos.length, 315);
+    assert.equal(grafo.candidatas.length, 33394);
+    assert.equal(grafo.conexiones.length, 33709);
 });
