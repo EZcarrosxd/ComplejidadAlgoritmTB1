@@ -93,3 +93,23 @@ La pantalla dibuja la red completa hasta 5000 nodos
 Con más nodos dibuja un subgrafo elegido alrededor del flujo y los nodos críticos, e indica el total
 
 Todos los cálculos usan los 1500 nodos y las 2767 líneas
+
+## Red georreferenciada del escenario A
+
+`dataset_osinergmin_A.json` reúne las estructuras de baja tensión publicadas por OSINERGMIN en coordenadas WGS 84
+Contiene 7208 estructuras, 315 tramos documentados y 17 503 conexiones candidatas de la alternativa `A_k4`
+Las conexiones candidatas son alternativas de diseño por cercanía y no instalaciones existentes
+
+Al elegir este archivo en la portada, la red se dibuja en el navegador sin enviarlo al servidor
+Por eso no aplica el límite de 10 MiB del análisis y el navegador acepta hasta 64 MiB
+Las estructuras quedan en sus coordenadas originales con una proyección equirectangular local y no se usa Pivot MDS
+Esta vista no ejecuta los algoritmos eléctricos porque el escenario no trae capacidades ni demandas
+
+Para comprobar el archivo contra el ZIP archivado y sus huellas de procedencia:
+
+```powershell
+python dataset/generar_osinergmin_a.py Escenario_Diseno_Electrico_OSINERGMIN.zip Dataset/fuentes/referencias_fuentes.json dataset_osinergmin_A.json --verificar
+```
+
+Las pruebas del visor se ejecutan con `pytest` si Node.js está instalado
+Con la variable `DATASET_OSINERGMIN_A` apuntando al JSON también se prueba el dataset completo
