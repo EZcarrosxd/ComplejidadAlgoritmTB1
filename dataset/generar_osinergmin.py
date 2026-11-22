@@ -1,4 +1,4 @@
-"""Empaqueta o verifica el escenario A a partir de los GeoJSON archivados."""
+"""Empaqueta o verifica las alternativas A y B a partir de los GeoJSON archivados."""
 import argparse
 from hashlib import sha256
 import json
@@ -7,15 +7,18 @@ from zipfile import BadZipFile, ZipFile
 
 
 RUTA_DATOS = "escenario_diseno_osinergmin/datos/"
-ALTERNATIVA = "A_k4"
-CANTIDADES = (7208, 315, 17503)
+ALTERNATIVAS = {
+    "A": {"codigo": "A_k4", "cantidades": (7208, 315, 17503)},
+    "B": {"codigo": "B_k8", "cantidades": (7208, 315, 33394)},
+}
 
 
 def leer_json(archivo):
     return json.loads(archivo.read_bytes())
 
 
-def leer_escenario(archivo_zip, referencias):
+def leer_escenario(archivo_zip, referencias, letra="A"):
+    codigo = ALTERNATIVAS[letra]["codigo"]
     origen = referencias["paquetes_de_entrada"]["escenarios_arboles"]
     if sha256(archivo_zip.read_bytes()).hexdigest() != origen["sha256"]:
         raise ValueError("El ZIP del escenario no coincide con la huella de procedencia.")
@@ -28,22 +31,24 @@ def leer_escenario(archivo_zip, referencias):
         candidatas = leer_coleccion("conexiones_candidatas")
     candidatas["features"] = [
         elemento for elemento in candidatas["features"]
-        if ALTERNATIVA in elemento["properties"]["alternativas"]
+        if codigo in elemento["properties"]["alternativas"]
     ]
     return {
         "tipo": "grafo_georreferenciado", "version": 1,
-        "alternativa": ALTERNATIVA, "sistema_coordenadas": "EPSG:4326",
+        "alternativa": codigo, "sistema_coordenadas": "EPSG:4326",
         "nodos": nodos, "tramos_documentados": tramos,
         "conexiones_candidatas": candidatas, "procedencia": referencias,
     }
 
 
-def comprobar_grafo(grafo):
+def comprobar_grafo(grafo, letra="A"):
+    cantidades = ALTERNATIVAS[letra]["cantidades"]
     nodos = grafo["nodos"]["features"]
     tramos = grafo["tramos_documentados"]["features"]
     candidatas = grafo["conexiones_candidatas"]["features"]
-    if (len(nodos), len(tramos), len(candidatas)) != CANTIDADES:
-        raise ValueError("El escenario A debe contener 7208 nodos, 315 tramos y 17 503 candidatas.")
+    if (len(nodos), len(tramos), len(candidatas)) != cantidades:
+        raise ValueError(f"La alternativa {letra} debe contener {cantidades[0]} nodos, "
+                         f"{cantidades[1]} tramos y {cantidades[2]} candidatas.")
 
     posiciones = {nodo["id"]: nodo["geometry"]["coordinates"] for nodo in nodos}
     if len(posiciones) != len(nodos) or len({tuple(coordenadas) for coordenadas in posiciones.values()}) != len(nodos):
@@ -68,9 +73,9 @@ def comprobar_grafo(grafo):
             pares.add(par)
 
 
-def verificar_archivo(archivo_json, esperado):
+def verificar_archivo(archivo_json, esperado, letra="A"):
     archivo = leer_json(archivo_json)
-    comprobar_grafo(archivo)
+    comprobar_grafo(archivo, letra)
     if archivo != esperado:
         claves = sorted(clave for clave in (archivo.keys() | esperado.keys())
                         if archivo.get(clave) != esperado.get(clave))
@@ -81,20 +86,23 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("escenario", type=Path, help="ZIP Escenario_Diseno_Electrico_OSINERGMIN.zip")
     parser.add_argument("referencias", type=Path, help="Dataset/fuentes/referencias_fuentes.json")
-    parser.add_argument("json", type=Path, help="Ruta de dataset_osinergmin_A.json")
+    parser.add_argument("json", type=Path, help="Ruta del JSON de la alternativa")
+    parser.add_argument("--alternativa", choices=sorted(ALTERNATIVAS), default="A")
     parser.add_argument("--verificar", action="store_true", help="Compara el JSON existente sin escribir archivos.")
     args = parser.parse_args()
+    letra = args.alternativa
     try:
-        escenario = leer_escenario(args.escenario, leer_json(args.referencias))
-        comprobar_grafo(escenario)
+        escenario = leer_escenario(args.escenario, leer_json(args.referencias), letra)
+        comprobar_grafo(escenario, letra)
         if not args.verificar:
             with args.json.open("x", encoding="utf-8", newline="\n") as salida:
                 json.dump(escenario, salida, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
                 salida.write("\n")
-        verificar_archivo(args.json, escenario)
+        verificar_archivo(args.json, escenario, letra)
     except (OSError, BadZipFile, ValueError, KeyError) as error:
         parser.exit(1, f"Error: {error}\n")
-    print(f"{args.json}: 7208 nodos, 315 tramos y 17 503 candidatas verificados.")
+    nodos, tramos, candidatas = ALTERNATIVAS[letra]["cantidades"]
+    print(f"{args.json}: alternativa {letra} con {nodos} nodos, {tramos} tramos y {candidatas} candidatas verificados.")
 
 
 if __name__ == "__main__":
