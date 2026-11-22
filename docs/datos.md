@@ -94,22 +94,41 @@ Con más nodos dibuja un subgrafo elegido alrededor del flujo y los nodos críti
 
 Todos los cálculos usan los 1500 nodos y las 2767 líneas
 
-## Red georreferenciada del escenario A
+## Red georreferenciada de OSINERGMIN
 
-`dataset_osinergmin_A.json` reúne las estructuras de baja tensión publicadas por OSINERGMIN en coordenadas WGS 84
-Contiene 7208 estructuras, 315 tramos documentados y 17 503 conexiones candidatas de la alternativa `A_k4`
+`dataset_osinergmin_A.json` y `dataset_osinergmin_B.json` reúnen las estructuras de baja tensión publicadas por OSINERGMIN en coordenadas WGS 84
+
+| Alternativa | Estructuras | Tramos documentados | Conexiones candidatas | Aristas |
+|---|---:|---:|---:|---:|
+| A (`A_k4`) | 7208 | 315 | 17 503 | 17 818 |
+| B (`B_k8`) | 7208 | 315 | 33 394 | 33 709 |
+
 Las conexiones candidatas son alternativas de diseño por cercanía y no instalaciones existentes
+Los pesos `peso_mm` son longitudes enteras en milímetros, no costos ni datos eléctricos
 
-Al elegir este archivo en la portada, la red se dibuja en el navegador sin enviarlo al servidor
-Por eso no aplica el límite de 10 MiB del análisis y el navegador acepta hasta 64 MiB
-Las estructuras quedan en sus coordenadas originales con una proyección equirectangular local y no se usa Pivot MDS
-Esta vista no ejecuta los algoritmos eléctricos porque el escenario no trae capacidades ni demandas
+Al elegir uno de estos archivos en la portada, el navegador lo lee completo y dibuja las estructuras en sus coordenadas originales con una proyección equirectangular local
+No se usa Pivot MDS y el navegador acepta archivos de hasta 64 MiB
 
-Para comprobar el archivo contra el ZIP archivado y sus huellas de procedencia:
+Desde la misma vista se pueden ejecutar Kruskal, Prim y BFS
+El navegador envía a `POST /api/georreferenciado/analizar` solo los identificadores de las estructuras y, por cada arista, sus dos extremos y su peso en el mismo orden del archivo
+Ese grafo compacto ocupa unos 470 KB en A y 790 KB en B, por debajo del límite de 10 MiB
+El servidor ejecuta las implementaciones de `backend/algorithms` y devuelve los índices de las aristas elegidas, la longitud total y el número de componentes
+No se usan los supuestos de S/ 3,98 por metro ni de 20 A del avance anterior
+
+| Resultado | A | B |
+|---|---:|---:|
+| Aristas del árbol con Kruskal y Prim | 7207 | 7207 |
+| Longitud mínima | 137 416,341 m | 137 411,789 m |
+| Componentes con BFS | 1 | 1 |
+
+Para generar o comprobar cada archivo contra el ZIP archivado y sus huellas de procedencia:
 
 ```powershell
-python dataset/generar_osinergmin_a.py Escenario_Diseno_Electrico_OSINERGMIN.zip Dataset/fuentes/referencias_fuentes.json dataset_osinergmin_A.json --verificar
+python dataset/generar_osinergmin.py Escenario_Diseno_Electrico_OSINERGMIN.zip Dataset/fuentes/referencias_fuentes.json dataset_osinergmin_A.json --verificar
+python dataset/generar_osinergmin.py Escenario_Diseno_Electrico_OSINERGMIN.zip Dataset/fuentes/referencias_fuentes.json dataset_osinergmin_B.json --alternativa B --verificar
 ```
 
-Las pruebas del visor se ejecutan con `pytest` si Node.js está instalado
-Con la variable `DATASET_OSINERGMIN_A` apuntando al JSON también se prueba el dataset completo
+Sin `--verificar` el script crea el archivo en una ruta nueva y luego lo compara con el ZIP
+
+Las pruebas del visor y del análisis se ejecutan con `pytest`
+Con las variables `DATASET_OSINERGMIN_A` y `DATASET_OSINERGMIN_B` apuntando a los JSON también se prueban los datos completos y los resultados del informe
