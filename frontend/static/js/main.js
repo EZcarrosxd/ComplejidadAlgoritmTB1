@@ -3,6 +3,7 @@ import './subida.js';
 import './progreso.js';
 import './resultados.js';
 import './grafo.js';
+import './vista-geografica.js';
 import './panel-general.js';
 import './panel-flujo.js';
 import './panel-fallas.js';

@@ -24,13 +24,18 @@ export function explicarError(error) {
     };
 }
 
-export function validarArchivo(archivo) {
+const MIB = 1024 * 1024;
+const LIMITE_SERVIDOR_MIB = 10;
+const LIMITE_NAVEGADOR_MIB = 64;
+
+export function validarArchivo(archivo, geografico = false) {
     const extension = (archivo.name.split('.').pop() || '').toLowerCase();
     if (extension !== 'json' && extension !== 'csv') {
         return { titulo: `"${archivo.name}" no es un archivo .json ni .csv`, indicacion: 'Elige un archivo con una de esas extensiones' };
     }
-    if (archivo.size > 10 * 1024 * 1024) {
-        return { titulo: 'El archivo supera los 10 MiB', indicacion: 'Reduce el archivo o divide la red en partes más pequeñas' };
+    const limite = geografico ? LIMITE_NAVEGADOR_MIB : LIMITE_SERVIDOR_MIB;
+    if (archivo.size > limite * MIB) {
+        return { titulo: `El archivo supera los ${limite} MiB`, indicacion: 'Reduce el archivo o divide la red en partes más pequeñas' };
     }
     return null;
 }

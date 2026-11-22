@@ -2,6 +2,7 @@ import { estado } from './estado.js';
 import { cambiarModo, restaurar } from './acciones.js';
 import { abrirAyuda, cerrarAyuda } from './ayuda.js';
 import { acercar, alejar, centrar } from './grafo.js';
+import { acercarGeografica, alejarGeografica, ajustarGeografica } from './vista-geografica.js';
 import { GRUPOS } from './algoritmos.js';
 import { alternarReproduccion, avanzarPaso, cerrarPasos } from './reproductor.js';
 
@@ -15,7 +16,14 @@ window.addEventListener('keydown', (e) => {
     }
     if (etiqueta === 'INPUT' || etiqueta === 'TEXTAREA' || e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.key === '?') { abrirAyuda(); return; }
-    if (estado.fase !== 'resultados' || estado.ayuda) return;
+    if (estado.ayuda) return;
+    if (estado.fase === 'geografica') {
+        if (e.key === 'f' || e.key === 'F') ajustarGeografica();
+        else if (e.key === '+' || e.key === '=') acercarGeografica();
+        else if (e.key === '-') alejarGeografica();
+        return;
+    }
+    if (estado.fase !== 'resultados') return;
 
     const numero = Number(e.key);
     if (Number.isInteger(numero) && numero >= 1 && numero <= GRUPOS.length) cambiarModo(GRUPOS[numero - 1].metodos[0]);

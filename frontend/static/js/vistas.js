@@ -8,17 +8,20 @@ suscribir((s, cambios) => {
     $('espacio-trabajo').hidden = subiendo;
     $('vista-loading').hidden = s.fase !== 'progreso';
     $('vista-resultados').hidden = s.fase !== 'resultados';
-    $('btn-otra').hidden = s.fase !== 'resultados';    if (subiendo) {
+    $('vista-geografica').hidden = s.fase !== 'geografica';
+    $('btn-otra').hidden = s.fase !== 'resultados' && s.fase !== 'geografica';
+    if (subiendo) {
         $('archivo').focus({ preventScroll: true });
     } else {
-        const titulo = s.fase === 'progreso' ? 'titulo-progreso' : 'titulo-resultados';
+        const titulos = { progreso: 'titulo-progreso', resultados: 'titulo-resultados', geografica: 'titulo-geografica' };
+        const titulo = titulos[s.fase];
         $(titulo).focus({ preventScroll: true });
         irA('analizar');
     }
 });
 
 $('btn-otra').addEventListener('click', () => {
-    actualizar({ fase: 'subida', archivo: null, error: null, falla: null, sel: null, datos: null, modelo: null });
+    actualizar({ fase: 'subida', archivo: null, geografico: false, error: null, falla: null, sel: null, datos: null, modelo: null });
     anunciar('Listo para analizar otra red');
     irA('analizar');
 });

@@ -1,6 +1,7 @@
 export const estado = {
     fase: 'subida',
     archivo: null,
+    geografico: false,
     arrastrando: false,
     error: null,
     pasos: [],

@@ -1,0 +1,16 @@
+.lienzo-geografico { background: var(--white); cursor: grab; }
+
+.simbolo-estructura { width: 7px; height: 7px; background: #24455e; }
+.simbolo-tramo { width: 18px; border-top: 2px solid #00578b; }
+.simbolo-candidata { width: 18px; border-top: 2px dashed #a75224; }
+
+.escala-geografica {
+    position: absolute; left: .9rem; bottom: 4.4rem; display: flex; flex-direction: column; gap: .2rem;
+    padding: .2rem .4rem; background: rgba(255, 255, 255, .85); border-radius: var(--radio-sm);
+    font-size: .75rem; color: var(--ink-soft); pointer-events: none;
+}
+.escala-barra { height: 6px; border: 1.5px solid var(--ink-soft); border-top: 0; }
+
+.cifras-geograficas { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0; }
+.cifras-geograficas dt { font-size: .8rem; color: var(--muted); }
+.cifras-geograficas dd { margin: .15rem 0 0; font-size: 1.6rem; font-weight: 750; letter-spacing: -.03em; }

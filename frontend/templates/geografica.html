@@ -1,0 +1,47 @@
+<div class="results-view" id="vista-geografica" hidden>
+    <section class="graph" aria-labelledby="titulo-mapa-geografico">
+        <h2 class="sr-only" id="titulo-mapa-geografico">Red en sus coordenadas geográficas</h2>
+        <div class="graph-box">
+            <canvas class="graph-canvas lienzo-geografico" id="grafo-geo" role="img"
+                    aria-label="Red del escenario A dibujada en sus coordenadas geográficas"></canvas>
+            <p class="graph-count" id="geo-conteo"></p>
+            <div class="tip" id="geo-tip" aria-hidden="true" hidden></div>
+            <div class="zoom">
+                <button type="button" id="geo-acercar" aria-label="Acercar">+</button>
+                <button type="button" id="geo-alejar" aria-label="Alejar">−</button>
+                <button type="button" id="geo-ajustar" aria-keyshortcuts="F">Ajustar</button>
+            </div>
+            <div class="escala-geografica" aria-hidden="true">
+                <span class="escala-barra" id="geo-escala-barra"></span>
+                <span id="geo-escala-texto"></span>
+            </div>
+            <ul class="legend" aria-label="Leyenda">
+                <li><span class="simbolo-estructura" aria-hidden="true"></span>Estructura</li>
+                <li><span class="simbolo-tramo" aria-hidden="true"></span>Tramo documentado</li>
+                <li><span class="simbolo-candidata" aria-hidden="true"></span>Conexión propuesta</li>
+            </ul>
+        </div>
+    </section>
+    <aside class="barra-lateral" aria-labelledby="titulo-geografica">
+        <div class="barra-contenido">
+            <div>
+                <h1 class="barra-titulo" id="titulo-geografica" tabindex="-1">Red georreferenciada</h1>
+                <p class="barra-texto" id="geo-archivo"></p>
+            </div>
+            <dl class="cifras-geograficas">
+                <div><dt>Estructuras</dt><dd id="geo-nodos"></dd></div>
+                <div><dt>Tramos documentados</dt><dd id="geo-tramos"></dd></div>
+                <div><dt>Conexiones propuestas</dt><dd id="geo-candidatas"></dd></div>
+                <div><dt>Aristas en total</dt><dd id="geo-aristas"></dd></div>
+            </dl>
+            <p class="barra-texto">Cada estructura está en su posición WGS 84 original, con una proyección equirectangular local
+Las conexiones propuestas son alternativas de diseño por cercanía y no instalaciones existentes
+El archivo se lee en tu navegador y no se envía al servidor</p>
+            <p class="barra-texto">Arrastra para desplazarte y usa la rueda o los botones para acercar
+Ajustar vuelve a mostrar toda la red</p>
+        </div>
+        <div class="barra-pie">
+            <button type="button" class="btn-submit" id="geo-guardar">Guardar imagen del grafo</button>
+        </div>
+    </aside>
+</div>
