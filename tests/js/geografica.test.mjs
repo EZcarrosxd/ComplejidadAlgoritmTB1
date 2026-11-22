@@ -32,7 +32,7 @@ function paqueteDePrueba() {
 }
 
 function contextoFalso() {
-    const llamadas = { moveTo: 0, lineTo: 0, fillRect: 0, stroke: 0 };
+    const llamadas = { moveTo: 0, lineTo: 0, fillRect: 0, stroke: 0, arc: 0, fill: 0 };
     const contexto = { llamadas, setLineDash() {}, beginPath() {} };
     for (const nombre of Object.keys(llamadas)) contexto[nombre] = () => { llamadas[nombre]++; };
     return contexto;
@@ -88,7 +88,7 @@ test('las aristas elegidas se dibujan desde sus geometrías originales', () => {
     assert.equal(candidata, escena.candidatas[0]);
     const contexto = contextoFalso();
     dibujarRed(contexto, escena, encuadrar(escena, 400, 300), 400, 300, 1, [candidata]);
-    assert.equal(contexto.llamadas.moveTo, 3);
+    assert.equal(contexto.llamadas.moveTo - contexto.llamadas.arc, 3);
 });
 
 test('rechaza una arista con un extremo inexistente', () => {
@@ -127,9 +127,11 @@ test('el encuadre dibuja todas las aristas y estructuras', () => {
     const escena = crearEscena(cargarGrafoDesdeJson(paqueteDePrueba()));
     const contexto = contextoFalso();
     dibujarRed(contexto, escena, encuadrar(escena, 400, 300), 400, 300);
-    assert.equal(contexto.llamadas.moveTo, 2);
+    assert.equal(contexto.llamadas.moveTo - contexto.llamadas.arc, 2);
     assert.equal(contexto.llamadas.lineTo, 3);
-    assert.equal(contexto.llamadas.fillRect, 1 + 3);
+    assert.equal(contexto.llamadas.arc, 3);
+    assert.equal(contexto.llamadas.fill, 1);
+    assert.equal(contexto.llamadas.fillRect, 1);
 });
 
 const rutaDataset = process.env.DATASET_OSINERGMIN_A;
@@ -147,9 +149,9 @@ test('el dataset del escenario A se dibuja completo en sus coordenadas', { skip:
     const escena = crearEscena(grafo);
     const contexto = contextoFalso();
     dibujarRed(contexto, escena, encuadrar(escena, 1072, 932), 1072, 932);
-    assert.equal(contexto.llamadas.moveTo, 315 + 17503);
+    assert.equal(contexto.llamadas.moveTo - contexto.llamadas.arc, 315 + 17503);
     assert.equal(grafo.conexiones.length, 17818);
-    assert.equal(contexto.llamadas.fillRect, 1 + 7208);
+    assert.equal(contexto.llamadas.arc, 7208);
 });
 
 const rutaDatasetB = process.env.DATASET_OSINERGMIN_B;

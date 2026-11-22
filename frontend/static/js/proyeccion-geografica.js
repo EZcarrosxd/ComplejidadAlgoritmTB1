@@ -102,14 +102,17 @@ export function dibujarRed(contexto, escena, camara, ancho, alto, aumento = 1, a
         dibujarLineas(contexto, escena.tramos, camara, ancho, alto, COLOR_TRAMO, 1.45);
     }
 
-    const radio = Math.max(0.55, Math.min(1.1, ancho / 950)) * Math.min(3, Math.sqrt(Math.max(1, aumento)));
+    const radio = 1.3 * Math.min(3, Math.sqrt(Math.max(1, aumento)));
     contexto.fillStyle = COLOR_ESTRUCTURA;
     const { escala, x, y } = camara;
+    contexto.beginPath();
     for (let i = 0; i < escena.nodos.length; i += 2) {
         const px = escena.nodos[i] * escala + x, py = escena.nodos[i + 1] * escala + y;
         if (px < -radio || px > ancho + radio || py < -radio || py > alto + radio) continue;
-        contexto.fillRect(px - radio, py - radio, 2 * radio, 2 * radio);
+        contexto.moveTo(px + radio, py);
+        contexto.arc(px, py, radio, 0, 2 * Math.PI);
     }
+    contexto.fill();
 }
 
 export function nodoCercano(escena, camara, punto, distanciaMaxima = 10) {
