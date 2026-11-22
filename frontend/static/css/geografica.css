@@ -14,3 +14,23 @@
 .cifras-geograficas { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0; }
 .cifras-geograficas dt { font-size: .8rem; color: var(--muted); }
 .cifras-geograficas dd { margin: .15rem 0 0; font-size: 1.6rem; font-weight: 750; letter-spacing: -.03em; }
+
+.simbolo-arbol { width: 18px; border-top: 2.5px solid #2F6430; }
+.simbolo-descartada { width: 18px; border-top: 1.5px solid rgba(160, 152, 140, .6); }
+
+.algoritmos-geograficos, .comparacion-geografica { display: grid; gap: .6rem; --c: var(--lime-dark); }
+.subtitulo-geografico { margin: 0; font-size: 1rem; font-weight: 700; }
+.metodos-geograficos { display: flex; flex-wrap: wrap; gap: .4rem; }
+.metodo-geografico {
+    padding: .4rem .8rem; background: transparent; border: 1px solid var(--line); border-radius: 999px;
+    color: var(--ink-soft); font-size: .78rem; font-weight: 650; cursor: pointer;
+}
+.metodo-geografico:hover { border-color: var(--border); color: var(--ink); }
+.metodo-geografico[aria-pressed="true"] {
+    border-color: var(--c); color: var(--c); background: color-mix(in srgb, var(--c) 8%, var(--white));
+}
+.metodo-geografico:disabled { opacity: .55; cursor: wait; }
+
+.tabla-geografica { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.tabla-geografica th, .tabla-geografica td { padding: .35rem .4rem; border-bottom: 1px solid var(--line); text-align: right; }
+.tabla-geografica th:first-child, .tabla-geografica td:first-child { text-align: left; color: var(--ink-soft); }

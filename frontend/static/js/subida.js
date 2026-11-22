@@ -7,8 +7,8 @@ import { analizar } from './analisis.js';
 import { obtenerEjemplo } from './api.js';
 
 const entrada = $('archivo');
-const TEXTO_ANALISIS = 'Responde cinco preguntas sobre tu red\nCosto, capacidad, rutas, fallas y refuerzo';
-const TEXTO_GEOGRAFICO = 'Dibuja las estructuras en sus coordenadas WGS 84 originales\nSe lee en tu navegador y no se envía al servidor';
+const TEXTO_ANALISIS = 'Demostración del avance anterior con costos y capacidades supuestos\nResponde cinco preguntas sobre tu red\nCosto, capacidad, rutas, fallas y refuerzo';
+const TEXTO_GEOGRAFICO = 'Dibuja las estructuras en sus coordenadas WGS 84 originales\nPermite ejecutar Kruskal, Prim y BFS sobre la red cargada';
 const zona = $('dropzone');
 
 function formatearBytes(bytes) {
@@ -65,7 +65,7 @@ async function abrirGeografica(archivo) {
     }
 }
 
-$('btn-demo').addEventListener('click', () => analizar(obtenerEjemplo, 'Red de ejemplo'));
+$('btn-demo').addEventListener('click', () => analizar(obtenerEjemplo, 'Red de ejemplo del avance anterior'));
 
 suscribir((s, cambios) => {
     if (!toca(cambios, 'archivo', 'arrastrando', 'error', 'geografico')) return;

@@ -2,6 +2,7 @@ export const estado = {
     fase: 'subida',
     archivo: null,
     geografico: false,
+    redGeografica: null,
     arrastrando: false,
     error: null,
     pasos: [],

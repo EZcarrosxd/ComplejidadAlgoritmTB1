@@ -21,7 +21,7 @@ suscribir((s, cambios) => {
 });
 
 $('btn-otra').addEventListener('click', () => {
-    actualizar({ fase: 'subida', archivo: null, geografico: false, error: null, falla: null, sel: null, datos: null, modelo: null });
+    actualizar({ fase: 'subida', archivo: null, geografico: false, redGeografica: null, error: null, falla: null, sel: null, datos: null, modelo: null });
     anunciar('Listo para analizar otra red');
     irA('analizar');
 });

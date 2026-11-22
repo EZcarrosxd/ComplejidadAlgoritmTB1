@@ -4,6 +4,7 @@ import './progreso.js';
 import './resultados.js';
 import './grafo.js';
 import './vista-geografica.js';
+import './algoritmos-geograficos.js';
 import './panel-general.js';
 import './panel-flujo.js';
 import './panel-fallas.js';

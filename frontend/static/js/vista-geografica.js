@@ -1,7 +1,8 @@
-import { $, anunciar, crear, formatoEntero } from './dom.js';
+import { $, anunciar, crear } from './dom.js';
 import { actualizar, suscribir, toca } from './estado.js';
-import { cargarGrafoDesdeJson } from './datos-georreferenciados.js';
-import { crearEscena, dibujarRed, encuadrar, metrosPorGrado, nodoCercano } from './proyeccion-geografica.js';
+import { ALTERNATIVAS, cargarGrafoDesdeJson } from './datos-georreferenciados.js';
+import { caminosSeleccionados, crearEscena, dibujarRed, encuadrar, metrosPorGrado, nodoCercano } from './proyeccion-geografica.js';
+import { formatoInforme } from './formato-informe.js';
 
 const ANCHO_IMAGEN = 1072;
 const ALTO_IMAGEN = 932;
@@ -13,7 +14,10 @@ const ESCALAS_METROS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
 const lienzo = $('grafo-geo');
 const contexto = lienzo.getContext('2d');
 const tip = $('geo-tip');
-const vista = { escena: null, nombre: '', camara: null, ajuste: null, movida: false, cuadro: 0, bajoPuntero: -1 };
+const vista = {
+    escena: null, letra: 'A', camara: null, ajuste: null, movida: false, cuadro: 0, bajoPuntero: -1,
+    arbol: null, modo: 'original',
+};
 
 const ancho = () => lienzo.clientWidth;
 const alto = () => lienzo.clientHeight;
@@ -32,7 +36,7 @@ function dibujar() {
     if (!vista.escena || !w || !h) return;
     const densidad = window.devicePixelRatio || 1;
     contexto.setTransform(densidad, 0, 0, densidad, 0, 0);
-    dibujarRed(contexto, vista.escena, vista.camara, w, h, aumento());
+    dibujarRed(contexto, vista.escena, vista.camara, w, h, aumento(), vista.arbol);
     const indice = vista.bajoPuntero;
     if (indice >= 0) {
         const px = vista.escena.nodos[2 * indice] * vista.camara.escala + vista.camara.x;
@@ -146,6 +150,32 @@ lienzo.addEventListener('wheel', (evento) => {
     zoomEn(ubicar(evento), Math.exp(-evento.deltaY * 0.0015));
 }, { passive: false });
 
+function nombreImagen() {
+    if (vista.modo !== 'original') return `Grafo_OSINERGMIN_Escenario_${vista.letra}_${vista.modo}.png`;
+    return vista.letra === 'A' ? 'Grafo_OSINERGMIN_Escenario_A_JSON.png' : `Grafo_OSINERGMIN_Escenario_${vista.letra}.png`;
+}
+
+function contarAristas() {
+    return vista.escena.tramos.length + vista.escena.candidatas.length;
+}
+
+function mostrarConteo() {
+    const estructuras = formatoInforme.format(vista.escena.ids.length);
+    $('geo-conteo').textContent = vista.arbol
+        ? `Árbol de ${vista.modo === 'kruskal' ? 'Kruskal' : 'Prim'} · ${formatoInforme.format(vista.arbol.length)} de ${formatoInforme.format(contarAristas())} aristas`
+        : `Alternativa ${vista.letra} · ${estructuras} estructuras · ${formatoInforme.format(contarAristas())} aristas`;
+}
+
+export function mostrarArbol(modo, indices) {
+    if (!vista.escena) return;
+    vista.modo = modo;
+    vista.arbol = indices ? caminosSeleccionados(vista.escena, indices) : null;
+    $('geo-leyenda-red').hidden = Boolean(vista.arbol);
+    $('geo-leyenda-arbol').hidden = !vista.arbol;
+    mostrarConteo();
+    pedirDibujo();
+}
+
 function guardarImagen() {
     if (!vista.escena) return;
     const imagen = document.createElement('canvas');
@@ -154,13 +184,13 @@ function guardarImagen() {
     const contextoImagen = imagen.getContext('2d');
     contextoImagen.setTransform(DENSIDAD_IMAGEN, 0, 0, DENSIDAD_IMAGEN, 0, 0);
     const camara = encuadrar(vista.escena, ANCHO_IMAGEN, ALTO_IMAGEN);
-    dibujarRed(contextoImagen, vista.escena, camara, ANCHO_IMAGEN, ALTO_IMAGEN);
+    dibujarRed(contextoImagen, vista.escena, camara, ANCHO_IMAGEN, ALTO_IMAGEN, 1, vista.arbol);
     imagen.toBlob((archivo) => {
         if (!archivo) return;
         const url = URL.createObjectURL(archivo);
         const descarga = document.createElement('a');
         descarga.href = url;
-        descarga.download = 'Grafo_OSINERGMIN_Escenario_A_JSON.png';
+        descarga.download = nombreImagen();
         descarga.click();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
     }, 'image/png');
@@ -169,20 +199,24 @@ function guardarImagen() {
 export async function mostrarRedGeografica(archivo) {
     const grafo = cargarGrafoDesdeJson(JSON.parse(await archivo.text()));
     vista.escena = crearEscena(grafo);
-    vista.nombre = archivo.name;
+    vista.letra = ALTERNATIVAS[grafo.alternativa];
     vista.movida = false;
     vista.camara = null;
     vista.bajoPuntero = -1;
+    vista.arbol = null;
+    vista.modo = 'original';
     const [nodos, tramos, candidatas] = [grafo.nodos.length, grafo.tramos.length, grafo.candidatas.length];
-    const formato = (n) => formatoEntero.format(n);
-    $('geo-archivo').textContent = archivo.name;
+    const formato = (n) => formatoInforme.format(n);
+    $('geo-archivo').textContent = `Alternativa ${vista.letra} · ${archivo.name}`;
     $('geo-nodos').textContent = formato(nodos);
     $('geo-tramos').textContent = formato(tramos);
     $('geo-candidatas').textContent = formato(candidatas);
     $('geo-aristas').textContent = formato(tramos + candidatas);
-    $('geo-conteo').textContent = `${formato(nodos)} estructuras · ${formato(tramos + candidatas)} aristas`;
-    actualizar({ fase: 'geografica', archivo, error: null });
-    anunciar(`Red georreferenciada lista\n${formato(nodos)} estructuras, ${formato(tramos)} tramos documentados y ${formato(candidatas)} conexiones propuestas`);
+    $('geo-leyenda-red').hidden = false;
+    $('geo-leyenda-arbol').hidden = true;
+    mostrarConteo();
+    actualizar({ fase: 'geografica', archivo, error: null, redGeografica: grafo });
+    anunciar(`Alternativa ${vista.letra} lista\n${formato(nodos)} estructuras, ${formato(tramos)} tramos documentados y ${formato(candidatas)} conexiones propuestas`);
 }
 
 suscribir((s, cambios) => {

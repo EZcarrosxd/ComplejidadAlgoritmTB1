@@ -50,3 +50,17 @@ export async function obtenerEjemplo(senal) {
     const contenido = await respuesta.blob();
     return new File([contenido], 'dataset.json', { type: 'application/json' });
 }
+
+export async function analizarGeorreferenciado(grafoCompacto, senal) {
+    const respuesta = await fetch(`${base()}/api/georreferenciado/analizar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(grafoCompacto),
+        signal: senal,
+    });
+    const json = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) {
+        throw new ErrorServidor(json.error || `El servidor respondió con error ${respuesta.status}`, respuesta.status);
+    }
+    return json;
+}
