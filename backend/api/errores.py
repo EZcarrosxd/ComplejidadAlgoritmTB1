@@ -11,7 +11,9 @@ def registrar_errores(app):
 
     @app.exception_handler(RequestValidationError)
     async def error_peticion(request, error):
+        mensaje = ("El grafo enviado no tiene el formato esperado"
+                   if request.url.path.startswith("/api/georreferenciado") else "Envíe el archivo en el campo file")
         return JSONResponse(
-            {"error": "Envíe el archivo en el campo file"},
+            {"error": mensaje},
             status_code=422,
         )
