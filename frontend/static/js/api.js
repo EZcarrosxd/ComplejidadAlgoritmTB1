@@ -48,14 +48,17 @@ export async function obtenerEjemplo(senal) {
     const respuesta = await fetch(`${base()}/api/ejemplo`, { signal: senal });
     if (!respuesta.ok) throw new ErrorServidor('No se pudo descargar la red de ejemplo', respuesta.status);
     const contenido = await respuesta.blob();
-    return new File([contenido], 'dataset.json', { type: 'application/json' });
+    return new File([contenido], 'red_osinergmin.json', { type: 'application/json' });
 }
 
-export async function analizarGeorreferenciado(grafoCompacto, senal) {
-    const respuesta = await fetch(`${base()}/api/georreferenciado/analizar`, {
+export async function analizarGeorreferenciado(grafo, algoritmo, precioPorMetro, senal) {
+    const parametros = new URLSearchParams();
+    if (precioPorMetro !== '') parametros.set('precio_por_metro', precioPorMetro);
+    const consulta = parametros.size ? `?${parametros}` : '';
+    const respuesta = await fetch(`${base()}/api/georreferenciado/${algoritmo}${consulta}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(grafoCompacto),
+        body: JSON.stringify(grafo),
         signal: senal,
     });
     const json = await respuesta.json().catch(() => ({}));

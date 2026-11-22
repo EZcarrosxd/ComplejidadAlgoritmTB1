@@ -1,6 +1,6 @@
 import { ErrorServidor, LIMITE_ESPERA_MINUTOS, MENSAJE_SIN_CONEXION } from './api.js';
 
-const FORMATO = 'Usa un .json con la lista "conexiones" (origen, destino y distancia_m) o un .csv con las columnas origen,destino,distancia_m';
+const FORMATO = 'Revisa el formato de nodos y aristas y el precio por metro';
 
 export function explicarError(error) {
     if (error?.name === 'TimeoutError') {
@@ -25,17 +25,14 @@ export function explicarError(error) {
 }
 
 const MIB = 1024 * 1024;
-const LIMITE_SERVIDOR_MIB = 10;
-const LIMITE_NAVEGADOR_MIB = 64;
+const LIMITE_MIB = 64;
 
-export function validarArchivo(archivo, geografico = false) {
-    const extension = (archivo.name.split('.').pop() || '').toLowerCase();
-    if (extension !== 'json' && extension !== 'csv') {
-        return { titulo: `"${archivo.name}" no es un archivo .json ni .csv`, indicacion: 'Elige un archivo con una de esas extensiones' };
+export function validarArchivo(archivo) {
+    if (!archivo.name.toLowerCase().endsWith('.json')) {
+        return { titulo: `"${archivo.name}" no es un archivo JSON`, indicacion: 'Elige un archivo con extensión .json' };
     }
-    const limite = geografico ? LIMITE_NAVEGADOR_MIB : LIMITE_SERVIDOR_MIB;
-    if (archivo.size > limite * MIB) {
-        return { titulo: `El archivo supera los ${limite} MiB`, indicacion: 'Reduce el archivo o divide la red en partes más pequeñas' };
+    if (archivo.size > LIMITE_MIB * MIB) {
+        return { titulo: `El archivo supera los ${LIMITE_MIB} MiB`, indicacion: 'Reduce el archivo o divide la red en partes más pequeñas' };
     }
     return null;
 }

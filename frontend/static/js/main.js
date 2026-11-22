@@ -1,14 +1,5 @@
 import './vistas.js';
 import './subida.js';
-import './progreso.js';
-import './resultados.js';
-import './grafo.js';
-import './vista-geografica.js';
 import './algoritmos-geograficos.js';
-import './panel-general.js';
-import './panel-flujo.js';
-import './panel-fallas.js';
-import './panel-algoritmo.js';
-import './reproductor.js';
 import './ayuda.js';
 import './teclado.js';

@@ -17,13 +17,14 @@ def test_health_no_requiere_dataset(deployed):
     assert respuesta.json() == {"status": "ok"}
 
 
-def test_origen_permitido_en_carga_y_error(deployed, dataset):
+def test_origen_permitido_en_analisis_y_error(deployed):
     origen = "https://mi-red.pages.dev"
-    respuesta = deployed.post("/api/upload", headers={"Origin": origen},
-                              files={"file": ("red.json", dataset)})
+    ruta = "/api/georreferenciado/bfs"
+    respuesta = deployed.post(ruta, headers={"Origin": origen},
+                              json={"nodos": [{"id": "p", "coordenadas": [0, 0]}], "aristas": []})
     assert respuesta.status_code == 200
     assert respuesta.headers["access-control-allow-origin"] == origen
-    error = deployed.post("/api/upload", headers={"Origin": origen})
+    error = deployed.post(ruta, headers={"Origin": origen})
     assert error.status_code == 422
     assert error.headers["access-control-allow-origin"] == origen
 
@@ -33,7 +34,7 @@ def test_origen_permitido_en_carga_y_error(deployed, dataset):
     ("https://otro.pages.dev", False), ("https://mi-red.pages.dev.ejemplo.com", False),
 ])
 def test_preflight_con_dominio_exacto(deployed, origen, permitido):
-    respuesta = deployed.options("/api/upload", headers={
+    respuesta = deployed.options("/api/georreferenciado/bfs", headers={
         "Origin": origen,
         "Access-Control-Request-Method": "POST",
         "Access-Control-Request-Headers": "content-type",

@@ -16,9 +16,10 @@
 .cifras-geograficas dd { margin: .15rem 0 0; font-size: 1.6rem; font-weight: 750; letter-spacing: -.03em; }
 
 .simbolo-arbol { width: 18px; border-top: 2.5px solid #2F6430; }
+.simbolo-arbol-candidata { border-top-style: dashed; }
 .simbolo-descartada { width: 18px; border-top: 1.5px solid rgba(160, 152, 140, .6); }
 
-.algoritmos-geograficos, .comparacion-geografica { display: grid; gap: .6rem; --c: var(--lime-dark); }
+.algoritmos-geograficos { display: grid; gap: .75rem; --c: var(--lime-dark); }
 .subtitulo-geografico { margin: 0; font-size: 1rem; font-weight: 700; }
 .metodos-geograficos { display: flex; flex-wrap: wrap; gap: .4rem; }
 .metodo-geografico {
@@ -31,6 +32,11 @@
 }
 .metodo-geografico:disabled { opacity: .55; cursor: wait; }
 
-.tabla-geografica { width: 100%; border-collapse: collapse; font-size: .85rem; }
-.tabla-geografica th, .tabla-geografica td { padding: .35rem .4rem; border-bottom: 1px solid var(--line); text-align: right; }
-.tabla-geografica th:first-child, .tabla-geografica td:first-child { text-align: left; color: var(--ink-soft); }
+.precio-geografico { display: grid; gap: .35rem; font-size: .85rem; }
+.precio-geografico label { font-weight: 650; }
+.precio-geografico input {
+    width: 100%; min-height: 2.4rem; padding: .35rem .65rem; border: 1px solid var(--line);
+    border-radius: var(--radio-sm); background: var(--white); color: var(--ink);
+}
+#geo-resultado dd { overflow-wrap: anywhere; }
+.cifra-ancha { grid-column: 1 / -1; }

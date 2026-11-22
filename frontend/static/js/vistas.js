@@ -1,31 +1,25 @@
 import { $, anunciar, irA } from './dom.js';
 import { actualizar, suscribir, toca } from './estado.js';
 
-suscribir((s, cambios) => {
+suscribir((estado, cambios) => {
     if (!toca(cambios, 'fase')) return;
-    const subiendo = s.fase === 'subida';
+    const subiendo = estado.fase === 'subida';
     $('inicio').hidden = !subiendo;
     $('espacio-trabajo').hidden = subiendo;
-    $('vista-loading').hidden = s.fase !== 'progreso';
-    $('vista-resultados').hidden = s.fase !== 'resultados';
-    $('vista-geografica').hidden = s.fase !== 'geografica';
-    $('btn-otra').hidden = s.fase !== 'resultados' && s.fase !== 'geografica';
-    if (subiendo) {
-        $('archivo').focus({ preventScroll: true });
-    } else {
-        const titulos = { progreso: 'titulo-progreso', resultados: 'titulo-resultados', geografica: 'titulo-geografica' };
-        const titulo = titulos[s.fase];
-        $(titulo).focus({ preventScroll: true });
-        irA('analizar');
-    }
+    $('vista-geografica').hidden = subiendo;
+    $('btn-otra').hidden = subiendo;
+    $(subiendo ? 'archivo' : 'titulo-geografica').focus({ preventScroll: true });
+    if (!subiendo) irA('analizar');
 });
 
-$('btn-otra').addEventListener('click', () => {
-    actualizar({ fase: 'subida', archivo: null, geografico: false, redGeografica: null, error: null, falla: null, sel: null, datos: null, modelo: null });
-    anunciar('Listo para analizar otra red');
+function volverAlInicio() {
+    actualizar({ fase: 'subida', redGeografica: null, error: null });
+    anunciar('Listo para cargar otra red');
     irA('analizar');
-});
+}
 
+$('btn-otra').addEventListener('click', volverAlInicio);
 $('btn-inicio').addEventListener('click', () => {
-    window.scrollTo(0, 0);
+    if (!$('inicio').hidden) window.scrollTo(0, 0);
+    else volverAlInicio();
 });

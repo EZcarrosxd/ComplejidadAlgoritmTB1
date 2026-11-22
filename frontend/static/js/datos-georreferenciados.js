@@ -1,100 +1,63 @@
-export const ALTERNATIVAS = { A_k4: 'A', B_k8: 'B' };
+const CLASES = new Set(['tramo_documentado', 'candidata_geografica']);
 
-function leerColeccion(coleccion, descripcion) {
-    if (coleccion?.type !== 'FeatureCollection' || !Array.isArray(coleccion.features)) {
-        throw new Error(`${descripcion} debe ser una colección GeoJSON`);
-    }
-    return coleccion.features;
+function tieneCampos(objeto, obligatorios, opcionales = []) {
+    return objeto !== null && typeof objeto === 'object' && !Array.isArray(objeto)
+        && obligatorios.every((campo) => Object.hasOwn(objeto, campo))
+        && Object.keys(objeto).every((campo) => obligatorios.includes(campo) || opcionales.includes(campo));
 }
 
-function validarCoordenada(coordenada) {
-    if (!Array.isArray(coordenada) || coordenada.length !== 2 ||
-        !coordenada.every(Number.isFinite) || Math.abs(coordenada[0]) > 180 || Math.abs(coordenada[1]) > 90) {
-        throw new Error('Se esperaban coordenadas WGS 84 en orden longitud, latitud');
+const identificadorValido = (id) => typeof id === 'string' && id.trim() !== '';
+const mismoPunto = (a, b) => a[0] === b[0] && a[1] === b[1];
+
+function validarCoordenadas(punto) {
+    if (!Array.isArray(punto) || punto.length !== 2 || !punto.every(Number.isFinite)
+        || Math.abs(punto[0]) > 180 || Math.abs(punto[1]) > 90) {
+        throw new Error('Usa coordenadas WGS 84 en orden longitud, latitud');
     }
 }
 
-function mismoPunto(a, b) {
-    return a[0] === b[0] && a[1] === b[1];
-}
-
-function leerAristas(coleccion, clase, nodos, indices, ids, conexiones, alternativa) {
-    const trazados = [];
-    for (const arista of leerColeccion(coleccion, clase)) {
-        const datos = arista?.properties;
-        if (datos?.clase !== clase || (alternativa && !Array.isArray(datos.alternativas))) {
-            throw new Error('Una arista no tiene la clase o la alternativa esperada');
-        }
-        if (alternativa && !datos.alternativas.includes(alternativa)) continue;
-
-        const inicio = nodos.get(datos.origen), fin = nodos.get(datos.destino);
-        const camino = arista.geometry?.coordinates;
-        if (typeof arista.id !== 'string' || !arista.id || ids.has(arista.id) ||
-            !inicio || !fin || datos.origen === datos.destino ||
-            arista.geometry?.type !== 'LineString' || !Array.isArray(camino) || camino.length < 2) {
-            throw new Error('Una arista tiene un identificador, extremos o geometría inválidos');
-        }
-        if (!Number.isInteger(datos.peso_mm) || datos.peso_mm <= 0) {
-            throw new Error('Cada arista debe tener su longitud entera en milímetros (peso_mm)');
-        }
-        camino.forEach(validarCoordenada);
-        if (!mismoPunto(camino[0], inicio) || !mismoPunto(camino.at(-1), fin)) {
-            throw new Error('Los extremos de una arista no coinciden con sus nodos');
-        }
-        ids.add(arista.id);
-        trazados.push(camino);
-        conexiones.push([indices.get(datos.origen), indices.get(datos.destino), datos.peso_mm]);
+export function cargarGrafoDesdeJson(grafo) {
+    if (!tieneCampos(grafo, ['nodos', 'aristas']) || !Array.isArray(grafo.nodos)
+        || !grafo.nodos.length || !Array.isArray(grafo.aristas)) {
+        throw new Error('El JSON debe contener una lista de nodos y una lista de aristas');
     }
-    return trazados;
-}
 
-export function cargarGrafoGeorreferenciado(coleccionNodos, coleccionTramos, coleccionCandidatas, alternativa = 'A_k4') {
-    const nodos = new Map();
-    const indices = new Map();
-    for (const nodo of leerColeccion(coleccionNodos, 'Nodos')) {
-        if (typeof nodo?.id !== 'string' || !nodo.id || nodos.has(nodo.id) ||
-            nodo.geometry?.type !== 'Point' || nodo.properties?.tipo_nodo !== 'estructura_bt') {
-            throw new Error('Cada estructura debe tener un identificador único y una geometría Point');
+    const posiciones = new Map();
+    for (const nodo of grafo.nodos) {
+        if (!tieneCampos(nodo, ['id', 'coordenadas']) || !identificadorValido(nodo.id)) {
+            throw new Error('Cada nodo debe tener un ID y sus coordenadas');
         }
-        validarCoordenada(nodo.geometry.coordinates);
-        indices.set(nodo.id, nodos.size);
-        nodos.set(nodo.id, nodo.geometry.coordinates);
+        if (posiciones.has(nodo.id)) throw new Error(`El identificador de nodo ${nodo.id} está repetido`);
+        validarCoordenadas(nodo.coordenadas);
+        posiciones.set(nodo.id, nodo.coordenadas);
     }
-    if (!nodos.size) throw new Error('El archivo de nodos no contiene estructuras');
 
     const ids = new Set();
-    const conexiones = [];
-    return {
-        alternativa,
-        ids: [...nodos.keys()],
-        nodos: [...nodos.values()],
-        tramos: leerAristas(coleccionTramos, 'tramo_documentado', nodos, indices, ids, conexiones),
-        candidatas: leerAristas(coleccionCandidatas, 'candidata_geografica', nodos, indices, ids, conexiones, alternativa),
-        conexiones,
-    };
-}
-
-export function cargarGrafoDesdeJson(paquete) {
-    const letra = ALTERNATIVAS[paquete?.alternativa];
-    if (paquete?.tipo !== 'grafo_georreferenciado' || paquete.version !== 1 ||
-        !letra || paquete.sistema_coordenadas !== 'EPSG:4326') {
-        throw new Error('Elige un JSON georreferenciado de la alternativa A o B con coordenadas WGS 84');
-    }
-    const { nodos, tramos_documentados, conexiones_candidatas } = paquete;
-    const grafo = cargarGrafoGeorreferenciado(nodos, tramos_documentados, conexiones_candidatas, paquete.alternativa);
-    if (grafo.candidatas.length !== conexiones_candidatas.features.length) {
-        throw new Error(`El JSON contiene conexiones candidatas ajenas a la alternativa ${letra}`);
+    for (const arista of grafo.aristas) {
+        if (!tieneCampos(arista, ['id', 'origen', 'destino', 'peso_mm', 'clase'], ['trazado'])
+            || !identificadorValido(arista.id)) {
+            throw new Error('Una arista tiene campos o identificador inválidos');
+        }
+        if (ids.has(arista.id)) throw new Error(`El identificador de arista ${arista.id} está repetido`);
+        ids.add(arista.id);
+        if (!CLASES.has(arista.clase)) throw new Error(`La arista ${arista.id} tiene una clase inválida`);
+        if (!Number.isSafeInteger(arista.peso_mm) || arista.peso_mm <= 0) {
+            throw new Error(`La arista ${arista.id} debe tener un peso entero positivo en milímetros`);
+        }
+        const inicio = posiciones.get(arista.origen), fin = posiciones.get(arista.destino);
+        if (!inicio || !fin || arista.origen === arista.destino) {
+            throw new Error(`La arista ${arista.id} tiene extremos inválidos`);
+        }
+        if (Object.hasOwn(arista, 'trazado')) {
+            const camino = arista.trazado;
+            if (!Array.isArray(camino) || camino.length < 3) {
+                throw new Error(`El trazado de ${arista.id} requiere al menos un punto intermedio`);
+            }
+            camino.forEach(validarCoordenadas);
+            if (!mismoPunto(camino[0], inicio) || !mismoPunto(camino.at(-1), fin)) {
+                throw new Error(`El trazado de ${arista.id} debe comenzar en el origen y terminar en el destino`);
+            }
+        }
     }
     return grafo;
-}
-
-export function crearGrafoCompacto(grafo, algoritmo) {
-    return { algoritmo, nodos: grafo.ids, aristas: grafo.conexiones };
-}
-
-const MARCA_GEOGRAFICA = /"tipo"\s*:\s*"grafo_georreferenciado"/;
-
-export async function esJsonGeografico(archivo) {
-    if (!/\.json$/i.test(archivo.name)) return false;
-    return MARCA_GEOGRAFICA.test(await archivo.slice(0, 2048).text());
 }

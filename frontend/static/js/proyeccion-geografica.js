@@ -4,6 +4,7 @@ const COLOR_TRAMO = '#00578b';
 const COLOR_ESTRUCTURA = 'rgba(36, 69, 94, .82)';
 const COLOR_DESCARTADA = 'rgba(160, 152, 140, .35)';
 const COLOR_ARBOL = '#2F6430';
+const GUIONES_CANDIDATA = [2.5, 1.7];
 
 function limitesGeograficos(grafo) {
     let oeste = Infinity, sur = Infinity, este = -Infinity, norte = -Infinity;
@@ -13,8 +14,8 @@ function limitesGeograficos(grafo) {
         sur = Math.min(sur, latitud);
         norte = Math.max(norte, latitud);
     }
-    grafo.nodos.forEach(considerar);
-    for (const trazado of grafo.tramos) trazado.forEach(considerar);
+    grafo.nodos.forEach((nodo) => considerar(nodo.coordenadas));
+    for (const arista of grafo.aristas) arista.trazado?.forEach(considerar);
     return { oeste, sur, este, norte };
 }
 
@@ -33,22 +34,28 @@ export function crearEscena(grafo) {
         return plano;
     }
 
+    const coordenadas = grafo.nodos.map((nodo) => nodo.coordenadas);
+    const posiciones = new Map(grafo.nodos.map((nodo) => [nodo.id, nodo.coordenadas]));
+    const aristas = new Map(grafo.aristas.map((arista) => {
+        const puntos = arista.trazado ?? [posiciones.get(arista.origen), posiciones.get(arista.destino)];
+        return [arista.id, { clase: arista.clase, camino: aPlano(puntos) }];
+    }));
     return {
-        ids: grafo.ids,
-        coordenadas: grafo.nodos,
-        nodos: aPlano(grafo.nodos),
-        tramos: grafo.tramos.map(aPlano),
-        candidatas: grafo.candidatas.map(aPlano),
+        ids: grafo.nodos.map((nodo) => nodo.id),
+        coordenadas,
+        nodos: aPlano(coordenadas),
+        aristas,
+        ...agruparCaminos(aristas.values()),
         anchoPlano: (este - oeste) * factorLon,
         altoPlano: norte - sur,
     };
 }
 
-export function encuadrar(escena, ancho, alto) {
+export function encuadrar(escena, ancho, alto, margenVertical = 0) {
     const margen = Math.max(8, Math.min(ancho, alto) * 0.035);
     const escala = Math.min(
-        (ancho - 2 * margen) / Math.max(escena.anchoPlano, 1e-10),
-        (alto - 2 * margen) / Math.max(escena.altoPlano, 1e-10),
+        Math.max(1, ancho - 2 * margen) / Math.max(escena.anchoPlano, 0.0001),
+        Math.max(1, alto - 2 * Math.max(margen, margenVertical)) / Math.max(escena.altoPlano, 0.0001),
     );
     return { escala, x: ancho / 2, y: alto / 2 };
 }
@@ -82,11 +89,16 @@ function dibujarLineas(contexto, caminos, camara, ancho, alto, color, grosor, gu
     contexto.stroke();
 }
 
-export function caminosSeleccionados(escena, indices) {
-    const cantidadTramos = escena.tramos.length;
-    return indices.map((indice) => (indice < cantidadTramos
-        ? escena.tramos[indice]
-        : escena.candidatas[indice - cantidadTramos]));
+function agruparCaminos(aristas) {
+    const tramos = [], candidatas = [];
+    for (const { clase, camino } of aristas) {
+        (clase === 'tramo_documentado' ? tramos : candidatas).push(camino);
+    }
+    return { tramos, candidatas };
+}
+
+export function caminosSeleccionados(escena, ids) {
+    return agruparCaminos(ids.map((id) => escena.aristas.get(id)));
 }
 
 export function dibujarRed(contexto, escena, camara, ancho, alto, aumento = 1, arbol = null) {
@@ -94,15 +106,17 @@ export function dibujarRed(contexto, escena, camara, ancho, alto, aumento = 1, a
     contexto.fillRect(0, 0, ancho, alto);
     contexto.lineJoin = 'round';
     if (arbol) {
-        dibujarLineas(contexto, escena.candidatas, camara, ancho, alto, COLOR_DESCARTADA, 0.6);
+        dibujarLineas(contexto, escena.candidatas, camara, ancho, alto, COLOR_DESCARTADA, 0.6, GUIONES_CANDIDATA);
         dibujarLineas(contexto, escena.tramos, camara, ancho, alto, COLOR_DESCARTADA, 0.6);
-        dibujarLineas(contexto, arbol, camara, ancho, alto, COLOR_ARBOL, 1.6);
+        dibujarLineas(contexto, arbol.candidatas, camara, ancho, alto, COLOR_ARBOL, 1.6, GUIONES_CANDIDATA);
+        dibujarLineas(contexto, arbol.tramos, camara, ancho, alto, COLOR_ARBOL, 1.6);
     } else {
-        dibujarLineas(contexto, escena.candidatas, camara, ancho, alto, COLOR_CANDIDATA, 0.8, [2.5, 1.7]);
+        dibujarLineas(contexto, escena.candidatas, camara, ancho, alto, COLOR_CANDIDATA, 0.8, GUIONES_CANDIDATA);
         dibujarLineas(contexto, escena.tramos, camara, ancho, alto, COLOR_TRAMO, 1.45);
     }
 
-    const radio = 1.3 * Math.min(3, Math.sqrt(Math.max(1, aumento)));
+    const radioBase = Math.min(4, Math.max(1.3, 14 / Math.sqrt(escena.ids.length)));
+    const radio = Math.min(6, radioBase * Math.sqrt(Math.max(1, aumento)));
     contexto.fillStyle = COLOR_ESTRUCTURA;
     const { escala, x, y } = camara;
     contexto.beginPath();

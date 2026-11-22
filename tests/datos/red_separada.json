@@ -1,0 +1,13 @@
+{
+  "nodos": [
+    {"id": "norte", "coordenadas": [-76.99, -12]},
+    {"id": "sur", "coordenadas": [-76.99, -12.03]},
+    {"id": "este", "coordenadas": [-76.98, -12.01]},
+    {"id": "oeste", "coordenadas": [-77, -12.01]},
+    {"id": "aislado", "coordenadas": [-77, -12.04]}
+  ],
+  "aristas": [
+    {"id": "enlace-1", "origen": "norte", "destino": "sur", "peso_mm": 1200, "clase": "candidata_geografica"},
+    {"id": "enlace-2", "origen": "este", "destino": "oeste", "peso_mm": 2300, "clase": "tramo_documentado"}
+  ]
+}

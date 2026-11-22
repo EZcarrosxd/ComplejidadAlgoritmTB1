@@ -1,134 +1,61 @@
-# Dataset y procedencia
+# Formato y procedencia de los datos
 
-La fuente inmediata es `dataset/Dataset.pdf`, copia sin cambios del PDF indicado
-por el estudiante en Descargas
-
-Contiene 45 páginas: conexiones en las páginas
-1 a 44 y precios y bibliografía en la página 45
-
-El 04/10/2026 se extrajeron las ternas `(origen, destino, distancia_m)` del PDF y
-se compararon con el JSON usando un multiconjunto, conservando posibles duplicados:
-**2767 de 2767 conexiones coinciden exactamente**, incluidas sus distancias
-
-La prueba de integración también comprueba que CSV y JSON producen el mismo análisis
-
-## Características
-
-| Dato | Valor |
-|---|---|
-| Nodos distintos | 1500, identificados de N-1 a N-1500 |
-| Conexiones | 2767 |
-| Componentes topológicas | 1 |
-| Distancia | Metros |
-| Precio de referencia utilizado | S/ 3.98 por metro, primera fila del PDF |
-| Segundo precio registrado | S/ 4.90 por metro; no se usa automáticamente |
-| Capacidad ausente en el PDF | Se supone 20 A por línea |
-
-Los nodos se deducen de los extremos de las conexiones
-
-Las fuentes citadas son de
-baja tensión; por eso se presentan como **nodos eléctricos**, sin afirmar que los
-1500 sean subestaciones de transmisión
-
-No se inventan coordenadas geográficas
-
-## Fuentes citadas por el PDF
-
-- [Estructuras de baja tensión, OSINERGMIN](https://www.datosabiertos.gob.pe/dataset/estructuras-de-baja-tensi%C3%B3n-organismo-supervisor-de-la-inversi%C3%B3n-en-energ%C3%ADa-y-miner%C3%ADa)
-- [Instalaciones de distribución de baja tensión y alumbrado público](https://www.datosabiertos.gob.pe/dataset/instalaciones-de-distribuci%C3%B3n-en-baja-tensi%C3%B3n-servicio-de-alumbrado-p%C3%BAblico-de-las-empresas)
-- [Cable Elcope, Sodimac](https://www.sodimac.com.pe/sodimac-pe/articulo/116266218/Cable-THW-12-AWG-Elcope-450-750V-Rojo-por-Metro-Lineal)
-- [Cable Celsa, Promart](https://www.promart.pe/cable-thw-90-450-750v-12-awg-celsa-negro-venta-por-metro/p)
-
-Los importes son los registrados en el PDF, no precios actuales verificados
-
-La bibliografía permite identificar las fuentes declaradas, pero el PDF no explica
-el filtrado geográfico, la fecha de extracción, el mapeo de IDs originales a N-1…,
-ni cómo se generaron las conexiones/distancias
-
-El grupo debe documentar ese proceso
-para demostrar la trazabilidad hasta los datos primarios exigida por la rúbrica
-
-## Formatos de entrada
-
-JSON principal: objeto con `conexiones` y, opcionalmente, `precios` y `nodos`
-
-También se acepta una lista JSON de conexiones
+El JSON del aplicativo contiene las listas `nodos` y `aristas`
 
 ```json
 {
-  "precios": [{"precio_por_metro": 3.98}],
-  "conexiones": [{"origen": "A", "destino": "B", "distancia_m": 10}]
+  "nodos": [
+    {"id": "poste-1", "coordenadas": [-77.05, -12.05]},
+    {"id": "poste-2", "coordenadas": [-77.04, -12.04]}
+  ],
+  "aristas": [
+    {
+      "id": "tramo-1",
+      "origen": "poste-1",
+      "destino": "poste-2",
+      "peso_mm": 1800000,
+      "clase": "tramo_documentado",
+      "trazado": [[-77.05, -12.05], [-77.044, -12.048], [-77.04, -12.04]]
+    }
+  ]
 }
 ```
 
-Este ejemplo solo ilustra el formato: la API exige al menos 1500 nodos
+- `id` es un texto y debe ser único dentro de su lista
+- `coordenadas` es un par WGS 84 en orden longitud, latitud
+- `origen` y `destino` apuntan a nodos distintos ya declarados
+- `peso_mm` es una longitud entera positiva en milímetros
+- `clase` admite `tramo_documentado` y `candidata_geografica` y determina el estilo visual de la conexión
+- `trazado` es opcional e incluye el punto de origen, los puntos intermedios en su orden y el punto de destino
+- Si la conexión es recta, se omite `trazado` y el visor une las coordenadas de los nodos
 
-Una conexión puede declarar `costo` y `capacidad`
+Se admiten nodos aislados y aristas paralelas
+Kruskal y Prim devuelven un bosque de expansión mínima si la red tiene varias componentes
+El precio del cable por metro se ingresa como parámetro opcional en soles y el importe se calcula multiplicando ese precio por la longitud seleccionada
 
-Si no declara costo, se calcula
-como distancia × primer precio
+## Conversión reproducible
 
-Si no declara precio o capacidad, se usan los
-supuestos anteriores
-
-Se conserva la capacidad explícita, incluso si es cero
-
-CSV: `origen,destino,distancia_m` o `origen,destino,costo,capacidad`
-
-`conexiones.csv` sirve para subir la red; `precios.csv` es una tabla de referencia,
-no una red y no se sube por separado
-
-El CSV usa S/ 3.98 como precio predeterminado
-
-Para incluir aislados en JSON, añadir `"nodos": [{"id":"A"}, ...]` con **todos**
-los nodos: cada extremo debe estar declarado
-
-Sin esa lista, se deducen de las líneas
-
-Se rechazan IDs vacíos, bucles, valores negativos/no finitos y filas mal formadas
-
-Las líneas paralelas se permiten: sus capacidades se suman en el flujo
-
-La pantalla dibuja la red completa hasta 5000 nodos
-Con más nodos dibuja un subgrafo elegido alrededor del flujo y los nodos críticos, e indica el total
-
-Todos los cálculos usan los 1500 nodos y las 2767 líneas
-
-## Red georreferenciada de OSINERGMIN
-
-`dataset_osinergmin_A.json` y `dataset_osinergmin_B.json` reúnen las estructuras de baja tensión publicadas por OSINERGMIN en coordenadas WGS 84
-
-| Alternativa | Estructuras | Tramos documentados | Conexiones candidatas | Aristas |
-|---|---:|---:|---:|---:|
-| A (`A_k4`) | 7208 | 315 | 17 503 | 17 818 |
-| B (`B_k8`) | 7208 | 315 | 33 394 | 33 709 |
-
-Las conexiones candidatas son alternativas de diseño por cercanía y no instalaciones existentes
-Los pesos `peso_mm` son longitudes enteras en milímetros, no costos ni datos eléctricos
-
-Al elegir uno de estos archivos en la portada, el navegador lo lee completo y dibuja las estructuras en sus coordenadas originales con una proyección equirectangular local
-No se usa Pivot MDS y el navegador acepta archivos de hasta 64 MiB
-
-Desde la misma vista se pueden ejecutar Kruskal, Prim y BFS
-El navegador envía a `POST /api/georreferenciado/analizar` solo los identificadores de las estructuras y, por cada arista, sus dos extremos y su peso en el mismo orden del archivo
-Ese grafo compacto ocupa unos 470 KB en A y 790 KB en B, por debajo del límite de 10 MiB
-El servidor ejecuta las implementaciones de `backend/algorithms` y devuelve los índices de las aristas elegidas, la longitud total y el número de componentes
-No se usan los supuestos de S/ 3,98 por metro ni de 20 A del avance anterior
-
-| Resultado | A | B |
-|---|---:|---:|
-| Aristas del árbol con Kruskal y Prim | 7207 | 7207 |
-| Longitud mínima | 137 416,341 m | 137 411,789 m |
-| Componentes con BFS | 1 | 1 |
-
-Para generar o comprobar cada archivo contra el ZIP archivado y sus huellas de procedencia:
+El conversor toma un JSON original de colecciones GeoJSON y escribe un archivo nuevo
+Conserva las conexiones presentes en ese JSON, sus identificadores, sus pesos y todos sus puntos intermedios
+La opción `--verificar` comprueba una salida existente
 
 ```powershell
-python dataset/generar_osinergmin.py Escenario_Diseno_Electrico_OSINERGMIN.zip Dataset/fuentes/referencias_fuentes.json dataset_osinergmin_A.json --verificar
-python dataset/generar_osinergmin.py Escenario_Diseno_Electrico_OSINERGMIN.zip Dataset/fuentes/referencias_fuentes.json dataset_osinergmin_B.json --alternativa B --verificar
+python -m dataset.convertir_red ruta/al/original.json ruta/a/red.json
+python -m dataset.convertir_red ruta/al/original.json ruta/a/red.json --verificar
 ```
 
-Sin `--verificar` el script crea el archivo en una ruta nueva y luego lo compara con el ZIP
+## Datos de referencia
 
-Las pruebas del visor y del análisis se ejecutan con `pytest`
-Con las variables `DATASET_OSINERGMIN_A` y `DATASET_OSINERGMIN_B` apuntando a los JSON también se prueban los datos completos y los resultados del informe
+Los dos archivos reúnen estructuras de baja tensión publicadas por OSINERGMIN
+Las conexiones candidatas representan propuestas de diseño
+
+| Archivo | Nodos | Aristas | Kruskal y Prim | Componentes con BFS |
+|---|---:|---:|---:|---:|
+| [red_osinergmin.json](../dataset/red_osinergmin.json) | 7208 | 17 818 | 137 416,341 m | 1 |
+| [red_osinergmin_ampliada.json](../dataset/red_osinergmin_ampliada.json) | 7208 | 33 709 | 137 411,789 m | 1 |
+
+Los JSON originales georreferenciados se conservaron en la carpeta local `tmp/respaldo-datasets/`
+Cuando los respaldos están disponibles, las pruebas comparan cada nodo y arista con su original
+
+`dataset/dataset.json`, `dataset/conexiones.csv`, `dataset/precios.csv` y `dataset/Dataset.pdf` conservan los datos del avance previo
+Los identificadores y las distancias de ese avance carecen de coordenadas geográficas

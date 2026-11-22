@@ -14,7 +14,7 @@ Crear un **Web Service** conectado al repositorio:
 
 | Campo del panel | Valor |
 |---|---|
-| Branch | `desarrollo` (los cambios deben estar subidos a GitHub) |
+| Branch | `main` del repositorio conectado en producción |
 | Runtime | Python |
 | Root Directory | Vacío: raíz del repositorio, donde está `app.py` |
 | Build Command | `pip install -r requirements.txt` |
@@ -44,7 +44,7 @@ Editar **solamente la última línea** de `frontend/static/js/config.js`:
 export const API_URL = 'https://TU-BACKEND.onrender.com';
 ```
 
-Usar HTTPS, sin `/api`, `/upload` ni `/docs`
+Usar la URL base HTTPS del servicio
 
 Es una dirección pública, no una clave
 
@@ -64,7 +64,7 @@ No subir el repositorio completo ni solo el HTML
 
 Dos formas manuales de hacerlo:
 
-- **Con Git:** conectar el repositorio, elegir rama `desarrollo`, framework `None`,
+- **Con Git:** conectar el repositorio, elegir rama `main`, framework `None`,
   dejar Root Directory vacío, usar `exit 0` como Build Command y `frontend` como
   Build Output Directory
 
@@ -107,7 +107,7 @@ no funciona como autenticación de la API
 
 ## 5 Verificar y tener en cuenta
 
-Abrir Cloudflare, subir `dataset.json` y probar el recálculo
+Abrir el sitio de Cloudflare, subir `dataset/red_osinergmin.json` y ejecutar Kruskal, Prim y BFS
 
 Si falla la conexión,
 comprobar primero `/health`, después `API_URL` y finalmente `ALLOWED_ORIGINS`
@@ -117,16 +117,9 @@ Si cambias `config.js`, volver a publicar y recargar el navegador sin caché
 Los servicios gratuitos de Render pueden suspenderse por inactividad: la primera
 consulta puede tardar mientras inicia
 
-La interfaz espera hasta cinco minutos por
-análisis o recálculo, incluida la descarga inicial si se usa la red de ejemplo
+La interfaz espera hasta cinco minutos por consulta o por la descarga de la red de ejemplo
 
-El resultado se guarda en memoria: los GET del último análisis son compartidos y
-se reinician al reiniciar el proceso
-
-Mantener un worker
-
-El panel usa directamente
-la respuesta de su propia carga, así que no depende de esos GET compartidos
+Cada consulta envía su propio grafo y devuelve su resultado
 
 ## Desarrollo local
 

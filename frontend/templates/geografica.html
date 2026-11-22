@@ -3,7 +3,7 @@
         <h2 class="sr-only" id="titulo-mapa-geografico">Red en sus coordenadas geográficas</h2>
         <div class="graph-box">
             <canvas class="graph-canvas lienzo-geografico" id="grafo-geo" role="img"
-                    aria-label="Red de OSINERGMIN dibujada en sus coordenadas geográficas"></canvas>
+                    aria-label="Red cargada dibujada en sus coordenadas geográficas"></canvas>
             <p class="graph-count" id="geo-conteo"></p>
             <div class="tip" id="geo-tip" aria-hidden="true" hidden></div>
             <div class="zoom">
@@ -16,13 +16,14 @@
                 <span id="geo-escala-texto"></span>
             </div>
             <ul class="legend" id="geo-leyenda-red" aria-label="Leyenda">
-                <li><span class="simbolo-estructura" aria-hidden="true"></span>Estructura</li>
+                <li><span class="simbolo-estructura" aria-hidden="true"></span>Nodo</li>
                 <li><span class="simbolo-tramo" aria-hidden="true"></span>Tramo documentado</li>
-                <li><span class="simbolo-candidata" aria-hidden="true"></span>Conexión propuesta</li>
+                <li><span class="simbolo-candidata" aria-hidden="true"></span>Conexión candidata</li>
             </ul>
             <ul class="legend" id="geo-leyenda-arbol" aria-label="Leyenda del árbol" hidden>
-                <li><span class="simbolo-estructura" aria-hidden="true"></span>Estructura</li>
-                <li><span class="simbolo-arbol" aria-hidden="true"></span>Arista del árbol</li>
+                <li><span class="simbolo-estructura" aria-hidden="true"></span>Nodo</li>
+                <li><span class="simbolo-arbol" aria-hidden="true"></span>Tramo seleccionado</li>
+                <li><span class="simbolo-arbol simbolo-arbol-candidata" aria-hidden="true"></span>Candidata seleccionada</li>
                 <li><span class="simbolo-descartada" aria-hidden="true"></span>Arista no elegida</li>
             </ul>
         </div>
@@ -34,13 +35,19 @@
                 <p class="barra-texto" id="geo-archivo"></p>
             </div>
             <dl class="cifras-geograficas">
-                <div><dt>Estructuras</dt><dd id="geo-nodos"></dd></div>
+                <div><dt>Nodos</dt><dd id="geo-nodos"></dd></div>
                 <div><dt>Tramos documentados</dt><dd id="geo-tramos"></dd></div>
-                <div><dt>Conexiones propuestas</dt><dd id="geo-candidatas"></dd></div>
+                <div><dt>Conexiones candidatas</dt><dd id="geo-candidatas"></dd></div>
                 <div><dt>Aristas en total</dt><dd id="geo-aristas"></dd></div>
             </dl>
             <section class="algoritmos-geograficos" aria-labelledby="titulo-algoritmos-geo">
-                <h2 class="subtitulo-geografico" id="titulo-algoritmos-geo">Algoritmos del informe</h2>
+                <h2 class="subtitulo-geografico" id="titulo-algoritmos-geo">Algoritmos</h2>
+                <div class="precio-geografico">
+                    <label for="geo-precio">Precio del cable en S/ por metro</label>
+                    <input type="number" id="geo-precio" min="0" max="99999999.9999" step="0.0001"
+                           inputmode="decimal" placeholder="Opcional" aria-describedby="geo-precio-nota">
+                    <p class="barra-texto" id="geo-precio-nota">Se aplica al ejecutar Kruskal o Prim</p>
+                </div>
                 <div class="metodos-geograficos" role="group" aria-label="Elegir lo que muestra el mapa">
                     <button type="button" class="metodo-geografico" data-algoritmo="original" aria-pressed="true">Red original</button>
                     <button type="button" class="metodo-geografico" data-algoritmo="kruskal" aria-pressed="false">Kruskal</button>
@@ -50,17 +57,6 @@
                 <p class="barra-texto" id="geo-estado-algoritmo" role="status"></p>
                 <dl class="cifras-geograficas" id="geo-resultado" hidden></dl>
             </section>
-            <section class="comparacion-geografica" id="geo-comparacion" aria-labelledby="titulo-comparacion-geo" hidden>
-                <h2 class="subtitulo-geografico" id="titulo-comparacion-geo">Comparación A y B</h2>
-                <table class="tabla-geografica">
-                    <thead><tr><th scope="col">Resultado</th><th scope="col">A</th><th scope="col">B</th></tr></thead>
-                    <tbody id="geo-tabla-comparacion"></tbody>
-                </table>
-                <p class="barra-texto" id="geo-diferencia"></p>
-            </section>
-            <p class="barra-texto">Cada estructura está en su posición WGS 84 original, con una proyección equirectangular local
-Las conexiones propuestas son alternativas de diseño por cercanía y no instalaciones existentes
-Los pesos son longitudes en milímetros, no costos ni datos eléctricos</p>
             <p class="barra-texto">Arrastra para desplazarte y usa la rueda o los botones para acercar
 Ajustar vuelve a mostrar toda la red</p>
         </div>

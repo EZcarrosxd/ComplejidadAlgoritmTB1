@@ -1,0 +1,14 @@
+{
+  "nodos": [
+    {"id": "poste-1", "coordenadas": [-77.05, -12.05]},
+    {"id": "poste-2", "coordenadas": [-77.04, -12.05]},
+    {"id": "poste-3", "coordenadas": [-77.04, -12.04]}
+  ],
+  "aristas": [
+    {"id": "c-1", "origen": "poste-1", "destino": "poste-2", "peso_mm": 3000, "clase": "candidata_geografica"},
+    {"id": "t-1", "origen": "poste-2", "destino": "poste-3", "peso_mm": 5000, "clase": "tramo_documentado",
+     "trazado": [[-77.04, -12.05], [-77.035, -12.045], [-77.04, -12.04]]},
+    {"id": "t-2", "origen": "poste-1", "destino": "poste-2", "peso_mm": 7000, "clase": "tramo_documentado"},
+    {"id": "c-2", "origen": "poste-1", "destino": "poste-3", "peso_mm": 9000, "clase": "candidata_geografica"}
+  ]
+}

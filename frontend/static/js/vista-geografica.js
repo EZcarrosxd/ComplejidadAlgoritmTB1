@@ -1,6 +1,5 @@
 import { $, anunciar, crear } from './dom.js';
 import { actualizar, suscribir, toca } from './estado.js';
-import { ALTERNATIVAS, cargarGrafoDesdeJson } from './datos-georreferenciados.js';
 import { caminosSeleccionados, crearEscena, dibujarRed, encuadrar, metrosPorGrado, nodoCercano } from './proyeccion-geografica.js';
 import { formatoInforme } from './formato-informe.js';
 
@@ -9,14 +8,13 @@ const ALTO_IMAGEN = 932;
 const DENSIDAD_IMAGEN = 2;
 const AUMENTO_MINIMO = 0.5;
 const AUMENTO_MAXIMO = 400;
-const ESCALAS_METROS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
 
 const lienzo = $('grafo-geo');
 const contexto = lienzo.getContext('2d');
 const tip = $('geo-tip');
 const vista = {
-    escena: null, letra: 'A', camara: null, ajuste: null, movida: false, cuadro: 0, bajoPuntero: -1,
-    arbol: null, modo: 'original',
+    escena: null, camara: null, ajuste: null, movida: false, cuadro: 0, bajoPuntero: -1,
+    arbol: null, modo: null, componentes: 0,
 };
 
 const ancho = () => lienzo.clientWidth;
@@ -25,9 +23,11 @@ const aumento = () => (vista.ajuste ? vista.camara.escala / vista.ajuste.escala 
 
 function actualizarEscala() {
     const pixelesPorMetro = vista.camara.escala / metrosPorGrado;
-    const metros = ESCALAS_METROS.find((m) => m * pixelesPorMetro >= 60) ?? ESCALAS_METROS.at(-1);
+    const unidad = 10 ** Math.floor(Math.log10(60 / pixelesPorMetro));
+    const metros = unidad * ([1, 2, 5].find((factor) => factor * unidad * pixelesPorMetro >= 60) ?? 10);
+    const [valor, sufijo] = metros >= 1000 ? [metros / 1000, 'km'] : metros < 1 ? [metros * 100, 'cm'] : [metros, 'm'];
     $('geo-escala-barra').style.width = `${Math.round(metros * pixelesPorMetro)}px`;
-    $('geo-escala-texto').textContent = metros >= 1000 ? `${metros / 1000} km` : `${metros} m`;
+    $('geo-escala-texto').textContent = `${Number(valor.toPrecision(2))} ${sufijo}`;
 }
 
 function dibujar() {
@@ -62,7 +62,7 @@ function redimensionar() {
     const densidad = window.devicePixelRatio || 1;
     lienzo.width = Math.round(w * densidad);
     lienzo.height = Math.round(h * densidad);
-    const nuevoAjuste = encuadrar(vista.escena, w, h);
+    const nuevoAjuste = encuadrar(vista.escena, w, h, 50);
     if (!vista.movida || !vista.camara) {
         vista.camara = { ...nuevoAjuste };
     }
@@ -107,7 +107,7 @@ function mostrarTip(indice, punto) {
         crear('div', '', `Longitud ${longitud.toFixed(6)}`),
         crear('div', '', `Latitud ${latitud.toFixed(6)}`),
     );
-    const x = Math.min(punto.x + 16, ancho() - 190), y = Math.max(punto.y - 80, 8);
+    const x = Math.max(8, Math.min(punto.x + 16, ancho() - 190)), y = Math.max(punto.y - 80, 8);
     tip.style.transform = `translate(${x}px, ${y}px)`;
     tip.hidden = false;
 }
@@ -151,25 +151,23 @@ lienzo.addEventListener('wheel', (evento) => {
 }, { passive: false });
 
 function nombreImagen() {
-    if (vista.modo !== 'original') return `Grafo_OSINERGMIN_Escenario_${vista.letra}_${vista.modo}.png`;
-    return vista.letra === 'A' ? 'Grafo_OSINERGMIN_Escenario_A_JSON.png' : `Grafo_OSINERGMIN_Escenario_${vista.letra}.png`;
-}
-
-function contarAristas() {
-    return vista.escena.tramos.length + vista.escena.candidatas.length;
+    return vista.modo ? `red_${vista.modo}.png` : 'red.png';
 }
 
 function mostrarConteo() {
-    const estructuras = formatoInforme.format(vista.escena.ids.length);
+    const total = formatoInforme.format(vista.escena.aristas.size);
+    const tipo = vista.componentes === 1 ? 'Árbol' : 'Bosque';
+    const metodo = vista.modo === 'kruskal' ? 'Kruskal' : 'Prim';
     $('geo-conteo').textContent = vista.arbol
-        ? `Árbol de ${vista.modo === 'kruskal' ? 'Kruskal' : 'Prim'} · ${formatoInforme.format(vista.arbol.length)} de ${formatoInforme.format(contarAristas())} aristas`
-        : `Alternativa ${vista.letra} · ${estructuras} estructuras · ${formatoInforme.format(contarAristas())} aristas`;
+        ? `${tipo} de ${metodo} · ${formatoInforme.format(vista.arbol.tramos.length + vista.arbol.candidatas.length)} de ${total} aristas`
+        : `${formatoInforme.format(vista.escena.ids.length)} nodos · ${total} aristas`;
 }
 
-export function mostrarArbol(modo, indices) {
+export function mostrarArbol(modo, ids, componentes) {
     if (!vista.escena) return;
     vista.modo = modo;
-    vista.arbol = indices ? caminosSeleccionados(vista.escena, indices) : null;
+    vista.componentes = componentes;
+    vista.arbol = ids ? caminosSeleccionados(vista.escena, ids) : null;
     $('geo-leyenda-red').hidden = Boolean(vista.arbol);
     $('geo-leyenda-arbol').hidden = !vista.arbol;
     mostrarConteo();
@@ -196,27 +194,27 @@ function guardarImagen() {
     }, 'image/png');
 }
 
-export async function mostrarRedGeografica(archivo) {
-    const grafo = cargarGrafoDesdeJson(JSON.parse(await archivo.text()));
+export function mostrarRedGeografica(grafo, nombre) {
+    soltar();
     vista.escena = crearEscena(grafo);
-    vista.letra = ALTERNATIVAS[grafo.alternativa];
     vista.movida = false;
     vista.camara = null;
     vista.bajoPuntero = -1;
     vista.arbol = null;
-    vista.modo = 'original';
-    const [nodos, tramos, candidatas] = [grafo.nodos.length, grafo.tramos.length, grafo.candidatas.length];
+    vista.modo = null;
+    const { tramos, candidatas } = vista.escena;
+    const nodos = grafo.nodos.length;
     const formato = (n) => formatoInforme.format(n);
-    $('geo-archivo').textContent = `Alternativa ${vista.letra} · ${archivo.name}`;
+    $('geo-archivo').textContent = nombre;
     $('geo-nodos').textContent = formato(nodos);
-    $('geo-tramos').textContent = formato(tramos);
-    $('geo-candidatas').textContent = formato(candidatas);
-    $('geo-aristas').textContent = formato(tramos + candidatas);
+    $('geo-tramos').textContent = formato(tramos.length);
+    $('geo-candidatas').textContent = formato(candidatas.length);
+    $('geo-aristas').textContent = formato(grafo.aristas.length);
     $('geo-leyenda-red').hidden = false;
     $('geo-leyenda-arbol').hidden = true;
     mostrarConteo();
-    actualizar({ fase: 'geografica', archivo, error: null, redGeografica: grafo });
-    anunciar(`Alternativa ${vista.letra} lista\n${formato(nodos)} estructuras, ${formato(tramos)} tramos documentados y ${formato(candidatas)} conexiones propuestas`);
+    actualizar({ fase: 'geografica', error: null, redGeografica: grafo });
+    anunciar(`Red cargada\n${formato(nodos)} nodos y ${formato(grafo.aristas.length)} aristas`);
 }
 
 suscribir((s, cambios) => {

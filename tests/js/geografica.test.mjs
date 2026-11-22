@@ -1,166 +1,120 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { cargarGrafoDesdeJson, crearGrafoCompacto, esJsonGeografico } from '../../frontend/static/js/datos-georreferenciados.js';
+import { cargarGrafoDesdeJson } from '../../frontend/static/js/datos-georreferenciados.js';
 import { caminosSeleccionados, crearEscena, dibujarRed, encuadrar, nodoCercano } from '../../frontend/static/js/proyeccion-geografica.js';
+import { metros } from '../../frontend/static/js/formato-informe.js';
 
-function punto(id, coordenadas) {
-    return { type: 'Feature', id, geometry: { type: 'Point', coordinates: coordenadas }, properties: { tipo_nodo: 'estructura_bt' } };
-}
-
-function arista(id, clase, origen, destino, camino, alternativas, peso_mm = 1000) {
-    const properties = { clase, origen, destino, peso_mm };
-    if (alternativas) properties.alternativas = alternativas;
-    return { type: 'Feature', id, geometry: { type: 'LineString', coordinates: camino }, properties };
-}
-
-const coleccion = (features) => ({ type: 'FeatureCollection', features });
-
-function paqueteDePrueba() {
-    return {
-        tipo: 'grafo_georreferenciado', version: 1, alternativa: 'A_k4', sistema_coordenadas: 'EPSG:4326',
-        nodos: coleccion([
-            punto('N1', [-77.05, -12.05]), punto('N2', [-77.04, -12.05]), punto('N3', [-77.04, -12.04]),
-        ]),
-        tramos_documentados: coleccion([
-            arista('T1', 'tramo_documentado', 'N1', 'N2', [[-77.05, -12.05], [-77.045, -12.051], [-77.04, -12.05]]),
-        ]),
-        conexiones_candidatas: coleccion([
-            arista('C1', 'candidata_geografica', 'N2', 'N3', [[-77.04, -12.05], [-77.04, -12.04]], ['A_k4']),
-        ]),
-    };
-}
+const leer = (ruta) => JSON.parse(readFileSync(new URL(ruta, import.meta.url), 'utf8'));
+const pequena = () => leer('../datos/red_pequena.json');
 
 function contextoFalso() {
     const llamadas = { moveTo: 0, lineTo: 0, fillRect: 0, stroke: 0, arc: 0, fill: 0 };
-    const contexto = { llamadas, setLineDash() {}, beginPath() {} };
+    const guiones = [];
+    const contexto = { llamadas, guiones, setLineDash: (valor) => guiones.push(valor), beginPath() {} };
     for (const nombre of Object.keys(llamadas)) contexto[nombre] = () => { llamadas[nombre]++; };
     return contexto;
 }
 
-test('carga el paquete y conserva las coordenadas originales', () => {
-    const paquete = paqueteDePrueba();
-    const grafo = cargarGrafoDesdeJson(paquete);
-    assert.deepEqual(grafo.ids, ['N1', 'N2', 'N3']);
-    assert.deepEqual(grafo.nodos, paquete.nodos.features.map((n) => n.geometry.coordinates));
-    assert.equal(grafo.tramos.length, 1);
-    assert.equal(grafo.candidatas.length, 1);
-    assert.equal(grafo.tramos[0], paquete.tramos_documentados.features[0].geometry.coordinates);
+test('acepta la red con nodos y aristas en cualquier orden', () => {
+    const entrada = pequena();
+    const grafo = cargarGrafoDesdeJson({ aristas: entrada.aristas, nodos: entrada.nodos });
+    assert.deepEqual(grafo, entrada);
+    assert.equal(grafo.aristas[1].trazado.length, 3);
 });
 
-test('rechaza un escenario distinto de A y B', () => {
-    const paquete = { ...paqueteDePrueba(), alternativa: 'C_k6' };
-    assert.throws(() => cargarGrafoDesdeJson(paquete), /alternativa A o B/);
+test('rechaza campos ajenos al formato', () => {
+    assert.throws(() => cargarGrafoDesdeJson({ ...pequena(), procedencia: {} }), /listas?|lista de nodos/);
+    const entrada = pequena();
+    entrada.aristas[0].capacidad = 20;
+    assert.throws(() => cargarGrafoDesdeJson(entrada), /campos/);
 });
 
-test('rechaza una candidata ajena a la alternativa del archivo', () => {
-    const paquete = paqueteDePrueba();
-    paquete.conexiones_candidatas.features[0].properties.alternativas = ['B_k8'];
-    assert.throws(() => cargarGrafoDesdeJson(paquete), /ajenas a la alternativa A/);
+test('rechaza aristas inválidas y trazados incompletos', () => {
+    for (const [cambio, mensaje] of [
+        [{ peso_mm: 1.5 }, /milímetros/],
+        [{ peso_mm: 2 ** 53 }, /milímetros/],
+        [{ clase: 'otro' }, /clase/],
+        [{ origen: 'inexistente' }, /extremos/],
+        [{ id: 't-1' }, /repetido/],
+        [{ trazado: null }, /punto intermedio/],
+        [{ trazado: [[-77.05, -12.05], [-77.04, -12.05]] }, /punto intermedio/],
+        [{ trazado: [[-77.04, -12.05], [-77.045, -12.04], [-77.05, -12.05]] }, /comenzar/],
+    ]) {
+        const entrada = pequena();
+        Object.assign(entrada.aristas[0], cambio);
+        assert.throws(() => cargarGrafoDesdeJson(entrada), mensaje);
+    }
 });
 
-test('acepta la alternativa B con sus propias candidatas', () => {
-    const paquete = { ...paqueteDePrueba(), alternativa: 'B_k8' };
-    paquete.conexiones_candidatas.features[0].properties.alternativas = ['A_k4', 'B_k8'];
-    const grafo = cargarGrafoDesdeJson(paquete);
-    assert.equal(grafo.alternativa, 'B_k8');
-    assert.equal(grafo.candidatas.length, 1);
+test('rechaza nodos repetidos y coordenadas inválidas', () => {
+    const entrada = pequena();
+    entrada.nodos[1].id = entrada.nodos[0].id;
+    assert.throws(() => cargarGrafoDesdeJson(entrada), /repetido/);
+    entrada.nodos[0].coordenadas[1] = -91;
+    assert.throws(() => cargarGrafoDesdeJson(entrada), /WGS 84/);
 });
 
-test('el grafo compacto conserva extremos y pesos en el orden de las aristas', () => {
-    const paquete = paqueteDePrueba();
-    paquete.tramos_documentados.features[0].properties.peso_mm = 1234;
-    paquete.conexiones_candidatas.features[0].properties.peso_mm = 1110;
-    const compacto = crearGrafoCompacto(cargarGrafoDesdeJson(paquete), 'kruskal');
-    assert.deepEqual(compacto, { algoritmo: 'kruskal', nodos: ['N1', 'N2', 'N3'], aristas: [[0, 1, 1234], [1, 2, 1110]] });
-});
-
-test('rechaza una arista sin longitud entera en milímetros', () => {
-    const paquete = paqueteDePrueba();
-    paquete.conexiones_candidatas.features[0].properties.peso_mm = 12.5;
-    assert.throws(() => cargarGrafoDesdeJson(paquete), /milímetros/);
-});
-
-test('las aristas elegidas se dibujan desde sus geometrías originales', () => {
-    const escena = crearEscena(cargarGrafoDesdeJson(paqueteDePrueba()));
-    const [tramo, candidata] = caminosSeleccionados(escena, [0, 1]);
-    assert.equal(tramo, escena.tramos[0]);
-    assert.equal(candidata, escena.candidatas[0]);
-    const contexto = contextoFalso();
-    dibujarRed(contexto, escena, encuadrar(escena, 400, 300), 400, 300, 1, [candidata]);
-    assert.equal(contexto.llamadas.moveTo - contexto.llamadas.arc, 3);
-});
-
-test('rechaza una arista con un extremo inexistente', () => {
-    const paquete = paqueteDePrueba();
-    paquete.conexiones_candidatas.features[0].properties.destino = 'N9';
-    assert.throws(() => cargarGrafoDesdeJson(paquete), /extremos/);
-});
-
-test('rechaza una geometría que no termina en su nodo', () => {
-    const paquete = paqueteDePrueba();
-    paquete.tramos_documentados.features[0].geometry.coordinates[2] = [-77.03, -12.05];
-    assert.throws(() => cargarGrafoDesdeJson(paquete), /no coinciden/);
-});
-
-test('reconoce el JSON georreferenciado por su cabecera', async () => {
-    const archivo = (nombre, texto) => ({ name: nombre, slice: () => ({ text: async () => texto }) });
-    assert.equal(await esJsonGeografico(archivo('a.json', JSON.stringify(paqueteDePrueba()))), true);
-    assert.equal(await esJsonGeografico(archivo('a.json', '{"conexiones":[]}')), false);
-    assert.equal(await esJsonGeografico(archivo('a.csv', '"tipo":"grafo_georreferenciado"')), false);
-});
-
-test('la proyección orienta el norte arriba y encuadra los nodos', () => {
-    const grafo = cargarGrafoDesdeJson(paqueteDePrueba());
-    const escena = crearEscena(grafo);
+test('el encuadre incluye los puntos intermedios y conserva la orientación', () => {
+    const entrada = pequena();
+    entrada.aristas[1].clase = 'candidata_geografica';
+    const escena = crearEscena(cargarGrafoDesdeJson(entrada));
     const camara = encuadrar(escena, 400, 300);
-    const [x1, y1, x2, y2, x3, y3] = [...escena.nodos].map((v, i) => v * camara.escala + (i % 2 ? camara.y : camara.x));
-    assert.ok(x2 > x1, 'el este queda a la derecha');
-    assert.ok(y3 < y2, 'el norte queda arriba');
+    const pantalla = (puntos) => [...puntos].map((v, i) => v * camara.escala + (i % 2 ? camara.y : camara.x));
+    const [x1, y1, x2, y2, x3, y3] = pantalla(escena.nodos);
+    assert.ok(x2 > x1 && y3 < y2);
     assert.equal(y1, y2);
-    for (const valor of [x1, x2, x3]) assert.ok(valor >= 0 && valor <= 400);
-    for (const valor of [y1, y2, y3]) assert.ok(valor >= 0 && valor <= 300);
+    const camino = pantalla(escena.aristas.get('t-1').camino);
+    assert.ok(camino[2] > x3 && camino[2] <= 400);
+    assert.deepEqual(pantalla(escena.aristas.get('c-1').camino), [x1, y1, x2, y2]);
     assert.equal(nodoCercano(escena, camara, { x: x3 + 2, y: y3 - 2 }), 2);
 });
 
-test('el encuadre dibuja todas las aristas y estructuras', () => {
-    const escena = crearEscena(cargarGrafoDesdeJson(paqueteDePrueba()));
+test('dibuja círculos, líneas rectas y trazados diferenciados por clase', () => {
+    const escena = crearEscena(cargarGrafoDesdeJson(pequena()));
     const contexto = contextoFalso();
     dibujarRed(contexto, escena, encuadrar(escena, 400, 300), 400, 300);
-    assert.equal(contexto.llamadas.moveTo - contexto.llamadas.arc, 2);
-    assert.equal(contexto.llamadas.lineTo, 3);
     assert.equal(contexto.llamadas.arc, 3);
-    assert.equal(contexto.llamadas.fill, 1);
-    assert.equal(contexto.llamadas.fillRect, 1);
+    assert.equal(contexto.llamadas.moveTo - contexto.llamadas.arc, 4);
+    assert.equal(contexto.llamadas.lineTo, 5);
+    assert.deepEqual(contexto.guiones.map((g) => g.length), [2, 0]);
 });
 
-const rutaDataset = process.env.DATASET_OSINERGMIN_A;
-
-test('el dataset del escenario A se dibuja completo en sus coordenadas', { skip: !rutaDataset }, () => {
-    const paquete = JSON.parse(readFileSync(rutaDataset, 'utf8'));
-    const grafo = cargarGrafoDesdeJson(paquete);
-    assert.equal(grafo.nodos.length, 7208);
-    assert.equal(grafo.tramos.length, 315);
-    assert.equal(grafo.candidatas.length, 17503);
-    assert.deepEqual(grafo.nodos, paquete.nodos.features.map((n) => n.geometry.coordinates));
-    assert.deepEqual(grafo.ids, paquete.nodos.features.map((n) => n.id));
-    assert.equal(new Set(grafo.nodos.map(String)).size, 7208);
-
-    const escena = crearEscena(grafo);
+test('selecciona geometrías por ID aunque las clases estén intercaladas', () => {
+    const escena = crearEscena(cargarGrafoDesdeJson(pequena()));
+    const arbol = caminosSeleccionados(escena, ['t-1', 'c-1']);
+    assert.equal(arbol.tramos[0], escena.aristas.get('t-1').camino);
+    assert.equal(arbol.tramos[0].length, 6);
+    assert.equal(arbol.candidatas[0], escena.aristas.get('c-1').camino);
     const contexto = contextoFalso();
-    dibujarRed(contexto, escena, encuadrar(escena, 1072, 932), 1072, 932);
-    assert.equal(contexto.llamadas.moveTo - contexto.llamadas.arc, 315 + 17503);
-    assert.equal(grafo.conexiones.length, 17818);
-    assert.equal(contexto.llamadas.arc, 7208);
+    dibujarRed(contexto, escena, encuadrar(escena, 400, 300), 400, 300, 1, arbol);
+    assert.deepEqual(contexto.guiones.map((g) => g.length), [2, 0, 2, 0]);
 });
 
-const rutaDatasetB = process.env.DATASET_OSINERGMIN_B;
+test('encuadra redes desconectadas y redes de un solo nodo', () => {
+    for (const entrada of [leer('../datos/red_separada.json'), { nodos: [{ id: 'p', coordenadas: [0, 0] }], aristas: [] }]) {
+        const escena = crearEscena(cargarGrafoDesdeJson(entrada));
+        const camara = encuadrar(escena, 400, 300);
+        assert.ok(Number.isFinite(camara.escala) && camara.escala > 0);
+        const contexto = contextoFalso();
+        dibujarRed(contexto, escena, camara, 400, 300);
+        assert.equal(contexto.llamadas.arc, entrada.nodos.length);
+    }
+});
 
-test('el dataset de la alternativa B conserva todas sus aristas para el analisis', { skip: !rutaDatasetB }, () => {
-    const grafo = cargarGrafoDesdeJson(JSON.parse(readFileSync(rutaDatasetB, 'utf8')));
-    assert.equal(grafo.alternativa, 'B_k8');
-    assert.equal(grafo.nodos.length, 7208);
-    assert.equal(grafo.tramos.length, 315);
-    assert.equal(grafo.candidatas.length, 33394);
-    assert.equal(grafo.conexiones.length, 33709);
+for (const nombre of ['red_osinergmin.json', 'red_osinergmin_ampliada.json']) {
+    test(`dibuja toda la red de ${nombre}`, () => {
+        const grafo = cargarGrafoDesdeJson(leer(`../../dataset/${nombre}`));
+        const escena = crearEscena(grafo);
+        const contexto = contextoFalso();
+        dibujarRed(contexto, escena, encuadrar(escena, 1072, 932), 1072, 932);
+        assert.equal(contexto.llamadas.arc, grafo.nodos.length);
+        assert.equal(contexto.llamadas.moveTo - contexto.llamadas.arc, grafo.aristas.length);
+        assert.equal(contexto.llamadas.lineTo, grafo.aristas.reduce((n, a) => n + (a.trazado?.length ?? 2) - 1, 0));
+    });
+}
+
+test('formatea la longitud hasta el milímetro', () => {
+    assert.equal(metros(137416341).replace(/\s/g, ' '), '137 416,341 m');
+    assert.equal(metros('9007199254740993').replace(/\s/g, ' '), '9 007 199 254 740,993 m');
 });

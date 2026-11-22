@@ -5,7 +5,7 @@ from .union_find import UnionFind
 def optimizar_costos_kruskal(nodos, aristas, pasos=None):
     uf = UnionFind(nodos.keys())
     mst = []
-    costo_total = 0.0
+    costo_total = 0
 
     aristas_ordenadas = ordenar_con_merge_sort(aristas, lambda x: x['costo'])
 

@@ -1,36 +1,13 @@
 import { estado } from './estado.js';
-import { cambiarModo, restaurar } from './acciones.js';
 import { abrirAyuda, cerrarAyuda } from './ayuda.js';
-import { acercar, alejar, centrar } from './grafo.js';
 import { acercarGeografica, alejarGeografica, ajustarGeografica } from './vista-geografica.js';
-import { GRUPOS } from './algoritmos.js';
-import { alternarReproduccion, avanzarPaso, cerrarPasos } from './reproductor.js';
 
-window.addEventListener('keydown', (e) => {
-    const etiqueta = (e.target && e.target.tagName) || '';
-
-    if (e.key === 'Escape') {
-        if (estado.ayuda) { cerrarAyuda(); return; }
-        if (estado.falla) { restaurar(); return; }
-        if (estado.paso !== null) { cerrarPasos(); return; }
-    }
-    if (etiqueta === 'INPUT' || etiqueta === 'TEXTAREA' || e.metaKey || e.ctrlKey || e.altKey) return;
-    if (e.key === '?') { abrirAyuda(); return; }
-    if (estado.ayuda) return;
-    if (estado.fase === 'geografica') {
-        if (e.key === 'f' || e.key === 'F') ajustarGeografica();
-        else if (e.key === '+' || e.key === '=') acercarGeografica();
-        else if (e.key === '-') alejarGeografica();
-        return;
-    }
-    if (estado.fase !== 'resultados') return;
-
-    const numero = Number(e.key);
-    if (Number.isInteger(numero) && numero >= 1 && numero <= GRUPOS.length) cambiarModo(GRUPOS[numero - 1].metodos[0]);
-    else if (e.key === 'ArrowRight' && estado.paso !== null) { e.preventDefault(); avanzarPaso(1); }
-    else if (e.key === 'ArrowLeft' && estado.paso !== null) { e.preventDefault(); avanzarPaso(-1); }
-    else if (e.key === ' ' && estado.paso !== null && etiqueta !== 'BUTTON') { e.preventDefault(); alternarReproduccion(); }
-    else if (e.key === 'f' || e.key === 'F') centrar();
-    else if (e.key === '+' || e.key === '=') acercar();
-    else if (e.key === '-') alejar();
+window.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape' && estado.ayuda) cerrarAyuda();
+    if (evento.target.matches('input, textarea') || evento.metaKey || evento.ctrlKey || evento.altKey) return;
+    if (evento.key === '?') abrirAyuda();
+    if (estado.ayuda || estado.fase !== 'geografica') return;
+    if (evento.key.toLowerCase() === 'f') ajustarGeografica();
+    else if (evento.key === '+' || evento.key === '=') acercarGeografica();
+    else if (evento.key === '-') alejarGeografica();
 });

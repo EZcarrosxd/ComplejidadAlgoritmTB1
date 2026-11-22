@@ -3,29 +3,37 @@ import heapq
 
 def crear_adyacencia_con_costos(nodos, aristas):
     adyacencia = {nodo: [] for nodo in nodos}
-    for arista in aristas:
-        adyacencia[arista['origen']].append((arista['costo'], arista['destino']))
-        adyacencia[arista['destino']].append((arista['costo'], arista['origen']))
+    for indice, arista in enumerate(aristas):
+        origen, destino, costo = arista["origen"], arista["destino"], arista["costo"]
+        adyacencia[origen].append((costo, origen, destino, indice))
+        adyacencia[destino].append((costo, destino, origen, indice))
     return adyacencia
 
 
-def optimizar_costos_prim(nodos, aristas, inicio):
+def seleccionar_aristas_prim(nodos, aristas, inicios):
     adyacencia = crear_adyacencia_con_costos(nodos, aristas)
-    en_arbol = {inicio}
-    frontera = [(costo, inicio, vecino) for costo, vecino in adyacencia[inicio]]
-    heapq.heapify(frontera)
-    arbol = []
-    costo_total = 0.0
+    visitados = set()
+    seleccionadas = []
+    costo_total = 0
 
-    while frontera and len(en_arbol) < len(nodos):
-        costo, desde, hacia = heapq.heappop(frontera)
-        if hacia in en_arbol:
+    for inicio in inicios:
+        if inicio in visitados:
             continue
-        en_arbol.add(hacia)
-        arbol.append([desde, hacia])
-        costo_total += costo
-        for costo_vecino, vecino in adyacencia[hacia]:
-            if vecino not in en_arbol:
-                heapq.heappush(frontera, (costo_vecino, hacia, vecino))
+        visitados.add(inicio)
+        frontera = list(adyacencia[inicio])
+        heapq.heapify(frontera)
+        while frontera:
+            costo, desde, hacia, indice = heapq.heappop(frontera)
+            if hacia in visitados:
+                continue
+            visitados.add(hacia)
+            seleccionadas.append((desde, hacia, indice))
+            costo_total += costo
+            for conexion in adyacencia[hacia]:
+                if conexion[2] not in visitados:
+                    heapq.heappush(frontera, conexion)
+    return seleccionadas, costo_total
 
-    return arbol, costo_total
+def optimizar_costos_prim(nodos, aristas, inicio):
+    seleccionadas, costo_total = seleccionar_aristas_prim(nodos, aristas, [inicio])
+    return [[desde, hacia] for desde, hacia, _ in seleccionadas], costo_total

@@ -2,20 +2,13 @@
 
 Caso 8 del curso 1ACC0184, ciclo 2026-20
 
-Aplicación modular en **FastAPI** y Python, con módulos de costo, capacidad, fallas y visualización
+El aplicativo carga una red eléctrica georreferenciada desde un JSON con `nodos` y `aristas` y dibuja el grafo en Canvas
 
-La API y la consola comparten la carga y el análisis de la red
-
-La interfaz usa HTML, CSS y JavaScript
-
-Calcula costo mínimo con Kruskal + UFDS, capacidad entre dos nodos con
-Ford-Fulkerson usando BFS (Edmonds-Karp) y puntos de articulación con DFS
+Kruskal y Prim calculan la longitud mínima de cableado usando el peso en milímetros de cada arista
+BFS cuenta las componentes conectadas
+Si ingresas un precio por metro, el aplicativo muestra una estimación comercial para la longitud seleccionada
 
 ## Ejecutar en Windows
-
-Se recomienda Python 3.10 o superior; validado en Python 3.14
-
-Desde la carpeta del proyecto:
 
 ```powershell
 python -m venv .venv
@@ -23,93 +16,36 @@ python -m venv .venv
 .\.venv\Scripts\python app.py
 ```
 
-Abrir [el panel](http://127.0.0.1:5000) o
-[la documentación interactiva](http://127.0.0.1:5000/docs)
+Abre [el aplicativo local](http://127.0.0.1:5000) o [la documentación interactiva de la API](http://127.0.0.1:5000/docs)
 
-Todo funciona en el puerto 5000
+Selecciona o arrastra cualquiera de los JSON de red de `dataset/` con prefijo `red_`, o pulsa **Usar red de ejemplo**
+El mapa aparece al cargar el archivo y puedes ejecutar los algoritmos desde el panel lateral
 
-Ya no se usa Flask ni un servidor separado en 8000
-
-Las tipografías se descargan de Google Fonts
-
-El grafo se dibuja con canvas, sin librerías externas
-
-Para desarrollo con recarga:
-
-```powershell
-.\.venv\Scripts\python -m uvicorn app:app --reload --port 5000
-```
-
-## Probar la aplicación
-
-1. Seleccionar o arrastrar `dataset/dataset.json` o `dataset/conexiones.csv` y pulsar **Analizar red**. También puedes pulsar **Usar la red de ejemplo** desde el inicio
-2. Al terminar el análisis, revisar costo, flujo, nodos críticos y la red completa en el mapa
-3. En **Capacidad**, cambiar origen y destino y pulsar **Calcular**
-4. Pulsar **Cargar otra red** para analizar otro archivo
-
-El dataset tiene **1500 nodos y 2767 líneas**
-
-Sus conexiones se verificaron contra
-`dataset/Dataset.pdf`
-
-La descripción y las fuentes están en [docs/datos.md](docs/datos.md)
-
-No se suben PDFs ni `precios.csv`: el lector acepta una red en JSON o CSV
-
-## Pruebas y consola
+## Consola y pruebas
 
 ```powershell
 .\.venv\Scripts\python -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python -m pytest -q
-.\.venv\Scripts\python main.py
-.\.venv\Scripts\python main.py dataset/conexiones.csv --origen N-1 --destino N-2
+.\.venv\Scripts\python main.py dataset/red_osinergmin_ampliada.json --algoritmo prim
+.\.venv\Scripts\python main.py tests/datos/red_pequena.json --algoritmo kruskal --precio-por-metro 3.98
 ```
 
-La consola devuelve JSON y termina con código distinto de cero si hay un error
-
-Las pruebas incluyen el dataset real del repositorio, redes pequeñas calculables a
-mano, desconexión, aislados, líneas paralelas, validación y una cadena de 1500 nodos
+Las pruebas cubren los dos datasets de referencia, redes pequeñas de distintos tamaños y validación de archivos y parámetros
+Se usa Node.js para probar el dibujo del visor
 
 ## API
 
 | Método | Ruta | Uso |
 |---|---|---|
-| POST | `/api/upload` | Multipart: `file`, `origen` y `destino` opcionales |
-| GET | `/api/network-status` | Articulaciones y metadatos del último análisis |
-| GET | `/api/optimization/mst` | Costo, líneas elegidas y componentes |
-| GET | `/api/optimization/flow` | Flujo, corte mínimo y extremos |
-| GET | `/api/ejemplo` | Descarga `dataset/dataset.json` para la red de ejemplo |
+| POST | `/api/georreferenciado/{algoritmo}` | JSON de red en el cuerpo y `precio_por_metro` opcional en la consulta |
+| GET | `/api/ejemplo` | Descarga la red de ejemplo |
+| GET | `/health` | Comprueba que la API está disponible |
 
-La carga conserva el contrato `{"mensaje": "...", "datos": {...}}` y agrega
-`aristas_mst`, `metadata.componentes` y `metadata.red_conectada`
+`algoritmo` admite `kruskal`, `prim` y `bfs`
+Los errores de validación responden con código 422 y un mensaje en `error`
 
-Errores: 400 archivo o extremos inválidos, 404 sin análisis previo, 413 archivo mayor
-que 10 MiB y 422 falta el campo `file`
+## Guías
 
-El mensaje está en `error`
-
-Los GET comparten el último resultado dentro de **un proceso**
-
-Es una aplicación
-local de demostración: no tiene sesiones por usuario ni persistencia
-
-## Guías del proyecto
-
-- [Arquitectura modular y SOLID](docs/arquitectura.md) — módulos, dependencias y orden de lectura
-- [Algoritmos](docs/algoritmos.md): lógica, complejidad y bibliografía
-- [Dataset](docs/datos.md): formatos, procedencia y supuestos
-- [Rúbrica](README_RUBRICA.md): evidencia disponible y pendientes del informe
-- [Base del informe TB1](docs/informe_tb1.md): problema, datos y propuesta
-- [Publicación manual](docs/despliegue-manual.md): frontend en Cloudflare Pages y API en Render
-
-Para publicarlos separados, el frontend es estático y no necesita compilación
-
-Configurar la dirección del backend en `frontend/static/js/config.js` y los dominios
-permitidos en la variable `ALLOWED_ORIGINS` del panel de Render
-
-El modelo supone 20 A cuando el dataset no declara capacidad
-
-El flujo y la
-robustez se analizan en la red original; el MST solo minimiza cableado
-
-No demuestra por sí solo que un diseño físico satisfaga demanda o tolere fallas
+- [Formato JSON, conversión y datos de referencia](docs/datos.md)
+- [Publicación en Cloudflare Pages y Render](docs/despliegue-manual.md)
+- [Informe académico](docs/informe_tb1.md)
