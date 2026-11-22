@@ -1,8 +1,14 @@
 .lienzo-geografico { background: var(--white); cursor: grab; }
+.lienzo-webgl { pointer-events: none; }
+[data-motor="three"] .lienzo-geografico { background: transparent; }
+#geo-tip { max-width: min(14rem, 90%); overflow-wrap: anywhere; }
+.geo-inspeccion { overflow-wrap: anywhere; }
+.geo-inspeccion ul { margin: 0; padding-left: 1.1rem; }
+.geo-paginacion { display: flex; gap: .45rem; align-items: center; }
 
-.simbolo-estructura { width: 7px; height: 7px; border-radius: 50%; background: #24455e; }
-.simbolo-tramo { width: 18px; border-top: 2px solid #00578b; }
-.simbolo-candidata { width: 18px; border-top: 2px dashed #a75224; }
+.simbolo-estructura { width: 10px; height: 10px; border: 1px solid #171717; border-radius: 50%; background: #fff; }
+.simbolo-tramo { width: 18px; border-top: 2px solid #171717; }
+.simbolo-candidata { width: 18px; border-top: 2px dashed #616161; }
 
 .escala-geografica {
     position: absolute; left: .9rem; bottom: 4.4rem; display: flex; flex-direction: column; gap: .2rem;
@@ -17,7 +23,7 @@
 
 .simbolo-arbol { width: 18px; border-top: 2.5px solid #2F6430; }
 .simbolo-arbol-candidata { border-top-style: dashed; }
-.simbolo-descartada { width: 18px; border-top: 1.5px solid rgba(160, 152, 140, .6); }
+.simbolo-descartada { width: 18px; border-top: 1.5px solid rgba(100, 100, 100, .45); }
 
 .algoritmos-geograficos { display: grid; gap: .75rem; --c: var(--lime-dark); }
 .subtitulo-geografico { margin: 0; font-size: 1rem; font-weight: 700; }

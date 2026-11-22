@@ -6,7 +6,7 @@ import { mostrarArbol } from './vista-geografica.js';
 import { formatoInforme, formatoSegundosInforme, metros } from './formato-informe.js';
 
 const NOMBRES = { kruskal: 'Kruskal', prim: 'Prim', bfs: 'BFS' };
-const botones = [...document.querySelectorAll('.metodo-geografico')];
+const botones = [...document.querySelectorAll('.metodo-geografico[data-algoritmo]')];
 const precio = $('geo-precio');
 let grafo = null;
 let trabajo = null;

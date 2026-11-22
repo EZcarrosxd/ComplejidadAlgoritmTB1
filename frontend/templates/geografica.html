@@ -40,6 +40,15 @@
                 <div><dt>Conexiones candidatas</dt><dd id="geo-candidatas"></dd></div>
                 <div><dt>Aristas en total</dt><dd id="geo-aristas"></dd></div>
             </dl>
+            <section class="algoritmos-geograficos geo-inspeccion" id="geo-inspeccion" aria-labelledby="geo-titulo-inspeccion" hidden>
+                <h2 class="subtitulo-geografico" id="geo-titulo-inspeccion"></h2>
+                <ul id="geo-lista-inspeccion"></ul>
+                <div class="geo-paginacion" id="geo-paginacion" hidden>
+                    <button type="button" class="metodo-geografico" id="geo-inspeccion-anterior">Anterior</button>
+                    <span id="geo-pagina"></span>
+                    <button type="button" class="metodo-geografico" id="geo-inspeccion-siguiente">Siguiente</button>
+                </div>
+            </section>
             <section class="algoritmos-geograficos" aria-labelledby="titulo-algoritmos-geo">
                 <h2 class="subtitulo-geografico" id="titulo-algoritmos-geo">Algoritmos</h2>
                 <div class="precio-geografico">
@@ -57,8 +66,9 @@
                 <p class="barra-texto" id="geo-estado-algoritmo" role="status"></p>
                 <dl class="cifras-geograficas" id="geo-resultado" hidden></dl>
             </section>
-            <p class="barra-texto">Arrastra para desplazarte y usa la rueda o los botones para acercar
-Ajustar vuelve a mostrar toda la red</p>
+            <p class="barra-texto">Acerca el mapa para ver los identificadores y los pesos en metros
+Pulsa un nodo o una conexión para inspeccionarlos
+Arrastra para desplazarte y pulsa Ajustar para ver toda la red</p>
         </div>
         <div class="barra-pie">
             <button type="button" class="btn-submit" id="geo-guardar">Guardar imagen del grafo</button>
